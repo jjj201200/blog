@@ -1,2 +1,2 @@
 # blog
-My Blog
+[skincraft](skincraft.one)
