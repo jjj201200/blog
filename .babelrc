@@ -1,0 +1,37 @@
+{
+    "presets": [
+        [
+            "babel-preset-es2015",
+            {
+                "loose": true,
+                "modules": false
+            }
+        ],
+        "babel-preset-react",
+        "babel-preset-stage-0"
+    ],
+    "plugins": [
+        "react-hot-loader/babel",
+        "babel-plugin-lodash",
+        "transform-react-jsx",
+        "babel-plugin-transform-decorators-legacy"
+    ],
+    "env": {
+        "development": {
+            "plugins": [
+                "react-hot-loader/babel",
+                [
+                    "babel-plugin-transform-runtime",
+                    {
+                        "helpers": true,
+                        "polyfill": true,
+                        "regenerator": true,
+                        "moduleName": "babel-runtime"
+                    }
+                ],
+                "babel-plugin-transform-decorators-legacy",
+                "babel-plugin-lodash"
+            ]
+        }
+    }
+}
