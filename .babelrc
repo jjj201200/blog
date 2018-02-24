@@ -1,0 +1,29 @@
+{
+    "presets": [
+        "react",
+        [
+            "env",
+            {
+                "modules": false
+            }
+        ]
+    ],
+    "plugins": [
+        "transform-decorators-legacy",
+        "transform-object-rest-spread",
+        "react-hot-loader/babel",
+        "transform-object-assign",
+        "transform-decorators",
+        "syntax-dynamic-import",
+        "transform-class-properties",
+        "transform-function-bind",
+        [
+            "import",
+            {
+                "libraryName": "antd",
+                "style": true
+            }
+        ]
+    ],
+    "comments": false
+}
