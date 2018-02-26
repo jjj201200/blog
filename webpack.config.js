@@ -7,21 +7,36 @@ const path = require('path');
 const webpack = require('webpack');
 
 const appPath = path.join(process.cwd(), 'app');
-const webPath = path.join(appPath, 'web');
+const webPath = path.join(process.cwd(), 'web');
 const webPagesPath = path.join(webPath, 'pages');
 
 const isDev = process.env.NODE_ENV === 'development';
 
+const entries = {
+    home: path.join(webPagesPath, 'home.js'),
+};
+const entriesArray = [];
+for(let key in entries){
+    entriesArray.push(entries[key]);
+}
+
 module.exports = {
-    entry: {
-        home: path.join(webPagesPath, 'clientEntries', 'home.js'),
-    },
+    target: 'web',
+    entry: entries,
     output: {
         path: path.resolve(__dirname, './'),
         filename: '[name].js',
     },
     module: {
         loaders: [
+            {
+                test: /\.js$/,
+                loaders: [
+                    'babel-loader',
+                    path.join(__dirname, 'loaders', 'clientEntryLoader.js'),
+                ],
+                include: entriesArray,
+            },
             {
                 test: /.(js|jsx)?$/,
                 loaders: [

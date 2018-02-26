@@ -15,9 +15,11 @@ module.exports = app => {
         async index() {
             const {ctx} = this;
             const props = {
+                title: 'Home',
                 location: ctx.request.url,
+                componentName: 'Home',
             };
-            await ctx.render('home.js', props);
+            await ctx.render('serverRenderTemplate.js', props);
         }
     };
 };

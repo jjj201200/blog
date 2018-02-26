@@ -38,7 +38,7 @@ module.exports = appInfo => {
                 '.jsx': 'reactViewEngine',
             },
             root: [ // 模板根目录配置
-                path.join(appInfo.baseDir, 'app/web/pages/serverEntries'),
+                path.join(appInfo.baseDir, 'app/view'),
             ].join(','),
         },
         mongoose: { //db
