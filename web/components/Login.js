@@ -39,8 +39,8 @@ class LoginMob extends React.Component {
     handleSubmit(e) {
         e.preventDefault();
         this.props.UserStore.login({
-            username: $('form.login [name="username"]').val(),
-            password: $('form.login [name="password"]').val(),
+            username: $('#sign_in_dialog [name="username"]').val(),
+            password: $('#sign_in_dialog [name="password"]').val(),
         });
     }
     @action('handleClickShowPasssword')
@@ -58,7 +58,7 @@ class LoginMob extends React.Component {
             <Dialog open={show} onClose={onClose} fullWidth>
                 <DialogTitle>Sign In</DialogTitle>
                 <DialogContent>
-                    <Form className="login" method="post" action="/">
+                    <Form id="sign_in_dialog" method="post" action="/">
                         <List>
                             <ListItem>
                                 <FormControl fullWidth>

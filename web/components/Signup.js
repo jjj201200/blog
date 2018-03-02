@@ -42,10 +42,10 @@ class SignUpMob extends React.Component {
         e.preventDefault();
         const {UserStore} = this.props;
         UserStore.signUp({
-            username: $('form.sign-up [id="sign-up-username"]').val(),
-            password: $('form.sign-up [id="sign-up-password"]').val(),
-            confirmPassword: $('.sign-up [name="sign-up-confirm-password"]').val(),
-            email: $('form.sign-up [name="sign-up-email"]').val(),
+            username: $('#sign-up-dialog [id="sign-up-username"]').val(),
+            password: $('#sign-up-dialog [id="sign-up-password"]').val(),
+            confirmPassword: $('#sign-up-dialog [id="sign-up-confirm-password"]').val(),
+            email: $('#sign-up-dialog [id="sign-up-email"]').val(),
         });
     }
 
@@ -64,7 +64,7 @@ class SignUpMob extends React.Component {
             <Dialog open={show} onClose={onClose} fullWidth>
                 <DialogTitle>Sign Up</DialogTitle>
                 <DialogContent>
-                    <Form className="sign-up">
+                    <Form id="sign-up-dialog">
                         <List>
                             <ListItem>
                                 <FormControl fullWidth>
