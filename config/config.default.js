@@ -26,7 +26,7 @@ module.exports = appInfo => {
         },
         webpack: {
             proxyMapping: {
-                js: 'text/javascript;',
+                js: 'text/javascript; charset=UTF-8;',
             },
             webpackConfigList: [require('../webpack.config.js')],
         },

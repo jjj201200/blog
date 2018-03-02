@@ -1,44 +1,100 @@
 /**
  * Author: Ruo
- * Create: 2018-01-02
- * Description: 头部
+ * Create: 2018-02-27
+ * Description:
  */
 
 import React from 'react';
-import {observer} from 'mobx-react';
-import styled from 'styled-components';
-import {theme, rem} from 'DFStyles';
+import PropTypes from 'prop-types';
+import {observable, action, autorun} from 'mobx';
+import {observer, inject} from 'mobx-react';
+import { withStyles } from 'material-ui/styles';
+import AppBar from 'material-ui/AppBar';
+import Toolbar from 'material-ui/Toolbar';
+import Typography from 'material-ui/Typography';
+import IconButton from 'material-ui/IconButton';
+import MenuIcon from 'material-ui-icons/Menu';
+import Button from 'material-ui/Button';
+import {SignUpMob, LoginMob, WriteMob} from 'DFComponents';
 
-const HeaderWrapper = styled.div`
-    position: fixed;
-    top: 0;
-    right: 0;
-    left: 0;
-    width: 100%;
-    height: ${rem(theme.headerHeight)};
-    background-color: ${theme.colors.black};
-    color: ${theme.colors.white};
-    z-index: 100;
-`;
-const HeaderInner = styled.div`
-    position: relative;
-    margin: 0 auto;
-    width: ${rem(theme.bodyMinWidth)};
-    padding: 0 4px;
-`;
+const styles = {
+    root: {
+        flexGrow: 1,
+    },
+    flex: {
+        flex: 1,
+    },
+    menuButton: {
+        marginLeft: -12,
+        marginRight: 20,
+    },
+};
 
-
+@inject('UserStore')
 @observer
-class Header extends React.Component {
+class HeaderView extends React.Component {
+    constructor(props) {
+        super(props);
+        this.toggleMob = ::this.toggleMob;
+        this.closeMob = ::this.closeMob;
+        autorun(() => {
+            if (this.props.UserStore && this.props.UserStore.store.get('hasLogin') === true) {
+                this.closeMob();
+            }
+        });
+    }
+
+    @observable mobStatus = null;
+
+    @action
+    toggleMob(mobName) {
+        this.mobStatus = this.mobStatus !== mobName && mobName;
+    }
+
+    closeMob() {
+        this.toggleMob(null);
+    }
+
     render() {
-        return (
-            <HeaderWrapper>
-                <HeaderInner>
-                    {this.props.children}
-                </HeaderInner>
-            </HeaderWrapper>
-        );
+        const {UserStore, classes} = this.props;
+        const hasLogin = UserStore.store.get('hasLogin');
+        return [
+            <AppBar key="app-bar" className={classes.root} position="fixed">
+                <Toolbar>
+                    <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
+                        <MenuIcon/>
+                    </IconButton>
+                    <Typography className={classes.flex} variant="title" color="inherit">
+                        Playground
+                    </Typography>
+                    {!hasLogin && <Button color="inherit" onClick={() => this.toggleMob('login')}>Sign In</Button>}
+                    {!hasLogin && <Button color="inherit" onClick={() => this.toggleMob('signUp')}>Sign Up</Button>}
+
+                    {hasLogin && <Button color="inherit" onClick={() => UserStore.logout()}>Log Out</Button>}
+                    {hasLogin && <Button color="inherit" onClick={() => this.toggleMob('write')}>Write</Button>}
+                </Toolbar>
+            </AppBar>,
+            <SignUpMob
+                key="sign-up"
+                show={!hasLogin && this.mobStatus === 'signUp'}
+                onClose={this.closeMob}
+            />,
+            <LoginMob
+                key="sign-in"
+                show={!hasLogin && this.mobStatus === 'login'}
+                onClose={this.closeMob}
+            />,
+            <WriteMob
+                key="write"
+                show={hasLogin && this.mobStatus === 'write'}
+                onClose={this.closeMob}
+            />,
+
+        ];
     }
 }
-
+HeaderView.propTypes = {
+    classes: PropTypes.object.isRequired,
+};
+const Header = withStyles(styles)(HeaderView);
 export {Header};

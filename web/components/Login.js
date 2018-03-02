@@ -6,13 +6,22 @@
 
 import $ from 'jquery';
 import React from 'react';
-import {action} from 'mobx';
+import {observable, action} from 'mobx';
 import {observer, inject} from 'mobx-react';
 import styled from 'styled-components';
 import {theme, rem} from 'DFStyles';
-import {Form, Label, LabelName, Input, Submit} from 'DFUIs';
+import {Form, Label, LabelName, Submit} from 'DFUIs';
 import {Mob} from 'DFComponents';
 import GBS from 'DFStores';
+import Dialog, {DialogTitle, DialogContent, DialogContentText} from 'material-ui/Dialog';
+import Input, {InputLabel, InputAdornment} from 'material-ui/Input';
+import {FormControl, FormHelperText} from 'material-ui/Form';
+import IconButton from 'material-ui/IconButton';
+import Visibility from 'material-ui-icons/Visibility';
+import VisibilityOff from 'material-ui-icons/VisibilityOff';
+import List, {ListItem, ListItemIcon, ListItemText} from 'material-ui/List';
+import Button from 'material-ui/Button';
+import Grid from 'material-ui/Grid';
 
 @inject('UserStore')
 @observer
@@ -21,30 +30,71 @@ class LoginMob extends React.Component {
         super(props);
         this.UserStore = GBS.stores.UserStore;
         this.handleSubmit = ::this.handleSubmit;
+        this.handleClickShowPasssword = ::this.handleClickShowPasssword;
+        this.handleMouseDownPassword = ::this.handleMouseDownPassword;
     }
-    @action handleSubmit(e) {
+    @observable showPassword = false;
+
+    @action
+    handleSubmit(e) {
         e.preventDefault();
         this.props.UserStore.login({
             username: $('form.login [name="username"]').val(),
             password: $('form.login [name="password"]').val(),
         });
     }
+    @action('handleClickShowPasssword')
+    handleClickShowPasssword() {
+        this.showPassword = !this.showPassword;
+    };
+
+    handleMouseDownPassword(event) {
+        event.preventDefault();
+    };
+
     render() {
         const {show, onClose} = this.props;
         return (
-            <Mob show={show} onClose={onClose} header={'Log In'}>
-                <Form className="login" method="post" action="/">
-                    <Label>
-                        <LabelName>Username:</LabelName>
-                        <Input type="text" name="username"/>
-                    </Label>
-                    <Label>
-                        <LabelName>Password:</LabelName>
-                        <Input type="password" name="password" autocomplete="current-password"/>
-                    </Label>
-                    <Submit onClick={this.handleSubmit}>GO</Submit>
-                </Form>
-            </Mob>
+            <Dialog open={show} onClose={onClose} fullWidth>
+                <DialogTitle>Sign In</DialogTitle>
+                <DialogContent>
+                    <Form className="login" method="post" action="/">
+                        <List>
+                            <ListItem>
+                                <FormControl fullWidth>
+                                    <InputLabel htmlFor="sign-in-username">Username</InputLabel>
+                                    <Input id="sign-in-username" name="username"/>
+                                </FormControl>
+                            </ListItem>
+                            <ListItem>
+                                <FormControl fullWidth>
+                                    <InputLabel htmlFor=""></InputLabel>
+                                    <Input
+                                        id="sign-in-password"
+                                        name="password"
+                                        type={this.showPassword ? 'text' : 'password'}
+                                        endAdornment={
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    onClick={this.handleClickShowPasssword}
+                                                    onMouseDown={this.handleMouseDownPassword}
+                                                >
+                                                    {this.showPassword ? <VisibilityOff/> : <Visibility/>}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        }
+                                    />
+                                </FormControl>
+                            </ListItem>
+                            <ListItem>
+                                <Grid container justify={'flex-end'}>
+                                    <Button variant="raised" color="primary" onClick={this.handleSubmit}>Sign In</Button>
+                                </Grid>
+                            </ListItem>
+                        </List>
+                    </Form>
+                </DialogContent>
+            </Dialog>
         );
     }
 };

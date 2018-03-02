@@ -4,7 +4,6 @@
  * Description: index
  */
 
-export * from './Header';
 export * from './Sidebar';
 export * from './Signup';
 export * from './Write';
@@ -13,3 +12,4 @@ export * from './DateBox';
 export * from './ArticleCard';
 export * from './Mob';
 export * from './Editor';
+export * from './Header';
