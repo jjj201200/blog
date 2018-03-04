@@ -1,0 +1,15 @@
+.rdw-editor-wrapper {
+  //position: absolute;
+  //top: 80px;
+  //bottom: 65px;
+  margin-top: 20px;
+  .rdw-editor-main {
+    padding: 1px 10px;
+    overflow: unset;
+    outline: 1px solid #F1F1F1;
+    border-radius: 2px;
+    .public-DraftStyleDefault-block {
+      margin-top: 10px;
+    }
+  }
+}

@@ -14,9 +14,9 @@ export default class GlobalStore {
         enableLogging({
             predicate: () => inClient(),
             action: true,
-            reaction: true,
-            transaction: true,
-            compute: true,
+            reaction: false,
+            transaction: false,
+            compute: false,
         })
     }
     @observable stores = {};

@@ -25,7 +25,7 @@ export const color = ({color, alpha = 1}) => Color(color).alpha(alpha).rgb().str
  * fontFamily
  * @param myFontName
  */
-export const fontFamily = (myFontName = 'Geo') => css`
+export const fontFamily = (myFontName = '') => css`
     font-family: ${_.isEmpty(myFontName) ? null : `'${myFontName}',`} "Microsoft YaHei", system, -apple-system, ".SFNSDisplay-Regular", HelveticaNeue, LucidaGrande, "PingFang SC", "Hiragino Sans GB", "sans-serif";
 `;
 /**

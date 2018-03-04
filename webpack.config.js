@@ -21,6 +21,7 @@ for(let key in entries){
 }
 
 module.exports = {
+    devtool: 'source-map',
     target: 'web',
     entry: entries,
     output: {

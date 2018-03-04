@@ -10,7 +10,7 @@ import {theme, rem} from 'DFStyles';
 
 export const Body = styled.div`
   position: absolute;
-  top: ${rem(theme.headerHeight)};
+  top: ${rem(theme.headerHeight + 10)};
   bottom: 0;
   left: -${rem(theme.sidebarWidth)};
   right: 0;

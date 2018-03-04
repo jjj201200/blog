@@ -8,7 +8,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {observable, action, autorun} from 'mobx';
 import {observer, inject} from 'mobx-react';
-import { withStyles } from 'material-ui/styles';
+import {withStyles} from 'material-ui/styles';
 import AppBar from 'material-ui/AppBar';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
@@ -33,6 +33,8 @@ const styles = {
 @inject('UserStore')
 @observer
 class HeaderView extends React.Component {
+    @observable mobStatus = null;
+
     constructor(props) {
         super(props);
         this.toggleMob = ::this.toggleMob;
@@ -44,15 +46,20 @@ class HeaderView extends React.Component {
         });
     }
 
-    @observable mobStatus = null;
-
-    @action
     toggleMob(mobName) {
-        this.mobStatus = this.mobStatus !== mobName && mobName;
+        if (this.mobStatus === mobName) {
+            this.closeMob(mobName);
+        } else this.openMob(mobName);
     }
 
+    @action
+    openMob(mobName) {
+        this.mobStatus = mobName;
+    }
+
+    @action
     closeMob() {
-        this.toggleMob(null);
+        this.mobStatus = null;
     }
 
     render() {
@@ -71,7 +78,7 @@ class HeaderView extends React.Component {
                     {!hasLogin && <Button color="inherit" onClick={() => this.toggleMob('signUp')}>Sign Up</Button>}
 
                     {hasLogin && <Button color="inherit" onClick={() => UserStore.logout()}>Log Out</Button>}
-                    {hasLogin && <Button color="inherit" onClick={() => this.toggleMob('write')}>Write</Button>}
+                    {hasLogin && <Button color="secondary" variant="raised" onClick={() => this.toggleMob('write')}>Write</Button>}
                 </Toolbar>
             </AppBar>,
             <SignUpMob
@@ -93,6 +100,7 @@ class HeaderView extends React.Component {
         ];
     }
 }
+
 HeaderView.propTypes = {
     classes: PropTypes.object.isRequired,
 };

@@ -1,4 +1,3 @@
-/* global require, module */
 /**
  *
  * Author: Ruo
@@ -8,18 +7,11 @@
 module.exports = app => {
     const {mongoose} = app;
     const {Schema} = mongoose;
-    /**
-     * @param username {String}
-     * @param password {String}
-     * @param email {String}
-     * @param loginDate {Date}
-     */
     const UserSchema = new Schema({
-        username: {type: String},
+        username: {type: String, unique: true},
         password: {type: String},
         email: {type: String},
-        loginDate: {type: Date},
+        loginDate: {type: Date, default: Date.now},
     });
-    const User = mongoose.model('User', UserSchema);
-    return User;
+    return mongoose.model('User', UserSchema);
 }

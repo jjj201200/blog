@@ -66,7 +66,7 @@ module.exports = app => {
                         const jwtData = service.jwt.verify(jwToken);
                         await service.user.getUser(jwtData.data.username);
                     } catch (err) {
-                        throw new Error(err);
+                        console.error(new Error(err));
                     }
 
                 } else {

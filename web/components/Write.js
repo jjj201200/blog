@@ -5,28 +5,37 @@
  */
 /* global require */
 
-import $ from 'jquery';
+import _ from 'lodash';
 import React from 'react';
-import {action} from 'mobx';
+import uniqid from 'uniqid';
+import {observable, action, toJS, runInAction} from 'mobx';
 import {observer, inject} from 'mobx-react';
-import styled from 'styled-components';
-import {theme, rem} from 'DFStyles';
-import {Form, Label, LabelName, Submit} from 'DFUIs';
-import {Mob} from 'DFComponents';
+// import styled from 'styled-components';
+// import {theme, rem} from 'DFStyles';
+// import {Form, Label, LabelName, Submit} from 'DFUIs';
+// import {Mob} from 'DFComponents';
 import GBS from 'DFStores';
 import {DFEditor} from 'DFComponents';
 // import LzEditor from 'react-lz-editor';
 import Dialog, {DialogTitle, DialogContent, DialogContentText} from 'material-ui/Dialog';
 import Input, {InputLabel, InputAdornment} from 'material-ui/Input';
 import {FormControl, FormHelperText} from 'material-ui/Form';
-import IconButton from 'material-ui/IconButton';
-import Visibility from 'material-ui-icons/Visibility';
-import VisibilityOff from 'material-ui-icons/VisibilityOff';
+// import IconButton from 'material-ui/IconButton';
+// import Visibility from 'material-ui-icons/Visibility';
+// import VisibilityOff from 'material-ui-icons/VisibilityOff';
 import List, {ListItem, ListItemIcon, ListItemText} from 'material-ui/List';
 import Button from 'material-ui/Button';
+import GridList, {GridListTile, GridListTileBar} from 'material-ui/GridList';
 import Grid from 'material-ui/Grid';
+import AppBar from 'material-ui/AppBar';
+import Toolbar from 'material-ui/Toolbar';
+import Typography from 'material-ui/Typography';
+// import CloseIcon from 'material-ui-icons/Close';
+import Chip from 'material-ui/Chip';
 
-@inject('UserStore')
+import 'DFStyles/sass';
+
+@inject('UserStore', 'BlogStore')
 @observer
 class WriteMob extends React.Component {
     constructor(props) {
@@ -34,27 +43,156 @@ class WriteMob extends React.Component {
         this.UserStore = GBS.stores.UserStore;
         this.handleSubmit = ::this.handleSubmit;
         this.receiveMarkdown = ::this.receiveMarkdown;
-    }
-    componentWillMount() {
+
+        this.onTagInputKeyUp = ::this.onTagInputKeyUp;
+        this.onTagInputChange = ::this.onTagInputChange;
+
+        this.onAddTag = ::this.onAddTag;
+        this.onCreateDeleteTagEvent = ::this.onCreateDeleteTagEvent;
     }
 
-    @action handleSubmit(e) {
+    @observable tagsArray = [];
+    @observable tagsInputValue = '';
+
+    @action
+    handleSubmit(e) {
         e.preventDefault();
     }
+
     receiveMarkdown(content) {
-        console.log("recieved markdown content", content);
+        console.log('recieved markdown content', content);
+    }
+
+    @action
+    onSaveDraft(content) {
+        this.props.BlogStore.saveDraft();
+    }
+
+    @action
+    onTagInputKeyUp(e) {
+        if (e.key === 'Enter') {
+            const tagName = _.trim(e.target.value);
+            if (tagName.length === 0) return;
+            this.tagsArray.push(tagName);
+        }
+    }
+
+    @action
+    onTagInputChange(e) {
+        if (e.target && e.target.value) {
+            this.tagsInputValue = e.target.value;
+        }
+    }
+
+    @action
+    onAddTag(tagStr) {
+        this.tagsArray.push(tagStr);
+    }
+
+    // @action
+    onCreateDeleteTagEvent(tagName) {
+        const that = this;
+        return function () {
+            const tagsArray = toJS(that.tagsArray);
+            if (tagsArray.length === 0) return;
+            const index = tagsArray.findIndex(value => value === tagName);
+            if (index >= 0) {
+                tagsArray.splice(index, 1);
+                that.tagsArray = tagsArray;
+            }
+        };
     }
 
     render() {
         const {show, onClose} = this.props;
         return (
-            <Dialog open={show} onClose={onClose} fullWidth>
-                <DialogTitle>Write Article</DialogTitle>
+            <Dialog open={show} onClose={onClose} fullScreen>
+                <AppBar style={{position: 'relative'}}>
+                    <Toolbar>
+                        <Grid container alignItems="center">
+                            <Grid item xs={6}>
+                                <Typography variant="title" color="inherit" style={{flex: 1}}>
+                                    Write Article
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Grid container spacing={16} justify="flex-end">
+                                    <Grid item>
+                                        <Button variant="raised" color="primary" onClick={onClose}>
+                                            Publish Article
+                                        </Button>
+                                    </Grid>
+                                    <Grid item>
+                                        <Button variant="raised" color="primary" onClick={onClose}>
+                                            Save Draft
+                                        </Button>
+                                    </Grid>
+                                    <Grid item>
+                                        <Button variant="raised" color="secondary" onClick={onClose}>
+                                            Close
+                                        </Button>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </Toolbar>
+                </AppBar>
                 <DialogContent>
-                    <Form className="sign-up">
-                        <DFEditor/>
-                        {/*<Submit onClick={this.handleSubmit}>GO</Submit>*/}
-                    </Form>
+                    <Grid container direction="column" style={{marginTop: 10}}>
+                        <Grid item>
+                            <Typography variant="display1">
+                                Title
+                            </Typography>
+                            <FormControl fullWidth>
+                                {/*<InputLabel htmlFor="write-page-title">Title</InputLabel>*/}
+                                <Input
+                                    id="write-page-title"
+                                    name="write-page-title"
+                                    // value={this.state.amount}
+                                    // onChange={this.handleChange('amount')}
+                                    // startAdornment={<InputAdornment position="start">$</InputAdornment>}
+                                />
+                            </FormControl>
+                        </Grid>
+                        <Grid item>
+                            <Grid container>
+                                <Grid item style={{paddingLeft: 0, paddingRight: 0}}>
+                                    <Grid container spacing={8} wrap="wrap">
+                                        {
+                                            this.tagsArray.map((tagName) => {
+                                                const key = uniqid();
+                                                const onDelete = this.onCreateDeleteTagEvent(tagName);
+                                                return (
+                                                    <Grid item key={key}>
+                                                        <Chip
+                                                            label={tagName}
+                                                            onDelete={onDelete}
+                                                        />
+                                                    </Grid>
+                                                );
+                                            })
+                                        }
+                                    </Grid>
+                                </Grid>
+                                <Grid item style={{flex: 1}}>
+                                    <FormControl fullWidth>
+                                        <InputLabel htmlFor="write-page-tags">Tags</InputLabel>
+                                        <Input
+                                            id="write-page-tags"
+                                            name="write-page-tags"
+                                            onKeyUp={this.onTagInputKeyUp}
+                                            value={this.tagsInputValue}
+                                            onChange={this.onTagInputChange}
+                                            // startAdornment={<InputAdornment position="start">$</InputAdornment>}
+                                        />
+                                    </FormControl>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                        <Grid item>
+                            <DFEditor/>
+                        </Grid>
+                    </Grid>
                 </DialogContent>
             </Dialog>
         );

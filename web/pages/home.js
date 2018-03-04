@@ -31,7 +31,7 @@ const HomeWrapper = styled.div`
         overflow: hidden;
     }
 `;
-const LogBox = styled.div`
+/*const LogBox = styled.div`
     position: absolute;
     top: 0;
     right: 4px;
@@ -58,14 +58,13 @@ const Logo = styled.span`
     a {
       color: #fff;
     }
-`;
+`;*/
 
 @inject('UserStore')
 @observer
 class Index extends React.Component {
     constructor(props) {
         super(props);
-
     }
 
     @observable mobStatus = null;

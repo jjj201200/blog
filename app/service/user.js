@@ -19,6 +19,7 @@ class UserService extends Service {
             session[key] = userData[key];
         }
     }
+
     deleteUserSession() {
         this.ctx.session = null;
     }
@@ -28,7 +29,7 @@ class UserService extends Service {
         const {ctx} = this;
 
         that.deleteUserSession(); // 清除session
-        ctx.service.jwt.create({},Math.floor(Date.now() / 1000)); // 设置空的过期的jwt
+        ctx.service.jwt.create({}, Math.floor(Date.now() / 1000)); // 设置空的过期的jwt
         ctx.body = {code: 0, message: 'sign out successfully'};
     }
 
@@ -56,32 +57,30 @@ class UserService extends Service {
     async signUp() {
         const that = this;
         const {ctx} = this;
-        const {service} = ctx;
-        const {User} = ctx.model;
-        if (User) {
+        const {service, model, helper} = ctx;
+        const {User} = model;
+        try {
+            if (!User) throw new Error('no model user');
             const requestBody = ctx.request.body;
-            try {
-                const searchUser = await User.findOne({username: requestBody['username']});
-                if (searchUser) { // 已经注册过了
-                    ctx.body = {code: -1, message: 'has user'};
-                } else {
-                    const newUser = new User({ // 新用户实例
-                        ...requestBody,
-                        loginDate: (new Date).getTime() + 8 * 3600000,
-                    });
-                    await newUser.save().then((newUser) => { // 插入新用户到数据库
-                        const {username, email, loginDate} = newUser;
-                        service.jwt.create({username, email, loginDate}); // 创建登录凭据
-                        that.setUserSession({signIn: true}); // 设置登录状态
-                        ctx.body = {code: 0, message: 'sign up successfully'};
-                    }).catch((err) => {
-                        ctx.body = {code: -1, message: err};
-                    });
-
-                }
-            } catch (err) {
-                throw new Error(err);
+            const searchUser = await User.findOne({username: requestBody['username']});
+            if (searchUser) { // 已经注册过了
+                ctx.body = {code: -1, message: 'has user'};
+            } else {
+                const newUser = new User({ // 新用户实例
+                    ...requestBody,
+                    loginDate: helper.currentTime,
+                });
+                await newUser.save().then((newUser) => { // 插入新用户到数据库
+                    const {username, email, loginDate} = newUser;
+                    service.jwt.create({username, email, loginDate}); // 创建登录凭据
+                    that.setUserSession({signIn: true}); // 设置登录状态
+                    ctx.body = {code: 0, message: 'sign up successfully'};
+                }).catch((e) => {
+                    ctx.body = {code: -1, message: e};
+                });
             }
+        } catch (e) {
+            console.error(e);
         }
     }
 

@@ -5,13 +5,20 @@
  * Description: 存储用户数据的store
  */
 // import Cookies from 'js-cookie';
-import {observable, action, runInAction} from 'mobx';
-import {Ajax} from 'DFUtils';
-import {inClient} from 'DFUtils';
+import {observable, action} from 'mobx';
+import {Ajax, inClient} from 'DFUtils';
 import {BasicStore, memoryStorage} from './BasicStore';
 
 class User {
-    constructor({username = null, email = null, loginDate = null} = {username: null, email: null, loginDate: null}) {
+    constructor({
+        username = null,
+        email = null,
+        loginDate = null
+    } = {
+        username: null,
+        email: null,
+        loginDate: null
+    }) {
         this.set({username, email, loginDate});
     }
 
@@ -34,7 +41,7 @@ class UserStore extends BasicStore {
         this.init();
     }
 
-    @action('init')
+    @action('initUserStore')
     init() {
         // if (!inClient()) return;
         this.store.set('hasLogin', false);
@@ -71,8 +78,9 @@ class UserStore extends BasicStore {
      * 注册
      * @param params
      */
-    @action('signUp')
-    signUp(params) { // TODO 参数校验
+    @action
+    signUp(params) {
+        // TODO 参数校验
         Ajax({
             type: 'post',
             url: '/api/signup',
@@ -84,7 +92,7 @@ class UserStore extends BasicStore {
             },
             fail: (res) => {
                 this.updateLoginStatus(false);
-                console.log(res);
+                console.error(res);
             },
         });
     }
@@ -108,6 +116,7 @@ class UserStore extends BasicStore {
             },
             fail: (res) => {
                 this.updateLoginStatus(false);
+                console.error(res);
             },
         });
     }
@@ -115,7 +124,7 @@ class UserStore extends BasicStore {
     /**
      * 登出
      */
-    @action('logout')
+    @action
     logout() {
         Ajax({
             type: 'post',
@@ -133,6 +142,7 @@ class UserStore extends BasicStore {
             },
             fail: (res) => {
                 this.updateLoginStatus(false);
+                console.error(res);
             },
         });
 
@@ -142,7 +152,7 @@ class UserStore extends BasicStore {
      * 更新登录状态变量
      * @param hasLogin
      */
-    @action('updateLoginStatus')
+    @action
     updateLoginStatus(hasLogin) {
         this.store.set('hasLogin', hasLogin);
     }
@@ -153,7 +163,7 @@ class UserStore extends BasicStore {
      * @param email
      * @param loginDate
      */
-    @action('updateCurrentUser')
+    @action
     updateCurrentUser({username, email, loginDate}) {
         const currentUser = this.store.get('currentUser');
         if (currentUser)
