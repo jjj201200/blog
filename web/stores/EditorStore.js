@@ -4,7 +4,7 @@
  * Description:
  */
 
-import {observable, action} from 'mobx';
+import {observable, action, toJS} from 'mobx';
 import {Ajax, inClient} from 'DFUtils';
 import {BasicStore, localStorage} from './BasicStore';
 import {EditorState, convertFromRaw} from 'draft-js';
@@ -34,7 +34,7 @@ class EditorStore extends BasicStore {
 
     @action
     getLocalContentState() {
-        return this.store.get('localContentState');
+        return toJS(this.store.get('localContentState'));
     }
 
     @action
@@ -52,9 +52,29 @@ class EditorStore extends BasicStore {
         this.store.set('localContentState', editorState);
     }
 
-    @action
+    /*@action
     deleteLocalContentState() {
         this.store.delete('localContentState');
+    }*/
+
+    @action
+    saveTitle(title) {
+        this.store.set('localTitle', title);
+    }
+
+    @action
+    getLocalTitle() {
+        return toJS(this.store.get('localTitle'));
+    }
+
+    @action
+    saveTags(tags) {
+        this.store.set('localTags', tags);
+    }
+
+    @action
+    getLocalTags() {
+        return toJS(this.store.get('localTags'));
     }
 }
 export default EditorStore;

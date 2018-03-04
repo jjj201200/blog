@@ -47,29 +47,13 @@ export class DFEditor extends React.Component {
 
     @action
     initEditorState() {
-        const localContentStateString = this.props.EditorStore.getLocalContentState();
-        if (localContentStateString) { // 获取content
-            let localContentStateObject;
-            /**
-             * 判断是否是被观察对象，因为获取自store
-             * 而store是被观察的，所以其子对象也是被观察的
-             * 不是可观察对象，就是刚刚生成的原始对象，可以直接用
-             */
-            if (isObservable(localContentStateString)) {
-                localContentStateObject = toJS(localContentStateString);
-            }
-
-            // localContentStateObject = convertFromRaw(localContentStateObject);
-            // console.log(localContentStateObject);
+        const localContentStateObject = this.props.EditorStore.getLocalContentState();
+        if (localContentStateObject) { // 获取content
             if (localContentStateObject instanceof ContentState) {
                 this.editorState = EditorState.createWithContent(localContentStateObject);
             } else {
                 this.editorState = EditorState.createWithContent(convertFromRaw(localContentStateObject));
             }
-
-            // this.contentState = this.editorState.getCurrentContent();
-            // this.editorState = EditorState.createWithContent(this.contentState);
-            // this.contentState = this.editorState.getCurrentContent();
         } else {
             this.editorState = EditorState.createEmpty();
         }

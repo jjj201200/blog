@@ -8,7 +8,7 @@
 import _ from 'lodash';
 import React from 'react';
 import uniqid from 'uniqid';
-import {observable, action, toJS, runInAction} from 'mobx';
+import {observable, action, toJS, autorun, isObservable} from 'mobx';
 import {observer, inject} from 'mobx-react';
 // import styled from 'styled-components';
 // import {theme, rem} from 'DFStyles';
@@ -35,28 +35,55 @@ import Chip from 'material-ui/Chip';
 
 import 'DFStyles/sass';
 
-@inject('UserStore', 'BlogStore')
+@inject('UserStore', 'BlogStore', 'EditorStore')
 @observer
 class WriteMob extends React.Component {
     constructor(props) {
         super(props);
         this.UserStore = GBS.stores.UserStore;
-        this.handleSubmit = ::this.handleSubmit;
         this.receiveMarkdown = ::this.receiveMarkdown;
+
+        this.onTitleChange = ::this.onTitleChange;
 
         this.onTagInputKeyUp = ::this.onTagInputKeyUp;
         this.onTagInputChange = ::this.onTagInputChange;
 
         this.onAddTag = ::this.onAddTag;
         this.onCreateDeleteTagEvent = ::this.onCreateDeleteTagEvent;
+
+        this.init();
+        autorun(() => {
+            let title, tagsArray;
+            if (isObservable(this.title)) {
+                title = toJS(this.title);
+            } else {
+                title = this.title;
+            }
+            if (isObservable(this.tagsArray)) {
+                tagsArray = toJS(this.tagsArray);
+            } else {
+                tagsArray = this.tagsArray;
+            }
+            this.props.EditorStore.saveTitle(title);
+            this.props.EditorStore.saveTags(tagsArray);
+        });
     }
 
+    @observable title = '';
     @observable tagsArray = [];
     @observable tagsInputValue = '';
 
     @action
-    handleSubmit(e) {
-        e.preventDefault();
+    init() {
+        this.title = this.props.EditorStore.getLocalTitle();
+        this.tagsArray = this.props.EditorStore.getLocalTags();
+    }
+
+    @action
+    onTitleChange(e) {
+        if (e.target && e.target.value !== undefined) {
+            this.title = e.target.value;
+        }
     }
 
     receiveMarkdown(content) {
@@ -68,7 +95,6 @@ class WriteMob extends React.Component {
         this.props.BlogStore.saveDraft();
     }
 
-    @action
     onTagInputKeyUp(e) {
         if (e.key === 'Enter') {
             const tagName = _.trim(e.target.value);
@@ -77,14 +103,12 @@ class WriteMob extends React.Component {
         }
     }
 
-    @action
     onTagInputChange(e) {
-        if (e.target && e.target.value) {
+        if (e.target && e.target.value !== undefined) {
             this.tagsInputValue = e.target.value;
         }
     }
 
-    @action
     onAddTag(tagStr) {
         this.tagsArray.push(tagStr);
     }
@@ -104,6 +128,7 @@ class WriteMob extends React.Component {
     }
 
     render() {
+        // TODO tags换行
         const {show, onClose} = this.props;
         return (
             <Dialog open={show} onClose={onClose} fullScreen>
@@ -148,15 +173,16 @@ class WriteMob extends React.Component {
                                 <Input
                                     id="write-page-title"
                                     name="write-page-title"
-                                    // value={this.state.amount}
-                                    // onChange={this.handleChange('amount')}
+                                    value={this.title}
+                                    placeholder="Enter your Title"
+                                    onChange={this.onTitleChange}
                                     // startAdornment={<InputAdornment position="start">$</InputAdornment>}
                                 />
                             </FormControl>
                         </Grid>
                         <Grid item>
-                            <Grid container>
-                                <Grid item style={{paddingLeft: 0, paddingRight: 0}}>
+                            <Grid container alignItems="flex-end">
+                                <Grid item style={{paddingRight: 0}}>
                                     <Grid container spacing={8} wrap="wrap">
                                         {
                                             this.tagsArray.map((tagName) => {
@@ -180,8 +206,9 @@ class WriteMob extends React.Component {
                                         <Input
                                             id="write-page-tags"
                                             name="write-page-tags"
-                                            onKeyUp={this.onTagInputKeyUp}
+                                            placeholder="Enter your tags and press the Enter key"
                                             value={this.tagsInputValue}
+                                            onKeyUp={this.onTagInputKeyUp}
                                             onChange={this.onTagInputChange}
                                             // startAdornment={<InputAdornment position="start">$</InputAdornment>}
                                         />
