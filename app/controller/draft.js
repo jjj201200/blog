@@ -1,19 +1,18 @@
 /**
  * Author: Ruo
- * Create: 2018-03-03
+ * Create: 2018-03-04
  * Description:
  */
 
 module.exports = app => {
     const {Controller, mongoose} = app;
-    return class BLogController extends Controller {
-        // blog的操作类型
+    return class DraftController extends Controller {
+        // draft的操作类型
         get methodArray() {
             return [
                 'create',
                 'update',
                 'get',
-                'getList',
                 'delete',
             ];
         };
@@ -53,23 +52,19 @@ module.exports = app => {
          * @returns {Promise.<Promise|string|Draft.Model.ImmutableData.CharacterMetadata|T|Promise<T[]>|Object|*>}
          */
         async create() {
-            return this.ctx.service.blog.create();
+            return this.ctx.service.draft.create();
         }
 
         async get() {
-            return this.ctx.service.blog.get();
-        }
-
-        async getList() {
-            return this.ctx.service.blog.getList();
+            return this.ctx.service.draft.get();
         }
 
         async update() {
-            return this.ctx.service.blog.update();
+            return this.ctx.service.draft.update();
         }
 
         async delete() {
-            return this.ctx.service.blog.delete();
+            return this.ctx.service.draft.delete();
         }
-    };
-};
+    }
+}

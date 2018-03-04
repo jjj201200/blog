@@ -112,8 +112,8 @@ class UserService extends Service {
                 } else {
                     ctx.body = {code: -1, message: 'no user'};
                 }
-            } catch (err) {
-                ctx.throw(500, {code: -1, err});
+            } catch (e) {
+                ctx.throw(500, {code: -1, e});
             }
 
         }
