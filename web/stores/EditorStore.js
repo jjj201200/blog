@@ -47,6 +47,8 @@ class EditorStore extends BasicStore {
 
     }
 
+    updateDraft
+
     @action
     saveLocalContentState(editorState) {
         this.store.set('localContentState', editorState);
