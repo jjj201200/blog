@@ -12,26 +12,19 @@ $ mongod --dbpath=./db
 $ npm run dev
 ```
 
-FE
+###FE
+Mobx:[https://mobx.js.org/](https://mobx.js.org/)
+material ui:[https://material-ui-next.com](https://material-ui-next.com)
+Draft.js:[https://draftjs.org/docs/](https://draftjs.org/docs/)
+react-draft-wysiwyg:[https://jpuri.github.io/react-draft-wysiwyg/#/docs](https://jpuri.github.io/react-draft-wysiwyg/#/docs)
 
-使用到 Mobx:[https://mobx.js.org/](https://mobx.js.org/)
+###BE
+mongoose:[http://mongoosejs.com/docs/guide.html](http://mongoosejs.com/docs/guide.html)
+egg.js:[http://eggjs.org/zh-cn/intro/](http://eggjs.org/zh-cn/intro/)
+MongoDB:[https://docs.mongodb.com/](https://docs.mongodb.com/)
 
-使用到 material ui:[https://material-ui-next.com](https://material-ui-next.com)
-
-使用到 Draft.js:[https://draftjs.org/docs/](https://draftjs.org/docs/)
-
-使用到 react-draft-wysiwyg:[https://jpuri.github.io/react-draft-wysiwyg/#/docs](https://jpuri.github.io/react-draft-wysiwyg/#/docs)
-
-BE
-
-使用到 mongoose:[http://mongoosejs.com/docs/guide.html](http://mongoosejs.com/docs/guide.html)
-
-使用到 egg.js:[http://eggjs.org/zh-cn/intro/](http://eggjs.org/zh-cn/intro/)
-
-使用到 MongoDB:[https://docs.mongodb.com/](https://docs.mongodb.com/)
-
-Other
-使用到 mobx-logger:[https://github.com/winterbe/mobx-logger](https://github.com/winterbe/mobx-logger)
+###Other
+mobx-logger:[https://github.com/winterbe/mobx-logger](https://github.com/winterbe/mobx-logger)
 
 **本工程支持css in js, sass, styled component
 
