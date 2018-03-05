@@ -58,7 +58,7 @@ class EditorStore extends BasicStore {
     }*/
 
     @action
-    saveTitle(title) {
+    saveLocalTitle(title) {
         this.store.set('localTitle', title);
     }
 
@@ -68,7 +68,7 @@ class EditorStore extends BasicStore {
     }
 
     @action
-    saveTags(tags) {
+    saveLocalTags(tags) {
         this.store.set('localTags', tags);
     }
 

@@ -15,6 +15,7 @@ import Typography from 'material-ui/Typography';
 import IconButton from 'material-ui/IconButton';
 import MenuIcon from 'material-ui-icons/Menu';
 import Button from 'material-ui/Button';
+import Grid from 'material-ui/Grid';
 import {SignUpMob, LoginMob, WriteMob} from 'DFComponents';
 
 const styles = {
@@ -68,17 +69,32 @@ class HeaderView extends React.Component {
         return [
             <AppBar key="app-bar" className={classes.root} position="fixed">
                 <Toolbar>
-                    <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
+                    {/*<IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
                         <MenuIcon/>
-                    </IconButton>
-                    <Typography className={classes.flex} variant="title" color="inherit">
-                        Playground
-                    </Typography>
-                    {!hasLogin && <Button color="inherit" onClick={() => this.toggleMob('login')}>Sign In</Button>}
-                    {!hasLogin && <Button color="inherit" onClick={() => this.toggleMob('signUp')}>Sign Up</Button>}
-
-                    {hasLogin && <Button color="inherit" onClick={() => UserStore.logout()}>Log Out</Button>}
-                    {hasLogin && <Button color="secondary" variant="raised" onClick={() => this.toggleMob('write')}>Write</Button>}
+                    </IconButton>*/}
+                    <Grid container alignItems="center">
+                        <Grid item xs={6}>
+                            <Typography className={classes.flex} variant="title" color="inherit">
+                                Playground
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Grid container spacing={16} justify="flex-end">
+                                {!hasLogin && <Grid item>
+                                     <Button color="inherit" onClick={() => this.toggleMob('login')}>Sign In</Button>
+                                </Grid>}
+                                {!hasLogin && <Grid item>
+                                    <Button color="inherit" onClick={() => this.toggleMob('signUp')}>Sign Up</Button>
+                                </Grid>}
+                                {hasLogin && <Grid item>
+                                    <Button color="inherit" onClick={() => UserStore.logout()}>Log Out</Button>
+                                </Grid>}
+                                {hasLogin && <Grid item>
+                                    <Button color="secondary" variant="raised" onClick={() => this.toggleMob('write')}>Write</Button>
+                                </Grid>}
+                            </Grid>
+                        </Grid>
+                    </Grid>
                 </Toolbar>
             </AppBar>,
             <SignUpMob

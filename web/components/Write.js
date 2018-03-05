@@ -32,6 +32,7 @@ import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 // import CloseIcon from 'material-ui-icons/Close';
 import Chip from 'material-ui/Chip';
+import Drawer from 'material-ui/Drawer';
 
 import 'DFStyles/sass';
 
@@ -51,6 +52,8 @@ class WriteMob extends React.Component {
         this.onAddTag = ::this.onAddTag;
         this.onCreateDeleteTagEvent = ::this.onCreateDeleteTagEvent;
 
+        this.onToggleDrawer = ::this.onToggleDrawer;
+
         this.init();
         autorun(() => {
             let title, tagsArray;
@@ -64,19 +67,20 @@ class WriteMob extends React.Component {
             } else {
                 tagsArray = this.tagsArray;
             }
-            this.props.EditorStore.saveTitle(title);
-            this.props.EditorStore.saveTags(tagsArray);
+            this.props.EditorStore.saveLocalTitle(title);
+            this.props.EditorStore.saveLocalTags(tagsArray);
         });
     }
 
     @observable title = '';
     @observable tagsArray = [];
     @observable tagsInputValue = '';
+    @observable drawerOpenState = false;
 
     @action
     init() {
-        this.title = this.props.EditorStore.getLocalTitle();
-        this.tagsArray = this.props.EditorStore.getLocalTags();
+        this.title = this.props.EditorStore.getLocalTitle() || '';
+        this.tagsArray = this.props.EditorStore.getLocalTags() || [];
     }
 
     @action
@@ -113,6 +117,9 @@ class WriteMob extends React.Component {
         this.tagsArray.push(tagStr);
     }
 
+    onToggleDrawer() {
+        this.drawerOpenState = !this.drawerOpenState;
+    }
     // @action
     onCreateDeleteTagEvent(tagName) {
         const that = this;
@@ -153,6 +160,11 @@ class WriteMob extends React.Component {
                                         </Button>
                                     </Grid>
                                     <Grid item>
+                                        <Button variant="raised" color="primary" onClick={this.onToggleDrawer}>
+                                            Draft List
+                                        </Button>
+                                    </Grid>
+                                    <Grid item>
                                         <Button variant="raised" color="secondary" onClick={onClose}>
                                             Close
                                         </Button>
@@ -185,11 +197,11 @@ class WriteMob extends React.Component {
                                 <Grid item style={{paddingRight: 0}}>
                                     <Grid container spacing={8} wrap="wrap">
                                         {
-                                            this.tagsArray.map((tagName) => {
+                                            this.tagsArray && this.tagsArray.map((tagName) => {
                                                 const key = uniqid();
                                                 const onDelete = this.onCreateDeleteTagEvent(tagName);
                                                 return (
-                                                    <Grid item key={key}>
+                                                    <Grid item key={key} style={{paddingRight: 8}}>
                                                         <Chip
                                                             label={tagName}
                                                             onDelete={onDelete}
@@ -200,7 +212,7 @@ class WriteMob extends React.Component {
                                         }
                                     </Grid>
                                 </Grid>
-                                <Grid item style={{flex: 1}}>
+                                <Grid item style={{flex: 1, paddingLeft: 0}}>
                                     <FormControl fullWidth>
                                         <InputLabel htmlFor="write-page-tags">Tags</InputLabel>
                                         <Input
@@ -221,6 +233,20 @@ class WriteMob extends React.Component {
                         </Grid>
                     </Grid>
                 </DialogContent>
+                <Drawer
+                    anchor="left"
+                    open={this.drawerOpenState}
+                    onClose={this.onToggleDrawer}
+                >
+                    <List>
+                        <ListItem button>
+                            aaa
+                        </ListItem>
+                        <ListItem button>
+                            bbb
+                        </ListItem>
+                    </List>
+                </Drawer>
             </Dialog>
         );
     }
