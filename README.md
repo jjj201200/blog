@@ -13,33 +13,33 @@ $ npm run dev
 ```
 
 FE
-??? Mobx:                   [](https://mobx.js.org/)
-??? material ui:            [](https://material-ui-next.com)
-??? Draft.js:               [](https://draftjs.org/docs/)
-??? react-draft-wysiwyg:    [](https://jpuri.github.io/react-draft-wysiwyg/#/docs)
+使用到 Mobx:                   [](https://mobx.js.org/)
+使用到 material ui:            [](https://material-ui-next.com)
+使用到 Draft.js:               [](https://draftjs.org/docs/)
+使用到 react-draft-wysiwyg:    [](https://jpuri.github.io/react-draft-wysiwyg/#/docs)
 
 BE
-??? mongoose:               [](http://mongoosejs.com/docs/guide.html)
-??? egg.js:                 [](http://eggjs.org/zh-cn/intro/)
-??? MongoDB:                [](https://docs.mongodb.com/)
+使用到 mongoose:               [](http://mongoosejs.com/docs/guide.html)
+使用到 egg.js:                 [](http://eggjs.org/zh-cn/intro/)
+使用到 MongoDB:                [](https://docs.mongodb.com/)
 
 Other
-??? mobx-logger:            [](https://github.com/winterbe/mobx-logger)
+使用到 mobx-logger:            [](https://github.com/winterbe/mobx-logger)
 
-**?????css in js?sass ? styled component
+**本工程支持css in js, sass, styled component
 
-## ???????
-????: GBS - GlobalStore
-??????????store??UserStore?BlogStore
+## 数据持久化
+全局对象: GBS - GlobalStore
+二级对象: UserStore, BlogStore 等
 
-UserStore???Store????BasicStore?????????????
+UserStore等二级Store需要继承BasicStore，其提供了初始化方法，如下:
 ``` javaScript
     class BlogStore extends BasicStore {
         constructor(rootStore) {
             /**
-             * param1 ????store???
-             * param2 ????GBS?????????
-             * param3 ???????????memoryStorage?cookieStorage
+             * param1 记录store的名字
+             * param2 全局GBS对象，用于在特殊情况下调用
+             * param3 数据持久化类型，默认为memoryStorage?cookieStorage，必须以数组的形式传入
              */
             super('BlogStore', rootStore, [localStorage]);
         }
