@@ -32,6 +32,7 @@ module.exports = {
             {src: path.join(webPath, 'stores'), expose: 'DFStores'},
             {src: path.join(webPath, 'utils'), expose: 'DFUtils'},
             {src: path.join(webPath, 'plugins'), expose: 'DFPlugins'},
+            {src: path.join(webPath, 'models'), expose: 'DFModels'},
         ]],
         /* add-module-exports
          * 使得在node端的export变成module.exports让require可以读取

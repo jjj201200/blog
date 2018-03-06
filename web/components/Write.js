@@ -7,6 +7,7 @@
 
 import _ from 'lodash';
 import React from 'react';
+import PropTypes from 'prop-types';
 import uniqid from 'uniqid';
 import {withStyles} from 'material-ui/styles';
 import {observable, action, toJS, autorun, isObservable} from 'mobx';
@@ -48,8 +49,9 @@ class WriteMobView extends React.Component {
         super(props);
         this.UserStore = GBS.stores.UserStore;
 
-        this.onTitleChange = ::this.onTitleChange;
+        this.onSaveDraft = ::this.onSaveDraft;
 
+        this.onTitleChange = ::this.onTitleChange;
         this.onTagInputKeyUp = ::this.onTagInputKeyUp;
         this.onTagInputChange = ::this.onTagInputChange;
 
@@ -81,9 +83,12 @@ class WriteMobView extends React.Component {
     @observable title = '';
     @observable tagsArray = [];
     @observable tagsInputValue = '';
+    @observable content = '';
 
     @observable draftListEl = null; // 用于显示草稿箱菜单的定位原色
     @observable draftDeleteModeState = false; // 是否处在草稿删除模式
+
+    editorRef = null;
 
     @action
     init() {
@@ -92,18 +97,23 @@ class WriteMobView extends React.Component {
     }
 
     onTitleChange(e) {
-        if (e.target && e.target.value !== undefined) {
+        if (e.target && e.target.value !== undefined && e.target.value.length <= 50) {
             this.title = e.target.value;
         }
     }
 
     @action
-    onSaveDraft(content) {
-        this.props.BlogStore.saveDraft();
+    onSaveDraft() {
+        const title = this.title;
+        const tags = this.tagsArray;
+
+        const content = this.props.EditorStore.saveFunc();
+        console.log({title, tags, content});
+        this.props.EditorStore.save({title, tags, content});
     }
 
     onTagInputKeyUp(e) {
-        if (e.key === 'Enter') {
+        if (e.key === 'Enter' && this.tagsArray.length < 6) {
             const tagName = _.trim(e.target.value);
             if (tagName.length === 0) return;
             this.tagsArray.push(tagName);
@@ -111,7 +121,7 @@ class WriteMobView extends React.Component {
     }
 
     onTagInputChange(e) {
-        if (e.target && e.target.value !== undefined) {
+        if (e.target && e.target.value !== undefined && e.target.value.length <= 10) {
             this.tagsInputValue = e.target.value;
         }
     }
@@ -169,7 +179,7 @@ class WriteMobView extends React.Component {
                                         </Button>
                                     </Grid>
                                     <Grid item>
-                                        <Button variant="raised" color="primary" onClick={onClose}>
+                                        <Button variant="raised" color="primary" onClick={this.onSaveDraft}>
                                             Save Draft
                                         </Button>
                                     </Grid>
@@ -331,6 +341,7 @@ class WriteMobView extends React.Component {
         );
     }
 };
+
 const drawerWidth = 240;
 const styles = theme => ({
     root: {
@@ -372,6 +383,7 @@ const styles = theme => ({
         flexGrow: 1,
         overflow: 'auto',
         height: '100%',
+        paddingTop: 0,
         paddingBottom: 0,
     },
     draftListItemText: {

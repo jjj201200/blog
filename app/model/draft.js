@@ -24,7 +24,7 @@ module.exports = app => {
         },
         tags: [String],
         content: {type: Schema.Types.Mixed},
-        publishDate: {type: Date, default: Date.now},
+        saveDate: {type: Date, default: Date.now},
         lastUpdateDate: {type: Date, default: Date.now},
     });
     return mongoose.model('Draft', DraftSchema);

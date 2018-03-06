@@ -64,11 +64,17 @@ module.exports = app => {
                 if (jwToken) {
                     try{
                         const jwtData = service.jwt.verify(jwToken);
-                        await service.user.getUser(jwtData.data.username);
+                        if (jwtData.data) {
+                            await service.user.getUser(jwtData.data.username);
+                        } else {
+                            ctx.body = {
+                                code: -1,
+                                message: 'not sign in'
+                            }
+                        }
                     } catch (err) {
                         console.error(new Error(err));
                     }
-
                 } else {
                     ctx.body = {
                         code: -1,

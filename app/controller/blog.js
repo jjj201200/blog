@@ -30,12 +30,13 @@ module.exports = app => {
             const createRule = { // 参数校验规则
                 method: {type: 'string', required: true},
             };
+            console.log(ctx.request.body);
             try {
                 if (jwToken) {
                     ctx.validate(createRule);
                     service.jwt.verify(jwToken); // 因为没有需要用到的数据，就不用获取值了
                     const {method} = ctx.request.body;
-                    if (method in this.methodArray) {
+                    if (this.methodArray.findIndex((value) => value === method) >= 0) {
                         await this[method]();
                     } else {
                         ctx.body = {code: -1, message: 'empty or invalid method: ' + method};

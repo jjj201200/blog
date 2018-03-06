@@ -50,41 +50,7 @@ class BlogStore extends BasicStore {
     constructor(rootStore) {
         super('BlogStore', rootStore, [localStorage]);
     }
-    @action
-    createBlog(param) {
-        // TODO 参数校验
-        Ajax({
-            type: 'post',
-            url: '/api/blog?method=create',
-            data: {...param},
-            success: (res) => {
-                if (res && res.code === 0) {
-                    this.updateLocalEditorState(res.data);
-                }
-            },
-            fail: (res) => {
-                console.error(res);
-            },
-        });
-    }
 
-    @action
-    saveDraft(param) {
-        // TODO 参数校验
-        Ajax({
-            type: 'post',
-            url: '/api/blog?method=draft',
-            data: {...param},
-            success: (res) => {
-                if (res && res.code === 0) {
-                    console.log(res);
-                }
-            },
-            fail: (res) => {
-                console.error(res);
-            }
-        })
-    }
 }
 
 export default BlogStore;

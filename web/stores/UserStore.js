@@ -8,31 +8,7 @@
 import {observable, action} from 'mobx';
 import {Ajax, inClient} from 'DFUtils';
 import {BasicStore, memoryStorage} from './BasicStore';
-
-class User {
-    constructor({
-        username = null,
-        email = null,
-        loginDate = null
-    } = {
-        username: null,
-        email: null,
-        loginDate: null
-    }) {
-        this.set({username, email, loginDate});
-    }
-
-    @observable username = null;
-    @observable email = null;
-    @observable loginDate = null;
-
-    @action('setUser')
-    set({username, email, loginDate}) {
-        this.username = username;
-        this.email = email;
-        this.loginDate = loginDate;
-    }
-}
+import {User} from 'DFModels';
 
 class UserStore extends BasicStore {
     constructor(rootStore) {

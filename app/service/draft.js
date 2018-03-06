@@ -47,12 +47,20 @@ module.exports = class DraftService extends Service {
             if (!Draft) throw new Error('no model draft');
             const requestBody = ctx.request.body;
             const searchDraft = await Draft.findOne({title: requestBody['title']});
-            if (searchDraft) {
-                ctx.body = {code: -1, message: 'has draft'};
-            } else {
+            if (searchDraft) { // existed, update it
+                searchDraft.set({
+                    ...requestBody,
+                    author: service.jwt.currentJwtData.username,
+                    lastUpdateDate: helper.currentTime,
+                });
+                await searchDraft.save().then((updatedDraft) => {
+                    ctx.body = {code: 0, message: 'update draft successfully'};
+                });
+            } else { // not exist, create one
                 const newDraft = new Draft({
                     ...requestBody,
-                    publishDate: helper.currentTime,
+                    author: service.jwt.currentJwtData.username,
+                    saveDate: helper.currentTime,
                     lastUpdateDate: helper.currentTime,
                 });
                 await newDraft.save().then((newDraft) => {
@@ -87,6 +95,7 @@ module.exports = class DraftService extends Service {
             if (searchDraft) {
                 searchDraft.set({
                     ...requestBody,
+                    author: service.jwt.currentJwtData.username,
                     lastUpdateDate: helper.currentTime,
                 });
                 await searchDraft.save().then((updatedDraft) => {

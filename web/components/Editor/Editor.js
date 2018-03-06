@@ -5,6 +5,7 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import {observable, action, autorun, toJS, isObservable} from 'mobx';
 import {inject, observer} from 'mobx-react';
 import {EditorState, ContentState, convertFromRaw, convertToRaw} from 'draft-js';
@@ -20,29 +21,18 @@ export class DFEditor extends React.Component {
     constructor(props) {
         super(props);
         this.onEditorStateChange = ::this.onEditorStateChange;
-        // this.onContentStateChange = ::this.onContentStateChange;
+        this.saveLocalContent = ::this.saveLocalContent;
         this.initEditorState = ::this.initEditorState;
 
         this.initEditorState();
         autorun(() => {
-            if (this.editorState) { // 存储content流程
-                let contentState;
-                /**
-                 * 判断是否是被观察对象，因为获取自store
-                 * 而store是被观察的，所以其子对象也是被观察的
-                 * 不是可观察对象，就是刚刚生成的原始对象，可以直接用
-                 */
-                if (isObservable(this.editorState)) {
-                    contentState = toJS(this.editorState);
-                }
-
-                if (this.editorState instanceof EditorState) { // 判断是否为原始对象EditorState，是的话直接用于生成上下文状态对象
-                    contentState = convertToRaw(this.editorState.getCurrentContent());
-                }
-
-                props.EditorStore.saveLocalContentState(contentState);
-            }
+            return;
         });
+    }
+    componentDidMount() {
+        if (this.props.EditorStore) {
+            this.props.EditorStore.saveFunc = this.saveLocalContent;
+        }
     }
 
     @action
@@ -70,8 +60,25 @@ export class DFEditor extends React.Component {
     // }
 
     @action
-    saveBlog() {
+    saveLocalContent() {
+        if (this.editorState) { // 存储content流程
+            let contentState;
+            /**
+             * 判断是否是被观察对象，因为获取自store
+             * 而store是被观察的，所以其子对象也是被观察的
+             * 不是可观察对象，就是刚刚生成的原始对象，可以直接用
+             */
+            if (isObservable(this.editorState)) {
+                contentState = toJS(this.editorState);
+            }
 
+            if (this.editorState instanceof EditorState) { // 判断是否为原始对象EditorState，是的话直接用于生成上下文状态对象
+                contentState = convertToRaw(this.editorState.getCurrentContent());
+            }
+
+            this.props.EditorStore.saveLocalContentState(contentState);
+            return contentState;
+        }
     }
 
     render() {
@@ -88,3 +95,6 @@ export class DFEditor extends React.Component {
         );
     }
 }
+DFEditor.contextTypes = {
+    getEditorSaveFunc: PropTypes.func
+};

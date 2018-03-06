@@ -86,6 +86,7 @@ module.exports = {
             DFStores: path.join(webPath, 'stores'),
             DFUtils: path.join(webPath, 'utils'),
             DFPlugins: path.join(webPath, 'plugins'),
+            DFModels: path.join(webPath, 'models'),
         },
         mainFiles: ['index'],
         extensions: ['.js', '.json', '.jsx', '.css', '.less', '.scss', '.sass'],

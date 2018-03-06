@@ -30,8 +30,6 @@ class EditorStore extends BasicStore {
 
     }
 
-
-
     @action
     getLocalContentState() {
         return toJS(this.store.get('localContentState'));
@@ -43,11 +41,48 @@ class EditorStore extends BasicStore {
     }
 
     @action
-    getBlogList() {
+    getDraftList() {
 
     }
 
-    updateDraft
+    @action
+    publish(param) {
+        return Ajax({
+            type: 'post',
+            url: 'api/blog?method=create',
+            data: {...param},
+            success: (res) => {
+                console.log(res);
+                // if (res && res.code === 0) {
+                //     this.updateLocalEditorState(res.data);
+                // }
+            },
+            fail: (e) => {
+                console.error(new Error(e));
+            }
+        })
+    }
+
+    @action
+    save(param) {
+        // TODO 参数校验
+        Ajax({
+            type: 'post',
+            url: '/api/draft?method=create',
+            data: {
+                ...param,
+                method: 'create',
+            },
+            success: (res) => {
+                if (res && res.code === 0) {
+                    console.log(res);
+                }
+            },
+            fail: (res) => {
+                console.error(res);
+            }
+        })
+    }
 
     @action
     saveLocalContentState(editorState) {
