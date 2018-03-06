@@ -62,7 +62,6 @@ class WriteMobView extends React.Component {
         this.onCloseDraftMenu = ::this.onCloseDraftMenu;
         this.onToggleDraftDeleteMode = ::this.onToggleDraftDeleteMode;
 
-        this.init();
         autorun(() => {
             let title, tagsArray;
             if (isObservable(this.title)) {
@@ -77,23 +76,44 @@ class WriteMobView extends React.Component {
             }
             this.props.EditorStore.saveLocalTitle(title);
             this.props.EditorStore.saveLocalTags(tagsArray);
+
+            if (this.props.UserStore.hasSignIn) {
+                this.props.EditorStore.getDraftList().then((res) => {
+                    console.log(res);
+                    if (res.code === 0) {
+                        this.draftList = res.data;
+                    } else {
+                        console.error(res);
+                    }
+                });
+            }
         });
     }
+
+    @observable draftList = [];
 
     @observable title = '';
     @observable tagsArray = [];
     @observable tagsInputValue = '';
     @observable content = '';
 
-    @observable draftListEl = null; // 用于显示草稿箱菜单的定位原色
+    @observable draftMenuEl = null; // 用于显示草稿箱菜单的定位原色
     @observable draftDeleteModeState = false; // 是否处在草稿删除模式
 
-    editorRef = null;
+    componentWillMount() {
+        this.init();
+    }
 
     @action
     init() {
-        this.title = this.props.EditorStore.getLocalTitle() || '';
-        this.tagsArray = this.props.EditorStore.getLocalTags() || [];
+        const localTitle = this.props.EditorStore.getLocalTitle();
+        const localTags = this.props.EditorStore.getLocalTags();
+        if (localTitle) {
+            this.title = this.title;
+        }
+        if (localTags && localTags.length > 0) {
+            this.tagsArray = localTags;
+        }
     }
 
     onTitleChange(e) {
@@ -104,11 +124,11 @@ class WriteMobView extends React.Component {
 
     @action
     onSaveDraft() {
-        const title = this.title;
-        const tags = this.tagsArray;
+        const title = toJS(this.title);
+        const tags = toJS(this.tagsArray);
 
         const content = this.props.EditorStore.saveFunc();
-        console.log({title, tags, content});
+        // console.log({title, tags, content});
         this.props.EditorStore.saveDraft({title, tags, content});
     }
 
@@ -145,12 +165,12 @@ class WriteMobView extends React.Component {
 
     onDraftMenuClick(e) {
         if (e.currentTarget) {
-            this.draftListEl = e.currentTarget;
+            this.draftMenuEl = e.currentTarget;
         }
     }
 
     onCloseDraftMenu() {
-        this.draftListEl = null;
+        this.draftMenuEl = null;
     }
 
     onToggleDraftDeleteMode() {
@@ -209,8 +229,8 @@ class WriteMobView extends React.Component {
                                 <IconButton>
                                     <MenuIcon onClick={this.onDraftMenuClick}/>
                                     <Menu
-                                        anchorEl={this.draftListEl}
-                                        open={Boolean(this.draftListEl)}
+                                        anchorEl={this.draftMenuEl}
+                                        open={Boolean(this.draftMenuEl)}
                                         onClose={this.onCloseDraftMenu}
                                     >
                                         <MenuItem>
@@ -224,53 +244,27 @@ class WriteMobView extends React.Component {
                                 </IconButton>
                             </div>
                             <List className={classes.draftItemList}>
-                                <ListItem button>
-                                    {this.draftDeleteModeState && <Checkbox
-                                        tabIndex={-1}
-                                        disableRipple
-                                    />}
-                                    <ListItemText primary="aaa" secondary="aaa" className={classes.draftListItemText}/>
-                                </ListItem>
-                                <Divider/>
-                                <ListItem button sytle={{width: 300}}>
-                                    {this.draftDeleteModeState && <Checkbox
-                                        tabIndex={-1}
-                                        disableRipple
-                                    />}
-                                    <ListItemText primary="bbb" secondary="bbb" className={classes.draftListItemText}/>
-                                </ListItem>
-                                <Divider/>
-                                <ListItem button sytle={{width: 300}}>
-                                    {this.draftDeleteModeState && <Checkbox
-                                        tabIndex={-1}
-                                        disableRipple
-                                    />}
-                                    <ListItemText primary="bbb" secondary="bbb" className={classes.draftListItemText}/>
-                                </ListItem>
-                                <Divider/>
-                                <ListItem button sytle={{width: 300}}>
-                                    {this.draftDeleteModeState && <Checkbox
-                                        tabIndex={-1}
-                                        disableRipple
-                                    />}
-                                    <ListItemText primary="bbb" secondary="bbb" className={classes.draftListItemText}/>
-                                </ListItem>
-                                <Divider/>
-                                <ListItem button sytle={{width: 300}}>
-                                    {this.draftDeleteModeState && <Checkbox
-                                        tabIndex={-1}
-                                        disableRipple
-                                    />}
-                                    <ListItemText primary="bbb" secondary="bbb" className={classes.draftListItemText}/>
-                                </ListItem>
-                                <Divider/>
-                                <ListItem button sytle={{width: 300}}>
-                                    {this.draftDeleteModeState && <Checkbox
-                                        tabIndex={-1}
-                                        disableRipple
-                                    />}
-                                    <ListItemText primary="bbb" secondary="bbb" className={classes.draftListItemText}/>
-                                </ListItem>
+                                {
+                                    this.draftList.map((data, index) => {
+                                        console.log(data, index);
+                                        const time = new Date(data.lastUpdateDate);
+                                        const dateTime = `${time.getFullYear()}-${time.getMonth() + 1}-${time.getDate()} ${time.getHours()}:${time.getMinutes()}:${time.getSeconds()}`;
+                                        return [
+                                            <ListItem button key={data.id}>
+                                                {this.draftDeleteModeState && <Checkbox
+                                                    tabIndex={-1}
+                                                    disableRipple
+                                                />}
+                                                <ListItemText
+                                                    primary={data.title}
+                                                    secondary={`Last saved at ${dateTime}`}
+                                                    className={classes.draftListItemText}
+                                                />
+                                            </ListItem>,
+                                            ((this.draftList.length -1 < index) && <Divider key={`${data.id}-divider`}/>),
+                                        ]
+                                    })
+                                }
                             </List>
                             {this.draftDeleteModeState && <Button
                                 variant="raised"
@@ -363,6 +357,7 @@ const styles = theme => ({
     },
     draftList: {
         display: 'flex',
+        height: '100%',
         flexDirection: 'column',
     },
     draftListHeader: {

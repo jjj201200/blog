@@ -20,13 +20,21 @@ class UserStore extends BasicStore {
     @action('initUserStore')
     init() {
         // if (!inClient()) return;
-        this.store.set('hasLogin', false);
+        this.store.set('hasSignIn', false);
         let user = this.store.get('currentUser');
         if (!user) {
             this.getUser();
         } else {
             this.store.set('currentUser', new User(user));
         }
+    }
+
+    get hasSignIn() {
+        return this.store.get('hasSignIn');
+    }
+
+    set hasSignIn(value) {
+        this.store.get('hasSignIn', value);
     }
 
     @action('getUser')
@@ -126,11 +134,11 @@ class UserStore extends BasicStore {
 
     /**
      * 更新登录状态变量
-     * @param hasLogin
+     * @param hasSignIn
      */
     @action
-    updateLoginStatus(hasLogin) {
-        this.store.set('hasLogin', hasLogin);
+    updateLoginStatus(hasSignIn) {
+        this.store.set('hasSignIn', hasSignIn);
     }
 
     /**

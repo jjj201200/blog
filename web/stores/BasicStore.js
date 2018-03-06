@@ -21,7 +21,7 @@ class BasicStore {
      * @param storeLibs
      * @param expireMilliSecond 用于设定cookie存储模式下的过期时间
      */
-    constructor(storeNameSpace, rootStore, storeLibs = [ // 数据持久化类型
+    constructor(storeNameSpace, rootStore = null, storeLibs = [ // 数据持久化类型
         memoryStorage,
         cookieStorage,
     ], expireMilliSecond = 0) {

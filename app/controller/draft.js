@@ -13,6 +13,7 @@ module.exports = app => {
                 'create',
                 'update',
                 'get',
+                'getList',
                 'delete',
             ];
         };
@@ -30,8 +31,8 @@ module.exports = app => {
                 method: {type: 'string', required: true},
             };
             try {
-                if (jwToken) { // 初步
-                    service.jwt.verify(jwToken);
+                if (jwToken) { // 初步确认jwt是否存在
+                    service.jwt.verify(jwToken); // 校验jwt
                     ctx.validate(createRule);
                     const {method} = ctx.request.body;
                     if (this.methodArray.findIndex((value) => value === method) >= 0) {
@@ -58,6 +59,10 @@ module.exports = app => {
 
         async get() {
             return this.ctx.service.draft.get();
+        }
+
+        async getList() {
+            return this.ctx.service.draft.getList();
         }
 
         async update() {

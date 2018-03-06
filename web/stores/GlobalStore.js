@@ -6,10 +6,12 @@
 // import _ from 'lodash';
 import {observable, action, toJS, autorun, extendObservable} from 'mobx';
 import {enableLogging} from 'DFPlugins/logger';
+import {BasicStore, memoryStorage} from './BasicStore';
 import {inClient} from 'DFUtils';
 
-export default class GlobalStore {
+export default class GlobalStore extends BasicStore{
     constructor() {
+        super('GlobalStore',null, [memoryStorage]);
         /* init logger */
         enableLogging({
             predicate: () => inClient(),

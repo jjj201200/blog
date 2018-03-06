@@ -9,6 +9,7 @@ module.exports = app => {
     const {Schema} = mongoose;
 
     const BlogSchema = new Schema({
+        id: {type: String},
         author: {
             type: String,
             unique: true,

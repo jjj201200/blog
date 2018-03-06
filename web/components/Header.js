@@ -41,7 +41,7 @@ class HeaderView extends React.Component {
         this.toggleMob = ::this.toggleMob;
         this.closeMob = ::this.closeMob;
         autorun(() => {
-            if (this.props.UserStore && this.props.UserStore.store.get('hasLogin') === true) {
+            if (this.props.UserStore && this.props.UserStore.hasSignIn === true) {
                 this.closeMob();
             }
         });
@@ -65,7 +65,7 @@ class HeaderView extends React.Component {
 
     render() {
         const {UserStore, classes} = this.props;
-        const hasLogin = UserStore.store.get('hasLogin');
+        const hasSignIn = UserStore.hasSignIn;
         return [
             <AppBar key="app-bar" className={classes.root} position="fixed">
                 <Toolbar>
@@ -80,16 +80,16 @@ class HeaderView extends React.Component {
                         </Grid>
                         <Grid item xs={6}>
                             <Grid container spacing={16} justify="flex-end">
-                                {!hasLogin && <Grid item>
+                                {!hasSignIn && <Grid item>
                                      <Button color="inherit" onClick={() => this.toggleMob('login')}>Sign In</Button>
                                 </Grid>}
-                                {!hasLogin && <Grid item>
+                                {!hasSignIn && <Grid item>
                                     <Button color="inherit" onClick={() => this.toggleMob('signUp')}>Sign Up</Button>
                                 </Grid>}
-                                {hasLogin && <Grid item>
+                                {hasSignIn && <Grid item>
                                     <Button color="inherit" onClick={() => UserStore.logout()}>Log Out</Button>
                                 </Grid>}
-                                {hasLogin && <Grid item>
+                                {hasSignIn && <Grid item>
                                     <Button color="secondary" variant="raised" onClick={() => this.toggleMob('write')}>Write</Button>
                                 </Grid>}
                             </Grid>
@@ -99,17 +99,17 @@ class HeaderView extends React.Component {
             </AppBar>,
             <SignUpMob
                 key="sign-up"
-                show={!hasLogin && this.mobStatus === 'signUp'}
+                show={!hasSignIn && this.mobStatus === 'signUp'}
                 onClose={this.closeMob}
             />,
             <LoginMob
                 key="sign-in"
-                show={!hasLogin && this.mobStatus === 'login'}
+                show={!hasSignIn && this.mobStatus === 'login'}
                 onClose={this.closeMob}
             />,
             <WriteMob
                 key="write"
-                show={hasLogin && this.mobStatus === 'write'}
+                show={hasSignIn && this.mobStatus === 'write'}
                 onClose={this.closeMob}
             />,
 

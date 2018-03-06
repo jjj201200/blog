@@ -19,6 +19,7 @@ class Draft {
         this.set({title, tags, content});
     }
 
+    @observable id = null;
     @observable title = null;
     @observable tags = null;
     @observable content = null;

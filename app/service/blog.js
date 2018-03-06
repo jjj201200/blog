@@ -5,6 +5,7 @@
  */
 
 const Service = require('egg').Service;
+const uniqid = require('uniqid');
 
 module.exports = class BlogService extends Service {
     constructor(ctx) {
@@ -75,6 +76,7 @@ module.exports = class BlogService extends Service {
                 ctx.body = {code: -1, message: 'has blog'};
             } else {
                 const newBlog = new Blog({
+                    id: uniqid(),
                     ...requestBody,
                     publishDate: helper.currentTime,
                     lastUpdateDate: helper.currentTime,

@@ -1,6 +1,10 @@
 'use strict';
 const path = require('path');
 
+const timeZone = 8;
+const timeZoneIncrement = timeZone * 60 * 60 * 1000;
+const jwtMaxAge = timeZoneIncrement + 24 * 60 * 60 * 1000
+
 module.exports = appInfo => {
     const config = {
         consoleLevel: 'DEBUG',
@@ -18,6 +22,7 @@ module.exports = appInfo => {
             secret: 'Jiangxin0037.',
             enable: true,
             match: '/api/',
+            maxAge: jwtMaxAge, // one day
         },
         development: {
             watchDirs: [

@@ -71,7 +71,7 @@ class Index extends React.Component {
 
     render() {
         const {UserStore} = this.props;
-        const hasLogin = UserStore.store.get('hasLogin');
+        // const hasSignIn = UserStore.store.get('hasSignIn');
         return (
             <HomeWrapper className={this.mobStatus ? 'fix' : null}>
                 <Reboot key="reboot-style"/>

@@ -42,7 +42,16 @@ class EditorStore extends BasicStore {
 
     @action
     getDraftList() {
-
+        return Ajax({
+            type: 'post',
+            url: 'api/draft',
+            data: {
+                method: 'getList',
+            },
+            fail: (e) => {
+                console.error(e)
+            },
+        });
     }
 
     @action

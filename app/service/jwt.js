@@ -11,8 +11,6 @@ class JWTService extends Service {
         this.currentJwtData = null;
     }
 
-
-
     /**
      *
      * @returns {Promise.<void>}
@@ -33,11 +31,11 @@ class JWTService extends Service {
     create(data, exp) {
         const {ctx} = this;
         const {cookies, app} = ctx;
-        const {secret} = app.config.jwt;
-        let exps = exp || Math.floor(Date.now() / 1000) + (60 * 60 * 24); // 1day过期
+        const {secret, maxAge} = app.config.jwt;
+        let exps = exp || Math.floor(Date.now() / 1000) + maxAge; // 1day过期
         const JSONWebToken = app.jwt.sign({exps, data}, secret);
         this.currentJwtData = JSONWebToken.data;
-        cookies.set('jwt', JSONWebToken, {maxAge: 38400000});
+        cookies.set('jwt', JSONWebToken, {maxAge});
     }
 
     /**
@@ -46,19 +44,22 @@ class JWTService extends Service {
      */
     verify(jwToken) {
         const {ctx} = this;
-        const {app} = ctx;
-        const {secret} = app.config.jwt;
+        const {app, cookies} = ctx;
+        const {secret, maxAge} = app.config.jwt;
 
         try {
             const jwtObject = app.jwt.verify(jwToken, secret); // 判断是否过期
+            console.log(jwtObject);
             this.currentJwtData = jwtObject.data;
             return jwtObject.data;
         } catch (err) {
             if (err.name === 'TokenExpiredError') {
-                 this.create({});
+                this.create({});
+                cookies.set('jwt', {}, {maxAge});
                 this.currentJwtData = null;
             }
         }
     }
 }
+
 module.exports = JWTService;

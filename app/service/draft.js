@@ -5,6 +5,7 @@
  */
 
 const Service = require('egg').Service;
+const uniqid = require('uniqid');
 
 module.exports = class DraftService extends Service {
     constructor(ctx) {
@@ -32,6 +33,27 @@ module.exports = class DraftService extends Service {
             ctx.body = {code: -1, message: e};
         }
     }
+
+    async getList() {
+        const {ctx} = this;
+        const {service, model, helper} = ctx;
+        const {Draft} = model;
+        try {
+            if (!Draft) throw new Error('no model draft');
+            const author = service.jwt.currentJwtData.username;
+            console.log(author);
+            const searchDraft = await Draft.find({author}).select({_id: false, __v: false, content: false});
+            if (searchDraft) {
+                ctx.body = {code: 0, data: searchDraft};
+            } else {
+                ctx.body = {code: -1, message: 'no draft'};
+            }
+        } catch (e) {
+            console.error(e);
+            ctx.body = {code: -1, message: e};
+        }
+    }
+
     /**
      * @requireParam title
      * @requireParam tags
@@ -46,19 +68,26 @@ module.exports = class DraftService extends Service {
         try {
             if (!Draft) throw new Error('no model draft');
             const requestBody = ctx.request.body;
-            const searchDraft = await Draft.findOne({title: requestBody['title']});
+            const author = service.jwt.currentJwtData.username;
+            const {title, content, tags} = requestBody;
+            const searchDraft = await Draft.findOne({title, author});
             if (searchDraft) { // existed, update it
                 searchDraft.set({
                     ...requestBody,
-                    author: service.jwt.currentJwtData.username,
                     lastUpdateDate: helper.currentTime,
                 });
                 await searchDraft.save().then((updatedDraft) => {
-                    ctx.body = {code: 0, message: 'update draft successfully'};
+                    const {id, lastUpdateDate, saveDate, author} = updatedDraft;
+                    ctx.body = {
+                        code: 0,
+                        message: 'update draft successfully',
+                        data: {title, content, tags, id, lastUpdateDate, saveDate, author},
+                    };
                 });
             } else { // not exist, create one
                 const newDraft = new Draft({
                     ...requestBody,
+                    id: uniqid(),
                     author: service.jwt.currentJwtData.username,
                     saveDate: helper.currentTime,
                     lastUpdateDate: helper.currentTime,
@@ -95,7 +124,6 @@ module.exports = class DraftService extends Service {
             if (searchDraft) {
                 searchDraft.set({
                     ...requestBody,
-                    author: service.jwt.currentJwtData.username,
                     lastUpdateDate: helper.currentTime,
                 });
                 await searchDraft.save().then((updatedDraft) => {
