@@ -64,7 +64,7 @@ class EditorStore extends BasicStore {
     }
 
     @action
-    save(param) {
+    saveDraft(param) {
         // TODO 参数校验
         Ajax({
             type: 'post',

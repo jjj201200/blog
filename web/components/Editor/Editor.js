@@ -16,6 +16,7 @@ import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 @observer
 export class DFEditor extends React.Component {
     @observable editorState = EditorState.createEmpty();
+
     // @observable contentState = null;
 
     constructor(props) {
@@ -26,9 +27,13 @@ export class DFEditor extends React.Component {
 
         this.initEditorState();
         autorun(() => {
-            return;
+            // return;
+            if (this.editorState) {
+                this.saveLocalContent();
+            }
         });
     }
+
     componentDidMount() {
         if (this.props.EditorStore) {
             this.props.EditorStore.saveFunc = this.saveLocalContent;
@@ -61,24 +66,23 @@ export class DFEditor extends React.Component {
 
     @action
     saveLocalContent() {
-        if (this.editorState) { // 存储content流程
-            let contentState;
-            /**
-             * 判断是否是被观察对象，因为获取自store
-             * 而store是被观察的，所以其子对象也是被观察的
-             * 不是可观察对象，就是刚刚生成的原始对象，可以直接用
-             */
-            if (isObservable(this.editorState)) {
-                contentState = toJS(this.editorState);
-            }
-
-            if (this.editorState instanceof EditorState) { // 判断是否为原始对象EditorState，是的话直接用于生成上下文状态对象
-                contentState = convertToRaw(this.editorState.getCurrentContent());
-            }
-
-            this.props.EditorStore.saveLocalContentState(contentState);
-            return contentState;
+        // 存储content流程
+        let contentState;
+        /**
+         * 判断是否是被观察对象，因为获取自store
+         * 而store是被观察的，所以其子对象也是被观察的
+         * 不是可观察对象，就是刚刚生成的原始对象，可以直接用
+         */
+        if (isObservable(this.editorState)) {
+            contentState = toJS(this.editorState);
         }
+
+        if (this.editorState instanceof EditorState) { // 判断是否为原始对象EditorState，是的话直接用于生成上下文状态对象
+            contentState = convertToRaw(this.editorState.getCurrentContent());
+        }
+
+        this.props.EditorStore.saveLocalContentState(contentState);
+        return contentState;
     }
 
     render() {
@@ -95,6 +99,3 @@ export class DFEditor extends React.Component {
         );
     }
 }
-DFEditor.contextTypes = {
-    getEditorSaveFunc: PropTypes.func
-};

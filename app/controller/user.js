@@ -64,8 +64,8 @@ module.exports = app => {
                 if (jwToken) {
                     try{
                         const jwtData = service.jwt.verify(jwToken);
-                        if (jwtData.data) {
-                            await service.user.getUser(jwtData.data.username);
+                        if (jwtData) {
+                            await service.user.getUser(jwtData.username);
                         } else {
                             ctx.body = {
                                 code: -1,

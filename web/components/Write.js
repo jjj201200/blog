@@ -109,7 +109,7 @@ class WriteMobView extends React.Component {
 
         const content = this.props.EditorStore.saveFunc();
         console.log({title, tags, content});
-        this.props.EditorStore.save({title, tags, content});
+        this.props.EditorStore.saveDraft({title, tags, content});
     }
 
     onTagInputKeyUp(e) {
