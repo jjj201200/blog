@@ -8,14 +8,11 @@ module.exports = app => {
     const {mongoose} = app;
     const {Schema} = mongoose;
 
-    const BlogSchema = new Schema({
-        id: {type: String},
-        author: {
-            type: String,
-            unique: true,
+    const ArticleSchema = new Schema({
+        authorId: {
+            type: Schema.Types.ObjectId,
             required: true,
-            lowercase: true,
-            trim: true,
+            ref: 'user',
         },
         title: {
             type: String,
@@ -25,8 +22,9 @@ module.exports = app => {
         },
         tags: [String],
         content: {type: Schema.Types.Mixed},
-        publishDate: {type: Date, default: Date.now},
-        lastUpdateDate: {type: Date, default: Date.now},
+        publishDate: {type: Date}, // 第一次发布时间
+        lastUpdateDate: {type: Date, default: Date.now}, // 最后一次更新时间
+        hasPublished: {type: Boolean, default: false}, // 是否已经发布
     });
-    return mongoose.model('Blog', BlogSchema);
+    return mongoose.model('Article', ArticleSchema);
 }

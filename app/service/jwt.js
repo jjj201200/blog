@@ -49,7 +49,6 @@ class JWTService extends Service {
 
         try {
             const jwtObject = app.jwt.verify(jwToken, secret); // 判断是否过期
-            console.log(jwtObject);
             this.currentJwtData = jwtObject.data;
             return jwtObject.data;
         } catch (err) {

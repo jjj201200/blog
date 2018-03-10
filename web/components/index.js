@@ -11,5 +11,5 @@ export * from './Login';
 export * from './DateBox';
 export * from './ArticleCard';
 export * from './Mob';
-export * from './Editor';
+// export * from './Editor';
 export * from './Header';

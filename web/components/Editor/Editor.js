@@ -15,7 +15,7 @@ import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 @inject('EditorStore')
 @observer
 export class DFEditor extends React.Component {
-    @observable editorState = EditorState.createEmpty();
+
 
     // @observable contentState = null;
 
@@ -26,12 +26,12 @@ export class DFEditor extends React.Component {
         this.initEditorState = ::this.initEditorState;
 
         this.initEditorState();
-        autorun(() => {
-            // return;
-            if (this.editorState) {
-                this.saveLocalContent();
-            }
-        });
+        // autorun(() => {
+        //     // return;
+        //     if (this.editorState) {
+        //         this.saveLocalContent();
+        //     }
+        // });
     }
 
     componentDidMount() {
@@ -42,12 +42,13 @@ export class DFEditor extends React.Component {
 
     @action
     initEditorState() {
-        const localContentStateObject = this.props.EditorStore.getLocalContentState();
-        if (localContentStateObject) { // 获取content
-            if (localContentStateObject instanceof ContentState) {
-                this.editorState = EditorState.createWithContent(localContentStateObject);
+        const localDraftObject = toJS(this.props.EditorStore.currentDraft);
+        console.log(localDraftObject);
+        if (localDraftObject.content) { // 获取content
+            if (localDraftObject instanceof ContentState) {
+                this.editorState = EditorState.createWithContent(localDraftObject.content);
             } else {
-                this.editorState = EditorState.createWithContent(convertFromRaw(localContentStateObject));
+                this.editorState = EditorState.createWithContent(convertFromRaw(localDraftObject.content));
             }
         } else {
             this.editorState = EditorState.createEmpty();
@@ -81,21 +82,14 @@ export class DFEditor extends React.Component {
             contentState = convertToRaw(this.editorState.getCurrentContent());
         }
 
-        this.props.EditorStore.saveLocalContentState(contentState);
+        console.log(this.props.EditorStore);
+        this.props.EditorStore.currentDraft.content = contentState;
         return contentState;
     }
 
     render() {
         return (
-            <Editor
-                editorState={this.editorState}
-                toolbarClassName="toolbarClassName"
-                wrapperClassName="wrapperClassName"
-                editorClassName="editorClassName"
-                // defaultContentState={this.contentState}
-                onEditorStateChange={this.onEditorStateChange}
-                onContentStateChange={this.onContentStateChange}
-            />
+
         );
     }
 }

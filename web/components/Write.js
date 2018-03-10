@@ -17,8 +17,12 @@ import {observer, inject} from 'mobx-react';
 // import {Form, Label, LabelName, Submit} from 'DFUIs';
 // import {Mob} from 'DFComponents';
 import GBS from 'DFStores';
-import {DFEditor} from 'DFComponents';
+// import {DFEditor} from 'DFComponents';
+import {formDate2YMDHMS} from 'DFUtils';
 // import LzEditor from 'react-lz-editor';
+import {EditorState, ContentState, convertFromRaw, convertToRaw} from 'draft-js';
+import {Editor} from 'react-draft-wysiwyg';
+import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import Dialog, {DialogTitle, DialogContent, DialogContentText} from 'material-ui/Dialog';
 import Input, {InputLabel, InputAdornment} from 'material-ui/Input';
 import {FormControl, FormHelperText} from 'material-ui/Form';
@@ -42,12 +46,30 @@ import Checkbox from 'material-ui/Checkbox';
 
 import 'DFStyles/sass';
 
-@inject('UserStore', 'BlogStore', 'EditorStore')
+@inject('UserStore', 'EditorStore')
 @observer
 class WriteMobView extends React.Component {
+    /**
+     * 文章发布Dialog的逻辑
+     * 初始化react组件的可视化
+     * 分为两个部分：草稿箱 编辑器（区域）
+     * 1.载入Write Article窗口时自动拉取用户的草稿箱数据并显示，此时右侧编辑区域为空，可以选择创建新的草稿或者新建草稿
+     * 2.点击草稿箱的列表项目会载入想赢的草稿到后侧，此时右侧编辑区域将显示草稿的内容
+     * 3.点击新建草稿则在草稿箱底部生成新的列表项目，同时编辑区域显示，各编辑项目为空
+     * @param props
+     */
     constructor(props) {
         super(props);
+        const {EditorStore} = this.props;
         this.UserStore = GBS.stores.UserStore;
+
+        /**
+         * 草稿箱
+         */
+
+        /**
+         * 编辑区域
+         */
 
         this.onSaveDraft = ::this.onSaveDraft;
 
@@ -58,67 +80,59 @@ class WriteMobView extends React.Component {
         this.onAddTag = ::this.onAddTag;
         this.onCreateDeleteTagEvent = ::this.onCreateDeleteTagEvent;
 
+        this.onGetArticleList = ::this.onGetArticleList;
         this.onDraftMenuClick = ::this.onDraftMenuClick;
         this.onCloseDraftMenu = ::this.onCloseDraftMenu;
         this.onToggleDraftDeleteMode = ::this.onToggleDraftDeleteMode;
 
-        autorun(() => {
-            let title, tagsArray;
-            if (isObservable(this.title)) {
-                title = toJS(this.title);
-            } else {
-                title = this.title;
-            }
-            if (isObservable(this.tagsArray)) {
-                tagsArray = toJS(this.tagsArray);
-            } else {
-                tagsArray = this.tagsArray;
-            }
-            this.props.EditorStore.saveLocalTitle(title);
-            this.props.EditorStore.saveLocalTags(tagsArray);
+        this.onEditorStateChange = ::this.onEditorStateChange;
+        this.saveLocalContent = ::this.saveLocalContent;
+        this.initEditorState = ::this.initEditorState;
 
-            if (this.props.UserStore.hasSignIn) {
-                this.props.EditorStore.getDraftList().then((res) => {
-                    console.log(res);
-                    if (res.code === 0) {
-                        this.draftList = res.data;
-                    } else {
-                        console.error(res);
-                    }
-                });
+        // this.init();
+
+        autorun(() => {
+            // EditorStore.saveLocalDraft(toJS(this.currentDraft));
+            if (this.props.UserStore.hasSignIn === true && this.hasInitialed === false) {
+                this.init();
             }
         });
     }
+    @observable hasInitialed = false;
 
-    @observable draftList = [];
+    @observable editorState = EditorState.createEmpty();
 
-    @observable title = '';
-    @observable tagsArray = [];
+    @observable articleList = [];
+
+    @observable currentArticle = null;
+
     @observable tagsInputValue = '';
-    @observable content = '';
 
     @observable draftMenuEl = null; // 用于显示草稿箱菜单的定位原色
     @observable draftDeleteModeState = false; // 是否处在草稿删除模式
 
-    componentWillMount() {
-        this.init();
+    componentWillUpdate() {
+        // console.log(this.props.show);
+        // if (this.props.show) {
+            // this.init();
+        // }
+        this.onGetArticleList();
     }
 
     @action
     init() {
-        const localTitle = this.props.EditorStore.getLocalTitle();
-        const localTags = this.props.EditorStore.getLocalTags();
-        if (localTitle) {
-            this.title = this.title;
-        }
-        if (localTags && localTags.length > 0) {
-            this.tagsArray = localTags;
+        // TODO 最好能够让他在编辑器打开的时候再获取，目前是页面打开就获取
+        if (this.props.UserStore.hasSignIn === true) { // 判断是否登录
+            console.log(this.props.UserStore.currentUser.username);
+            this.initEditorState();
+            this.onGetArticleList(this.props.UserStore.currentUser.username);
+            this.hasInitialed = true;
         }
     }
 
     onTitleChange(e) {
         if (e.target && e.target.value !== undefined && e.target.value.length <= 50) {
-            this.title = e.target.value;
+            this.currentDraft.title = e.target.value;
         }
     }
 
@@ -130,13 +144,26 @@ class WriteMobView extends React.Component {
         const content = this.props.EditorStore.saveFunc();
         // console.log({title, tags, content});
         this.props.EditorStore.saveDraft({title, tags, content});
+        this.onGetArticleList();
+    }
+
+    @action
+    onGetArticleList(username) {
+        this.props.EditorStore.getArticleListByUsername(username).then((res) => {
+            console.log(res);
+            if (res.code === 0) {
+                this.articleList = res.data;
+            } else {
+                console.error(res);
+            }
+        });
     }
 
     onTagInputKeyUp(e) {
         if (e.key === 'Enter' && this.tagsArray.length < 6) {
             const tagName = _.trim(e.target.value);
             if (tagName.length === 0) return;
-            this.tagsArray.push(tagName);
+            this.currentDraft.tags.push(tagName);
         }
     }
 
@@ -176,6 +203,68 @@ class WriteMobView extends React.Component {
     onToggleDraftDeleteMode() {
         this.draftDeleteModeState = !this.draftDeleteModeState;
         this.onCloseDraftMenu();
+    }
+
+    @action
+    initEditorState() {
+        const localDraftObject = toJS(this.props.EditorStore.currentDraft);
+        console.log(localDraftObject);
+        if (localDraftObject.content) { // 获取content
+            if (localDraftObject instanceof ContentState) {
+                this.editorState = EditorState.createWithContent(localDraftObject.content);
+            } else {
+                this.editorState = EditorState.createWithContent(convertFromRaw(localDraftObject.content));
+            }
+        } else {
+            this.editorState = EditorState.createEmpty();
+        }
+    }
+
+    @action('editorStateChange')
+    onEditorStateChange(editorState) {
+        this.editorState = editorState;
+    }
+
+    // @action('contentStateChange')
+    // onContentStateChange(contentState) {
+    //     this.contentState = contentState;
+    // }
+
+    @action
+    saveLocalContent() {
+        // 存储content流程
+        let contentState;
+        /**
+         * 判断是否是被观察对象，因为获取自store
+         * 而store是被观察的，所以其子对象也是被观察的
+         * 不是可观察对象，就是刚刚生成的原始对象，可以直接用
+         */
+        if (isObservable(this.editorState)) {
+            contentState = toJS(this.editorState);
+        }
+
+        if (this.editorState instanceof EditorState) { // 判断是否为原始对象EditorState，是的话直接用于生成上下文状态对象
+            contentState = convertToRaw(this.editorState.getCurrentContent());
+        }
+
+        console.log(this.props.EditorStore);
+        this.props.EditorStore.currentDraft.content = contentState;
+        return contentState;
+    }
+
+    renderEditor() {
+        if (this.props.show)
+            return (
+                <Editor
+                    editorState={this.editorState}
+                    toolbarClassName="toolbarClassName"
+                    wrapperClassName="wrapperClassName"
+                    editorClassName="editorClassName"
+                    // defaultContentState={this.contentState}
+                    onEditorStateChange={this.onEditorStateChange}
+                    // onContentStateChange={this.onContentStateChange}
+                />
+            );
     }
 
     render() {
@@ -221,7 +310,7 @@ class WriteMobView extends React.Component {
                             paper: classes.drawerPaper,
                         }}
                     >
-                        <div className={classes.draftList}>
+                        <div className={classes.articleList}>
                             <div className={classes.draftListHeader}>
                                 <ListSubheader className={classes.draftListHeaderText}>
                                     Draft list
@@ -245,10 +334,9 @@ class WriteMobView extends React.Component {
                             </div>
                             <List className={classes.draftItemList}>
                                 {
-                                    this.draftList.map((data, index) => {
-                                        console.log(data, index);
+                                    this.articleList.map((data, index) => {
                                         const time = new Date(data.lastUpdateDate);
-                                        const dateTime = `${time.getFullYear()}-${time.getMonth() + 1}-${time.getDate()} ${time.getHours()}:${time.getMinutes()}:${time.getSeconds()}`;
+                                        const dateTime = formDate2YMDHMS(time);
                                         return [
                                             <ListItem button key={data.id}>
                                                 {this.draftDeleteModeState && <Checkbox
@@ -257,12 +345,13 @@ class WriteMobView extends React.Component {
                                                 />}
                                                 <ListItemText
                                                     primary={data.title}
-                                                    secondary={`Last saved at ${dateTime}`}
+                                                    secondary={dateTime}
                                                     className={classes.draftListItemText}
                                                 />
                                             </ListItem>,
-                                            ((this.draftList.length -1 < index) && <Divider key={`${data.id}-divider`}/>),
-                                        ]
+                                            ((this.articleList.length - 1 < index) &&
+                                                <Divider key={`${data.id}-divider`}/>),
+                                        ];
                                     })
                                 }
                             </List>
@@ -327,7 +416,7 @@ class WriteMobView extends React.Component {
                             </Grid>
                         </Grid>
                         <Grid item>
-                            <DFEditor/>
+                            {this.renderEditor()}
                         </Grid>
                     </Grid>
                 </DialogContent>
@@ -355,7 +444,7 @@ const styles = theme => ({
         minWidth: drawerWidth,
         height: '100%',
     },
-    draftList: {
+    articleList: {
         display: 'flex',
         height: '100%',
         flexDirection: 'column',

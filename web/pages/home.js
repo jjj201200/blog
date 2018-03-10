@@ -97,7 +97,6 @@ class Index extends React.Component {
                 </Card>
                 </Body>
                 <Sidebar></Sidebar>
-
             </HomeWrapper>
         );
     }

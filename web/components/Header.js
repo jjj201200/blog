@@ -107,12 +107,11 @@ class HeaderView extends React.Component {
                 show={!hasSignIn && this.mobStatus === 'login'}
                 onClose={this.closeMob}
             />,
-            <WriteMob
+            (hasSignIn && <WriteMob
                 key="write"
                 show={hasSignIn && this.mobStatus === 'write'}
                 onClose={this.closeMob}
-            />,
-
+            />),
         ];
     }
 }

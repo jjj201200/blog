@@ -21,3 +21,5 @@ export const formatTime = (time) => {
     return `${h}:${m}:${s}.${ms}`;
 };
 export const now = () => formatTime(new Date());
+
+export const formDate2YMDHMS = (date) => `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;

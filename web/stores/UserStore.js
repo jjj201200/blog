@@ -17,18 +17,6 @@ class UserStore extends BasicStore {
         this.init();
     }
 
-    @action('initUserStore')
-    init() {
-        // if (!inClient()) return;
-        this.store.set('hasSignIn', false);
-        let user = this.store.get('currentUser');
-        if (!user) {
-            this.getUser();
-        } else {
-            this.store.set('currentUser', new User(user));
-        }
-    }
-
     get hasSignIn() {
         return this.store.get('hasSignIn');
     }
@@ -37,11 +25,31 @@ class UserStore extends BasicStore {
         this.store.get('hasSignIn', value);
     }
 
+    get currentUser() {
+        return this.store.get('currentUser');
+    }
+
+    set currentUser(value) {
+        this.store.get('currentUser', new User(value));
+    }
+
+    @action('initUserStore')
+    init() {
+        // if (!inClient()) return;
+        this.store.set('hasSignIn', false);
+        let user = this.currentUser;
+        if (!user) {
+            this.getUser();
+        } else {
+            this.store.set('currentUser', new User(user));
+        }
+    }
+
     @action('getUser')
     getUser() {
         return Ajax({
             type: 'post',
-            url: '/api/getUser',
+            url: '/api/get_user',
             success: (res) => {
                 if (res.code !== 0) {
                     //TODO
@@ -67,7 +75,7 @@ class UserStore extends BasicStore {
         // TODO 参数校验
         Ajax({
             type: 'post',
-            url: '/api/signup',
+            url: '/api/sign_up',
             data: {...params},
             success: (res) => {
                 if (res && res.code === 0) {
@@ -89,7 +97,7 @@ class UserStore extends BasicStore {
     login(params) { // TODO 参数校验
         Ajax({
             type: 'post',
-            url: '/api/signin',
+            url: '/api/sign_in',
             data: params,
             success: (res) => {
                 if (res && res.code === 0) {
@@ -112,7 +120,7 @@ class UserStore extends BasicStore {
     logout() {
         Ajax({
             type: 'post',
-            url: '/api/signout',
+            url: '/api/sign_out',
             success: (res) => {
                 if (res && res.code === 0) {
                     this.updateLoginStatus(false);
