@@ -3,7 +3,7 @@
  * Create: 2018-03-08
  * Description:
  */
-
+const _ = require('lodash');
 const Service = require('egg').Service;
 // const uniqid = require('uniqid');
 // 文章对象允许返回的字段
@@ -107,9 +107,7 @@ module.exports = class ArticleService extends Service {
              */
             const updateObject = {};
             _.map(params, (value, key) => {
-                if (value) {
-                    updateObject[key] = value;
-                }
+                updateObject[key] = value;
             });
 
             /**
@@ -117,15 +115,14 @@ module.exports = class ArticleService extends Service {
              */
                 // conditions, updateObject
             const article = await this.Article
-                    .select(ArticleReturnString)
-                    .findOneAndUpdate({
-                        _id: articleId,
-                    }, updateObject);
+                // .select(ArticleReturnString)
+                    .findByIdAndUpdate(articleId, updateObject, {new: true});
 
             if (article) {
+                const {_id, __v, ...rest} = article._doc;
                 that.ctx.body = {
                     code: 0,
-                    data: article,
+                    data: {id: _id, ...rest},
                     message: 'update article successfully',
                 };
             } else {
@@ -153,7 +150,7 @@ module.exports = class ArticleService extends Service {
             // TODO select可以选择查询返回的字段，最好将字段设计为可配置对象自动生成需要的字符串
             const searchArticle = this.Article
                 .findOne({_id})
-                .populate('authorId', 'username email', this.User)
+                // .populate('authorId', 'username email', this.User)
                 .select(ArticleReturnString);
             await searchArticle.exec((err, resArticle) => {
                 if (resArticle) { // 查询到了

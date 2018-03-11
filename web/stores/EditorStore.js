@@ -20,7 +20,7 @@ class EditorStore extends BasicStore {
         super('EditorStore', rootStore, [localStorage]);
         this.load(); // 载入本地localstorage的数据（如果有的话）
         this.article = null; // 编辑器状态对象
-        this.onOpenArticle = ::this.onOpenArticle;
+        this.openArticle = ::this.openArticle;
         this.saveArticleOnline = ::this.saveArticleOnline;
     }
 
@@ -53,17 +53,22 @@ class EditorStore extends BasicStore {
      */
     @action
     getArticle(articleId) {
+        const that = this;
         return Ajax({
             type: 'get',
             url: 'api/article',
-            data: JSON.stringify({
+            data: {
                 articleId,
                 method: 'get',
-            }),
+            },
             contentType: JSON_CONTENT_TYPE,
             dataType: 'json',
             success: (res) => {
-                console.log(res);
+                if (res.code === 0 && res.data) {
+                    // console.log(res.data);
+                    that.article.content = res.data.content;
+                    this.initEditorState();
+                }
             },
             fail: (e) => {
                 console.error(e);
@@ -140,7 +145,7 @@ class EditorStore extends BasicStore {
     @action
     initEditorState() {
         const article = toJS(this.article);
-        // console.log(article);
+        console.log(article);
         if (_.isEmpty(article.content)) { // 获取content
             this.editorState = EditorState.createEmpty();
         } else {
@@ -173,8 +178,9 @@ class EditorStore extends BasicStore {
     /**
      * 在本地打开有的文章
      */
-    onOpenArticle(article) {
+    openArticle(article) {
         this.article = article;
+        this.getArticle(article.id);
     }
 
     /**
@@ -211,7 +217,7 @@ class EditorStore extends BasicStore {
                         });
                         that.articleList.delete(tempId);
                         that.articleList.set(id, that.article);
-                        this.initEditorState();
+                        that.initEditorState();
                         console.log(that.article);
                     }
                 },
@@ -252,7 +258,8 @@ class EditorStore extends BasicStore {
                 success: (res) => {
                     if (res && res.code === 0) {
                         const {_id: id, ...rest} = res.data;
-                        that.articleList.get(id).set({
+                        console.log(res.data);
+                        that.article.set({
                             id, hasSavedOnline: true, ...rest,
                         });
                     }

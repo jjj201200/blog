@@ -130,7 +130,7 @@ class WriteMobView extends React.Component {
     onExited() {
         const {EditorStore} = this.props;
         if (EditorStore.article) { // 清空之前打开过的文章数据
-            EditorStore.article.set({hasOpened: false});
+            EditorStore.article.hasOpened = false;
             EditorStore.article = null;
         }
     }
@@ -184,7 +184,7 @@ class WriteMobView extends React.Component {
      */
     onCreateDeleteTagEvent(tagName) {
         const {EditorStore} = this.props;
-        const tagsArray = toJS(EditorStore.article).tags;
+        const tagsArray = EditorStore.article.tags;
         return function () {
             if (tagsArray.length === 0) return;
             const index = tagsArray.findIndex(value => value === tagName);
@@ -262,12 +262,12 @@ class WriteMobView extends React.Component {
                 }
             } else if (EditorStore.article && EditorStore.article.id !== articleId) { // 切换不同的文章
                 if (EditorStore.article.hasSavedOnline) { // 被切换掉的文章已经被保存
-                    EditorStore.onOpenArticle(EditorStore.articleList.get(articleId));
+                    EditorStore.openArticle(EditorStore.articleList.get(articleId));
                 } else {
                     // TODO 处理没有保存的时的保存提醒操作
                 }
             } else if (!EditorStore.article) { // 没有被打开的文章时
-                EditorStore.onOpenArticle(EditorStore.articleList.get(articleId));
+                EditorStore.openArticle(EditorStore.articleList.get(articleId));
             }
             // console.log(EditorStore.articleList);
         };
@@ -292,10 +292,9 @@ class WriteMobView extends React.Component {
      * 文本编辑器状态对象变化事件
      * @param editorState
      */
-    @action
+    // @action
     onEditorStateChange(editorState) {
         this.props.EditorStore.editorState = editorState;
-        console.log(editorState);
     }
 
     /* @action('contentStateChange')
@@ -309,7 +308,7 @@ class WriteMobView extends React.Component {
     renderEditor() {
         const {classes, show, EditorStore} = this.props;
         if (show && EditorStore.article) {
-            const {title, tags} = toJS(EditorStore.article);
+            const {tags} = EditorStore.article;
             return (
                 <Grid container direction="column" className={classes.content}>
                     <Grid item xs={12}>
@@ -321,7 +320,7 @@ class WriteMobView extends React.Component {
                             <Input
                                 id="write-page-title"
                                 name="write-page-title"
-                                value={title}
+                                value={EditorStore.article.title}
                                 placeholder="Enter your Title"
                                 onChange={this.onTitleChange}
                                 // startAdornment={<InputAdornment position="start">$</InputAdornment>}

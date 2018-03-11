@@ -112,7 +112,7 @@ module.exports = app => {
             const {service, request, helper} = this.ctx;
             try {
                 helper.checkParams(request.query, rule); // 校验get请求的参数
-                const {articleId} = request.body;
+                const {articleId} = request.query;
                 await service.article.get(articleId);
             } catch (e) {
                 // TODO 标准的错误处理
