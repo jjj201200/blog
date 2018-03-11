@@ -5,4 +5,4 @@
  */
 
 export * from './user';
-export * from './draft';
+export * from './article';

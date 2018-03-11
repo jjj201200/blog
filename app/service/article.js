@@ -12,6 +12,16 @@ const ArticleReturnKeys = [
     'tags',
     'content',
     'username',
+    'authorId',
+    'publishDate',
+    'lastUpdateDate',
+    'hasPublished',
+];
+const ArticleListReturnKeys = [
+    'title',
+    'tags',
+    'username',
+    'authorId',
     'publishDate',
     'lastUpdateDate',
     'hasPublished',
@@ -43,17 +53,17 @@ module.exports = class ArticleService extends Service {
      */
     async create(username, title, tags, content) {
         try {
-            const authorId = await this.User.find()
+            const authorId = await this.User.findOne()
                 .where({username})
-                .select('_id')._id;
+                .select('_id').exec();
             const article = new this.Article({
-                authorId,
+                authorId: authorId._id,
                 title,
                 tags,
                 content,
                 lastUpdateDate: this.helper.currentTime,
             });
-            await article.save().then((newArticle) => {
+            await article.save().select(ArticleReturnString).then((newArticle) => {
                 if (newArticle) {
                     this.ctx.body = {
                         code: 0,
@@ -138,7 +148,7 @@ module.exports = class ArticleService extends Service {
             // TODO select可以选择查询返回的字段，最好将字段设计为可配置对象自动生成需要的字符串
             const searchArticle = this.Article
                 .findOne({_id})
-                .populate('authorId')
+                .populate('authorId', 'username email', this.User)
                 .select(ArticleReturnString);
             await searchArticle.exec((err, resArticle) => {
                 if (resArticle) { // 查询到了
@@ -175,8 +185,8 @@ module.exports = class ArticleService extends Service {
     async getListByUsername(username, page = 1, pageSize = 10) {
         try {
             const list = this.Article.find()
-                .populate('authorId')
-                .select(ArticleReturnString)
+            // .populate('authorId', 'username email', this.User)
+                .select(ArticleListReturnKeys.join(' '))
                 .where({username})
                 .skip((page - 1) * pageSize)
                 .limit(pageSize);
@@ -206,11 +216,10 @@ module.exports = class ArticleService extends Service {
         }
     }
 
-    async delete(articleId) {
+    async delete(articleIdArray) {
         try {
             const article = await this.Article
-                .where({articleId})
-                .findOneAndRemove();
+                .remove({_id: {$in: articleIdArray}});
             if (article) {
                 this.ctx.body = {
                     code: 0,

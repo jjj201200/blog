@@ -8,7 +8,7 @@ import {observable, action, toJS} from 'mobx';
 import {Ajax, inClient, JSON_CONTENT_TYPE} from 'DFUtils';
 import {BasicStore, localStorage} from './BasicStore';
 import {EditorState, convertFromRaw} from 'draft-js';
-import {Draft} from 'DFModels';
+import {Article} from 'DFModels';
 
 /**
  * 一个用来管理文章发布界面的类
@@ -19,19 +19,35 @@ class EditorStore extends BasicStore {
     constructor(rootStore) {
         super('EditorStore', rootStore, [localStorage]);
         this.load(); // 载入本地localstorage的数据（如果有的话）
-        this.draft = null; // 编辑器状态对象
+        this.article = null; // 编辑器状态对象
     }
 
-    get currentDraft() {
-        if (this.draft) return this.draft;
-        return this.initDraft();
-    };
+    @observable newNumberId = 0;
+    @observable article = undefined;
+    articleList = observable.map({});
+    deleteArticleList = observable.array([]); // 待删除文章id列表
+    @observable hasSavedOnline = false;
 
-    set currentDraft(draft) {
-        this.draft = draft;
-        // this.saveLocalDraft(draft);
+    /**
+     * temp local number id
+     * @returns {number}
+     */
+    get articleNumber() {
+        return ++this.newNumberId;
     }
 
+    /**
+     * temp local id
+     * @returns {number}
+     */
+    get articleId() {
+        return (new Date()).getTime();
+    }
+
+    /**
+     * 获取指定文章id的数据
+     * @param {string} articleId
+     */
     @action
     getArticle(articleId) {
         return Ajax({
@@ -48,15 +64,16 @@ class EditorStore extends BasicStore {
             },
             fail: (e) => {
                 console.error(e);
-            }
-        })
+            },
+        });
     }
 
     /**
-     * 获取文章列表
+     * 拉取远程文章列表并初始化本地列表
      */
     @action
-    getArticleListByUsername(username) {
+    initArticleListByUsername(username) {
+        const that = this;
         return Ajax({
             type: 'get',
             url: 'api/article',
@@ -65,10 +82,53 @@ class EditorStore extends BasicStore {
                 method: 'getListByUsername',
             },
             dataType: 'json',
+            success: (res) => {
+                if (res && res.data && res.code === 0) {
+                    _.forEach(res.data, (value) => {
+                        if (!that.articleList.has(value._id)) {
+                            const articleObject = {id: value._id, ...value};
+                            that.articleList.set(value._id, new Article(articleObject));
+                        } else if (this.hasSavedOnline) { // 已经在线上保存
+                            return;
+                        } else {
+                            /**
+                             * TODO
+                             * 本地有数据且没有保存
+                             * 处理出具冲突
+                             */
+                        }
+                    });
+                }
+                // 获取本地文章缓存数据
+            },
             fail: (e) => {
-                console.error(e)
+                console.error(e);
             },
         });
+    }
+
+    /**
+     * 获取本地存贮的文章数据
+     *
+     */
+    @action
+    initLocalArticle() {
+        const localArticle = toJS(this.store.get('localArticle')); // 获取本地存储的文章
+        // console.log(localArticle);
+        if (!localArticle) return false;
+        // this.article = {title, tags, content};
+        if (!this.articleList.has(localArticle._id)) {
+            this.articleList.set(localArticle._id, new Article(value));
+        } else if (this.hasSavedOnline) { // 已经在线上保存
+            return;
+        } else {
+            /**
+             * TODO
+             * 本地有数据且没有保存
+             * 处理出具冲突
+             */
+        }
+        return localArticle;
     }
 
     /**
@@ -95,12 +155,12 @@ class EditorStore extends BasicStore {
             },
             fail: (res) => {
                 console.error(res);
-            }
+            },
         });
     }
 
     /**
-     * 更新文章内容
+     * 更新（保存）文章内容
      * @param articleId
      * @param title
      * @param tags
@@ -126,7 +186,7 @@ class EditorStore extends BasicStore {
             },
             fail: (res) => {
                 console.error(res);
-            }
+            },
         });
     }
 
@@ -135,23 +195,29 @@ class EditorStore extends BasicStore {
      * @param articleId
      */
     @action
-    deleteArticle(articleId) {
+    deleteArticle(articleIdArray) {
+        const that = this;
         return Ajax({
             type: 'post',
             url: 'api/article',
             data: JSON.stringify({
-                articleId,
+                articleIdArray,
                 method: 'delete',
             }),
             contentType: JSON_CONTENT_TYPE,
             dataType: 'json',
             success: (res) => {
+                const array = toJS(articleIdArray);
+                _.map(array, (articleId) => {
+                    that.articleList.delete(articleId);
+                    articleIdArray.remove(articleId);
+                });
                 console.log(res);
             },
             fail: (e) => {
                 console.error(e);
-            }
-        })
+            },
+        });
     }
 
     /**
@@ -167,7 +233,7 @@ class EditorStore extends BasicStore {
                 data: JSON.stringify({
                     articleId,
                     hasPublished,
-                    method: 'publish'
+                    method: 'publish',
                 }),
                 contentType: JSON_CONTENT_TYPE,
                 success: (res) => {
@@ -175,10 +241,15 @@ class EditorStore extends BasicStore {
                 },
                 fail: (e) => {
                     console.error(new Error(e));
-                }
-            })
+                },
+            });
     }
 
+    /**
+     * 取消发布
+     * @param articleId
+     * @param hasPublished
+     */
     @action
     unpublish(articleId, hasPublished) {
         return Ajax({
@@ -195,30 +266,35 @@ class EditorStore extends BasicStore {
             },
             fail: (e) => {
                 console.error(new Error(e));
-            }
-        })
+            },
+        });
     }
-
-
 
     /*@action
     deleteLocalContentState() {
         this.store.delete('localContentState');
     }*/
 
+    /**
+     * 初始化文章对象，两种情况:
+     * 1. 通过已有数据创建文章对象
+     * 2. 创建新的文章对象
+     */
     @action
-    initDraft() {
-        const title = toJS(this.store.get('localTitle'));
-        const tags = toJS(this.store.get('localTags'));
-        const content = toJS(this.store.get('localContentState'));
-        console.log({title, tags, content});
-        this.draft = new Draft({title, tags, content});
-        return this.currentDraft;
+    createLocalArticle(articleData) {
+        if (articleData) {
+            this.article = new Article(articleData);
+        } else {
+            this.article = new Article({title: `新建文章 ${this.articleNumber}`});
+            this.article.tempId = this.articleId; // 没有保存到线上的临时使用的本地id
+            this.articleList.set(this.articleId, this.article);
+        }
     }
 
     @action
-    saveLocalDraft(draftObject) {
+    saveLocalArticle(draftObject) {
         this.store.set('localDraft', draftObject);
     }
 }
+
 export default EditorStore;

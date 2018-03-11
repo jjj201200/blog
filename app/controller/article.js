@@ -54,7 +54,7 @@ module.exports = app => {
                     delete: { // 删除文章
                         name: 'delete',
                         rule: {
-                            articleId: {type: 'string', required: true},
+                            articleIdArray: {type: 'array', required: true},
                         },
                     },
                     publish: { // 发布文章
@@ -81,18 +81,14 @@ module.exports = app => {
         async index() {
             // TODO 最好可以统一入口
             const {ctx} = this;
-            const {service, cookies, request, validate, helper} = ctx;
+            const {service, cookies, request} = ctx;
             try {
                 const jwToken = cookies.get('jwt');
-                const createRule = { // 参数校验规则
-                    method: {type: 'string', required: true},
-                };
                 this.isPost = request.method === 'POST';
                 if (jwToken) {
-                    this.isPost ? validate(createRule) : helper.checkParams(request.query, createRule); // 校验参数
+                    const {method} = this.isPost ? request.body : request.query; // 本次执行的方法参数
                     if (this.methods[request.method]) { // 校验method类型
                         service.jwt.verify(jwToken); // 因为没有需要用到的数据，就不用获取值了
-                        const {method} = this.isPost ? request.body : request.query; // 本次执行的方法参数
                         const execFuncObject = this.methods[request.method][method];
                         if (execFuncObject) {
                             const {name, rule} = execFuncObject;
@@ -155,9 +151,9 @@ module.exports = app => {
          * username从jwt中获取
          */
         async create(rule) {
-            const {service, request, validate} = this.ctx;
+            const {service, request, helper} = this.ctx;
             try {
-                validate(rule);
+                helper.checkParams(request.body, rule);
                 const username = service.jwt.currentJwtData.username;
                 if (!username) {
                     throw new Error('invalide username');
@@ -181,9 +177,9 @@ module.exports = app => {
          * 包括发布/取消发布
          */
         async update(rule) {
-            const {service, request, validate} = this.ctx;
+            const {service, request, helper} = this.ctx;
             try {
-                validate(rule);
+                helper.checkParams(request.body, rule);
                 const {articleId, ...params} = request.body;
                 await service.article.update(articleId, params);
             } catch (e) {
@@ -197,11 +193,11 @@ module.exports = app => {
         }
 
         async delete(rule) {
-            const {service, request, validate} = this.ctx;
+            const {service, request, helper} = this.ctx;
             try {
-                validate(rule);
-                const {articleId} = request.body;
-                await service.article.delete(articleId);
+                helper.checkParams(request.body, rule);
+                const {articleIdArray} = request.body;
+                await service.article.delete(articleIdArray);
             } catch (e) {
                 // TODO 标准的错误处理
                 console.error(e);

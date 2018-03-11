@@ -9,6 +9,7 @@ const TYPES = {
     'string': String,
     'number': Number,
     'boolean': Boolean,
+    'array': Array,
 }
 module.exports = {
     // 获取服务器时间，包含时区

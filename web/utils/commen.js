@@ -17,8 +17,8 @@ export const formatTime = (time) => {
     const h = padStart(time.getHours(), 2, '0');
     const m = padStart(time.getMinutes(), 2, '0');
     const s = padStart(time.getSeconds(), 2, '0');
-    const ms = padStart(time.getMilliseconds(), 3, '0');
-    return `${h}:${m}:${s}.${ms}`;
+    // const ms = padStart(time.getMilliseconds(), 3, '0');
+    return `${h}:${m}:${s}`;
 };
 export const now = () => formatTime(new Date());
 
