@@ -22,6 +22,8 @@ class EditorStore extends BasicStore {
         this.article = null; // 编辑器状态对象
         this.openArticle = ::this.openArticle;
         this.saveArticleOnline = ::this.saveArticleOnline;
+        this.publish = ::this.publish;
+        this.unpublish = ::this.unpublish;
     }
 
     @observable newNumberId = 0;
@@ -145,7 +147,6 @@ class EditorStore extends BasicStore {
     @action
     initEditorState() {
         const article = toJS(this.article);
-        console.log(article);
         if (_.isEmpty(article.content)) { // 获取content
             this.editorState = EditorState.createEmpty();
         } else {
@@ -180,7 +181,11 @@ class EditorStore extends BasicStore {
      */
     openArticle(article) {
         this.article = article;
-        this.getArticle(article.id);
+        if (_.isEmpty(article.content)) { // 如果没有拉过数据就拉一下content
+            this.getArticle(article.id);
+        } else { // 否则就直接加载本地数据
+            this.initEditorState();
+        }
     }
 
     /**
@@ -309,52 +314,68 @@ class EditorStore extends BasicStore {
 
     /**
      * 发布文章
-     * @param param
+     * @param articleId
      */
     @action
-    publish(articleId, hasPublished) {
-        if (hasPublished)
+    publish() {
+        if (this.article) {
+            const that = this;
+            const articleId = this.article.id;
             return Ajax({
                 type: 'post',
                 url: 'api/article',
                 data: JSON.stringify({
                     articleId,
-                    hasPublished,
+                    hasPublished: true,
                     method: 'publish',
                 }),
                 contentType: JSON_CONTENT_TYPE,
                 success: (res) => {
-                    console.log(res);
+                    if (res && res.code === 0) {
+                        const {_id: id, ...rest} = res.data;
+                        that.article.set({
+                            id, hasSavedOnline: true, ...rest,
+                        });
+                    }
                 },
                 fail: (e) => {
                     console.error(new Error(e));
                 },
             });
+        }
     }
 
     /**
      * 取消发布
      * @param articleId
-     * @param hasPublished
      */
     @action
-    unpublish(articleId, hasPublished) {
-        return Ajax({
-            type: 'post',
-            url: 'api/article',
-            data: JSON.stringify({
-                articleId,
-                hasPublished,
-                method: 'unpublish',
-            }),
-            contentType: JSON_CONTENT_TYPE,
-            success: (res) => {
-                console.log(res);
-            },
-            fail: (e) => {
-                console.error(new Error(e));
-            },
-        });
+    unpublish() {
+        if (this.article) {
+            const that = this;
+            const articleId = this.article.id;
+            return Ajax({
+                type: 'post',
+                url: 'api/article',
+                data: JSON.stringify({
+                    articleId,
+                    hasPublished: false,
+                    method: 'unpublish',
+                }),
+                contentType: JSON_CONTENT_TYPE,
+                success: (res) => {
+                    if (res && res.code === 0) {
+                        const {_id: id, ...rest} = res.data;
+                        that.article.set({
+                            id, hasSavedOnline: true, ...rest,
+                        });
+                    }
+                },
+                fail: (e) => {
+                    console.error(new Error(e));
+                },
+            });
+        }
     }
 
     /*@action

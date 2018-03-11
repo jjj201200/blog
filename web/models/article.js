@@ -51,17 +51,17 @@ class Article {
     @observable hasSavedOnline = false; // save tag
     @observable hasOpened = false; // judge open on local editor
 
-    // @action('setArticle')
+    @action('setArticle')
     set({id, title, tags, content, publishDate, lastUpdateDate, hasPublished, hasSavedOnline, hasOpened}) {
-        this.id = id || this.id;
-        this.title = title || this.title;
-        this.tags = tags || this.tags;
-        this.content = content || this.content;
-        this.publishDate = publishDate || this.publishDate;
-        this.lastUpdateDate = lastUpdateDate || this.lastUpdateDate;
-        this.hasPublished = hasPublished || this.hasPublished;
-        this.hasSavedOnline = hasSavedOnline || this.hasSavedOnline;
-        this.hasOpened = hasOpened || this.hasOpened;
+        if (id !== undefined) this.id = id;
+        if (title !== undefined) this.title = title;
+        if (tags !== undefined) this.tags = tags;
+        if (content !== undefined) this.content = content;
+        if (publishDate !== undefined) this.publishDate = publishDate;
+        if (lastUpdateDate !== undefined) this.lastUpdateDate = lastUpdateDate;
+        if (hasPublished !== undefined) this.hasPublished = hasPublished;
+        if (hasSavedOnline !== undefined) this.hasSavedOnline = hasSavedOnline;
+        if (hasOpened !== undefined) this.hasOpened = hasOpened;
     }
 }
 

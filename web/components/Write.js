@@ -426,10 +426,10 @@ class WriteMobView extends React.Component {
                                         <Button
                                             variant="raised"
                                             color="primary"
-                                            onClick={onClose}
-                                            disabled={!EditorStore.article}
+                                            onClick={EditorStore.article && EditorStore.article.hasPublished ? EditorStore.unpublish : EditorStore.publish}
+                                            disabled={!EditorStore.article || !EditorStore.article.id}
                                         >
-                                            Publish Article
+                                            {(EditorStore.article && EditorStore.article.hasPublished) && 'un'}Publish Article
                                         </Button>
                                     </Grid>
                                     <Grid item>
