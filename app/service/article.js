@@ -53,9 +53,12 @@ module.exports = class ArticleService extends Service {
      */
     async create(username, title, tags, content) {
         try {
+            // 获取用户id
             const authorId = await this.User.findOne()
                 .where({username})
                 .select('_id').exec();
+
+            // 创建属于该用户的文章
             const article = new this.Article({
                 authorId: authorId._id,
                 title,
@@ -63,7 +66,9 @@ module.exports = class ArticleService extends Service {
                 content,
                 lastUpdateDate: this.helper.currentTime,
             });
-            await article.save().select(ArticleReturnString).then((newArticle) => {
+
+            // 保存文章数据
+            await article.save().then((newArticle) => {
                 if (newArticle) {
                     this.ctx.body = {
                         code: 0,

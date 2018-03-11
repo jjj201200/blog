@@ -7,7 +7,7 @@
 import {observable, action, toJS} from 'mobx';
 import {Ajax, inClient, JSON_CONTENT_TYPE} from 'DFUtils';
 import {BasicStore, localStorage} from './BasicStore';
-import {EditorState, convertFromRaw} from 'draft-js';
+import {EditorState, ContentState, convertFromRaw, convertToRaw} from 'draft-js';
 import {Article} from 'DFModels';
 
 /**
@@ -20,13 +20,16 @@ class EditorStore extends BasicStore {
         super('EditorStore', rootStore, [localStorage]);
         this.load(); // 载入本地localstorage的数据（如果有的话）
         this.article = null; // 编辑器状态对象
+        this.onOpenArticle = ::this.onOpenArticle;
+        this.saveArticleOnline = ::this.saveArticleOnline;
     }
 
     @observable newNumberId = 0;
-    @observable article = undefined;
+    @observable article = null;
     articleList = observable.map({});
     deleteArticleList = observable.array([]); // 待删除文章id列表
-    @observable hasSavedOnline = false;
+    @observable deleteModeState = false; // 是否处在草稿删除模式
+    @observable editorState = null; // 编辑器状态对象
 
     /**
      * temp local number id
@@ -86,7 +89,7 @@ class EditorStore extends BasicStore {
                 if (res && res.data && res.code === 0) {
                     _.forEach(res.data, (value) => {
                         if (!that.articleList.has(value._id)) {
-                            const articleObject = {id: value._id, ...value};
+                            const articleObject = {id: value._id, hasSavedOnline: true, ...value};
                             that.articleList.set(value._id, new Article(articleObject));
                         } else if (this.hasSavedOnline) { // 已经在线上保存
                             return;
@@ -117,7 +120,7 @@ class EditorStore extends BasicStore {
         // console.log(localArticle);
         if (!localArticle) return false;
         // this.article = {title, tags, content};
-        if (!this.articleList.has(localArticle._id)) {
+        if (!this.articleList.has(localArticle._id)) { // 没有相同id的文章
             this.articleList.set(localArticle._id, new Article(value));
         } else if (this.hasSavedOnline) { // 已经在线上保存
             return;
@@ -132,31 +135,93 @@ class EditorStore extends BasicStore {
     }
 
     /**
-     * 创建文章条目
-     * @param param
+     * 初始化文本编辑器对象
      */
     @action
-    createArticle(title, tags, content) {
-        // TODO 参数校验
-        // console.log(title, tags, content);
-        return Ajax({
-            type: 'post',
-            url: '/api/article',
-            data: JSON.stringify({
-                title, tags, content,
-                method: 'create',
-            }),
-            contentType: JSON_CONTENT_TYPE,
-            dataType: 'json',
-            success: (res) => {
-                if (res && res.code === 0) {
-                    console.log(res);
-                }
-            },
-            fail: (res) => {
-                console.error(res);
-            },
-        });
+    initEditorState() {
+        const article = toJS(this.article);
+        // console.log(article);
+        if (_.isEmpty(article.content)) { // 获取content
+            this.editorState = EditorState.createEmpty();
+        } else {
+            if (!article.content.entityMap) article.content.entityMap = {};
+            this.editorState = EditorState.createWithContent(convertFromRaw(article.content));
+        }
+    }
+
+    /**
+     * 将文章保存到线上
+     */
+    @action
+    saveArticleOnline() {
+        // const content = this.props.EditorStore.saveFunc();
+        // console.log({title, tags, content});
+        const contentObject = convertToRaw(this.editorState.getCurrentContent());
+        this.article.content = contentObject;
+        const article = toJS(this.article); // 获取需要保存的文章数据
+        /**
+         * 判断是否是新建的文章
+         * 是否有id 没有就是新建的
+         */
+        if (article.id) {
+            this.updateArticle(article.id, article.title, article.tags, article.content);
+        } else {
+            this.createArticle();
+        }
+    }
+
+    /**
+     * 在本地打开有的文章
+     */
+    onOpenArticle(article) {
+        this.article = article;
+    }
+
+    /**
+     * 创建文章条目
+     * @param {string} title
+     * @param {array} tags
+     * @param {object} content
+     * @param {number} tempId 当使用tempId创建新的文章时需要传递这个参数
+     */
+    @action
+    createArticle() {
+        const that = this;
+        try {
+            if (!this.article) {
+                throw new Error('no article need to create online');
+            }
+            const {tempId, title, tags, content} = this.article;
+            // TODO 参数校验
+            // console.log(title, tags, content);
+            return Ajax({
+                type: 'post',
+                url: '/api/article',
+                data: JSON.stringify({
+                    title, tags, content,
+                    method: 'create',
+                }),
+                contentType: JSON_CONTENT_TYPE,
+                dataType: 'json',
+                success: (res) => {
+                    if (res && res.code === 0) {
+                        const {_id: id, ...rest} = res.data;
+                        that.article = new Article({
+                            id, hasSavedOnline: true, ...rest,
+                        });
+                        that.articleList.delete(tempId);
+                        that.articleList.set(id, that.article);
+                        this.initEditorState();
+                        console.log(that.article);
+                    }
+                },
+                fail: (res) => {
+                    console.error(res);
+                },
+            });
+        } catch (e) {
+            console.error(e);
+        }
     }
 
     /**
@@ -167,27 +232,38 @@ class EditorStore extends BasicStore {
      * @param content
      */
     @action
-    updateArticle(articleId, title, tags, content) {
+    updateArticle() {
         // TODO 参数校验
-        // console.log(title, tags, content);
-        return Ajax({
-            type: 'post',
-            url: '/api/article',
-            data: JSON.stringify({
-                articleId, title, tags, content,
-                method: 'update',
-            }),
-            contentType: JSON_CONTENT_TYPE,
-            dataType: 'json',
-            success: (res) => {
-                if (res && res.code === 0) {
-                    console.log(res);
-                }
-            },
-            fail: (res) => {
-                console.error(res);
-            },
-        });
+        const that = this;
+        try {
+            if (!this.article) {
+                throw new Error('no article need to update');
+            }
+            const {id, title, tags, content} = this.article;
+            return Ajax({
+                type: 'post',
+                url: '/api/article',
+                data: JSON.stringify({
+                    articleId: id, title, tags, content,
+                    method: 'update',
+                }),
+                contentType: JSON_CONTENT_TYPE,
+                dataType: 'json',
+                success: (res) => {
+                    if (res && res.code === 0) {
+                        const {_id: id, ...rest} = res.data;
+                        that.articleList.get(id).set({
+                            id, hasSavedOnline: true, ...rest,
+                        });
+                    }
+                },
+                fail: (res) => {
+                    console.error(res);
+                },
+            });
+        } catch (e) {
+            console.error(e);
+        }
     }
 
     /**
@@ -195,23 +271,27 @@ class EditorStore extends BasicStore {
      * @param articleId
      */
     @action
-    deleteArticle(articleIdArray) {
+    deleteArticle() {
         const that = this;
+        const deleteArticleList = toJS(this.deleteArticleList);
         return Ajax({
             type: 'post',
             url: 'api/article',
             data: JSON.stringify({
-                articleIdArray,
+                articleIdArray: deleteArticleList,
                 method: 'delete',
             }),
             contentType: JSON_CONTENT_TYPE,
             dataType: 'json',
             success: (res) => {
-                const array = toJS(articleIdArray);
-                _.map(array, (articleId) => {
-                    that.articleList.delete(articleId);
-                    articleIdArray.remove(articleId);
+                _.map(deleteArticleList, (articleId) => { // 删除成功后清理本地数据
+                    that.articleList.delete(articleId); //  清理文章列表
+                    that.deleteArticleList.remove(articleId); // 清理待删除文章id列表
+                    if (that.article && that.article.id === articleId) { // 如果被删除文章已被打开则也清空
+                        that.article = null;
+                    }
                 });
+                if (that.articleList.size === 0) this.deleteModeState = false;
                 console.log(res);
             },
             fail: (e) => {
@@ -289,6 +369,7 @@ class EditorStore extends BasicStore {
             this.article.tempId = this.articleId; // 没有保存到线上的临时使用的本地id
             this.articleList.set(this.articleId, this.article);
         }
+        this.initEditorState(); // 使用 this.article 初始化文本编辑器环境
     }
 
     @action

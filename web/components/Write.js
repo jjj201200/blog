@@ -64,9 +64,9 @@ class WriteMobView extends React.Component {
         super(props);
 
         this.onEntered = ::this.onEntered;
+        this.onExited = ::this.onExited;
 
         this.createNewArticle = ::this.createNewArticle;
-        this.onSaveArticleOnline = ::this.onSaveArticleOnline;
 
         this.onTitleChange = ::this.onTitleChange;
         this.onTagInputKeyUp = ::this.onTagInputKeyUp;
@@ -83,8 +83,6 @@ class WriteMobView extends React.Component {
         this.onCreateDeleteArticleEvent = ::this.onCreateDeleteArticleEvent;
 
         this.onEditorStateChange = ::this.onEditorStateChange;
-        this.saveLocalContent = ::this.saveLocalContent;
-        this.initEditorState = ::this.initEditorState;
 
         // this.init();
 
@@ -102,14 +100,11 @@ class WriteMobView extends React.Component {
 
     @observable hasInitialed = false;
 
-    @observable editorState = null; // 编辑器状态对象
-
     @observable currentArticle = null; // 当前编辑器载入文章对象
 
     @observable tagsInputValue = ''; // 编辑器tags编辑框值
 
     @observable articleMenuEl = null; // 用于显示草稿箱菜单的定位对象
-    @observable deleteModeState = false; // 是否处在草稿删除模式
 
     /**
      * 当打开编辑器Dialog时
@@ -117,15 +112,7 @@ class WriteMobView extends React.Component {
      */
     @action
     onEntered() {
-        this.initArticleList();
-    }
-
-    /**
-     * 初始化文章列表
-     * 包含本地缓存文章
-     */
-    @action
-    initArticleList() {
+        this.props.EditorStore.deleteModeState = false;
         if (this.props.UserStore.hasSignIn === true) { // 判断是否登录
             // 拉取远程文章列表并初始化本地列表
             const username = this.props.UserStore.currentUser.username;
@@ -137,28 +124,25 @@ class WriteMobView extends React.Component {
     }
 
     /**
-     * 标题编辑框事件
+     * Dialog退出时触发的事件
      */
-    onTitleChange(e) {
-        if (e.target && e.target.value !== undefined && e.target.value.length <= 50) {
-            this.props.EditorStore.article.title = e.target.value;
+    @action
+    onExited() {
+        const {EditorStore} = this.props;
+        if (EditorStore.article) { // 清空之前打开过的文章数据
+            EditorStore.article.set({hasOpened: false});
+            EditorStore.article = null;
         }
     }
 
-    @action
-    onSaveArticleOnline() {
+    /**
+     * 标题编辑框事件
+     */
+    onTitleChange(e) {
         const {EditorStore} = this.props;
-        const article = toJS(EditorStore.article); // 获取需要保存的文章数据
-        // const content = this.props.EditorStore.saveFunc();
-        // console.log({title, tags, content});
-        /**
-         * 判断是否是新建的文章
-         * 是否有id 没有就是新建的
-         */
-        if (article.id) {
-            EditorStore.updateArticle(article.id, article.title, article.tags, article.content);
-        } else {
-            EditorStore.createArticle(article.title, article.tags, article.content);
+        if (e.target && e.target.value !== undefined && e.target.value.length <= 50) {
+            EditorStore.article.title = e.target.value;
+            EditorStore.article.hasSavedOnline = false; // 标记编辑过后没有推送保存
         }
     }
 
@@ -171,6 +155,7 @@ class WriteMobView extends React.Component {
             const tagName = _.trim(e.target.value);
             if (tagName.length === 0) return;
             EditorStore.article.tags.push(tagName);
+            EditorStore.article.hasSavedOnline = false; // 标记编辑过后没有推送保存
         }
     }
 
@@ -198,14 +183,15 @@ class WriteMobView extends React.Component {
      * @param {string} tagName 需要删除的tag
      */
     onCreateDeleteTagEvent(tagName) {
-        const that = this;
-        const tagsArray = toJS(this.props.EditorStore.article).tags;
+        const {EditorStore} = this.props;
+        const tagsArray = toJS(EditorStore.article).tags;
         return function () {
             if (tagsArray.length === 0) return;
             const index = tagsArray.findIndex(value => value === tagName);
             if (index >= 0) {
                 tagsArray.splice(index, 1);
-                that.props.EditorStore.article.set({tags: tagsArray});
+                EditorStore.article.set({tags: tagsArray});
+                EditorStore.article.hasSavedOnline = false; // 标记编辑过后没有推送保存
             }
         };
     }
@@ -232,7 +218,7 @@ class WriteMobView extends React.Component {
     onDeleteArticles() {
         const {EditorStore} = this.props;
         if (EditorStore.deleteArticleList.peek().length > 0) {
-            EditorStore.deleteArticle(EditorStore.deleteArticleList);
+            EditorStore.deleteArticle();
         }
     }
 
@@ -252,19 +238,18 @@ class WriteMobView extends React.Component {
     }
 
     /**
-     * 创建事件
-     * 关于文章列表删除状态改变的事件
+     * 创建事件关于文章列表删除状态改变的事件
      * @param articleId
      * @returns {Function}
      */
     onCreateCheckBoxChangeEvent(articleId) {
         const that = this;
+        const {EditorStore} = that.props;
         return function () {
-            if (!that.deleteModeState) return;
-            const {EditorStore} = that.props;
-            if (EditorStore.articleList.has(articleId)) {
+            // if (!that.props.EditorStore.deleteModeState) return;
+            if (that.props.EditorStore.deleteModeState && EditorStore.articleList.has(articleId)) {
                 const article = EditorStore.articleList.get(articleId);
-                console.log(article.id);
+                // console.log(article.id || article.tempId);
                 if (article.checked !== undefined) {
                     article.checked = !article.checked;
                 } else {
@@ -275,6 +260,14 @@ class WriteMobView extends React.Component {
                 } else {
                     EditorStore.deleteArticleList.remove(article.id);
                 }
+            } else if (EditorStore.article && EditorStore.article.id !== articleId) { // 切换不同的文章
+                if (EditorStore.article.hasSavedOnline) { // 被切换掉的文章已经被保存
+                    EditorStore.onOpenArticle(EditorStore.articleList.get(articleId));
+                } else {
+                    // TODO 处理没有保存的时的保存提醒操作
+                }
+            } else if (!EditorStore.article) { // 没有被打开的文章时
+                EditorStore.onOpenArticle(EditorStore.articleList.get(articleId));
             }
             // console.log(EditorStore.articleList);
         };
@@ -291,61 +284,32 @@ class WriteMobView extends React.Component {
      * 切换文章列表删除模式的事件
      */
     onToggleArticleDeleteMode() {
-        this.deleteModeState = !this.deleteModeState;
+        this.props.EditorStore.deleteModeState = !this.props.EditorStore.deleteModeState;
         this.onCloseArticleMenu();
     }
 
+    /**
+     * 文本编辑器状态对象变化事件
+     * @param editorState
+     */
     @action
-    initEditorState() {
-        const localArticleObject = toJS(this.props.EditorStore.currentArticle);
-        console.log(localArticleObject);
-        if (localArticleObject.content) { // 获取content
-            if (localArticleObject instanceof ContentState) {
-                this.editorState = EditorState.createWithContent(localArticleObject.content);
-            } else {
-                this.editorState = EditorState.createWithContent(convertFromRaw(localArticleObject.content));
-            }
-        } else {
-            this.editorState = EditorState.createEmpty();
-        }
-    }
-
-    @action('editorStateChange')
     onEditorStateChange(editorState) {
-        this.editorState = editorState;
+        this.props.EditorStore.editorState = editorState;
+        console.log(editorState);
     }
 
-    // @action('contentStateChange')
-    // onContentStateChange(contentState) {
-    //     this.contentState = contentState;
-    // }
+    /* @action('contentStateChange')
+    onContentStateChange(contentState) {
+        this.contentState = contentState;
+    }*/
 
-    @action
-    saveLocalContent() {
-        // 存储content流程
-        let contentState;
-        /**
-         * 判断是否是被观察对象，因为获取自store
-         * 而store是被观察的，所以其子对象也是被观察的
-         * 不是可观察对象，就是刚刚生成的原始对象，可以直接用
-         */
-        if (isObservable(this.editorState)) {
-            contentState = toJS(this.editorState);
-        }
-
-        if (this.editorState instanceof EditorState) { // 判断是否为原始对象EditorState，是的话直接用于生成上下文状态对象
-            contentState = convertToRaw(this.editorState.getCurrentContent());
-        }
-
-        console.log(this.props.EditorStore);
-        this.props.EditorStore.currentArticle.content = contentState;
-        return contentState;
-    }
-
+    /**
+     * 渲染编辑器区域元素
+     */
     renderEditor() {
         const {classes, show, EditorStore} = this.props;
         if (show && EditorStore.article) {
-            const {title, tags, content} = toJS(EditorStore.article);
+            const {title, tags} = toJS(EditorStore.article);
             return (
                 <Grid container direction="column" className={classes.content}>
                     <Grid item xs={12}>
@@ -402,7 +366,7 @@ class WriteMobView extends React.Component {
                     </Grid>
                     <Grid item xs={12}>
                         <Editor
-                            editorState={this.editorState}
+                            editorState={EditorStore.editorState}
                             toolbarClassName="toolbarClassName"
                             wrapperClassName="wrapperClassName"
                             editorClassName="editorClassName"
@@ -445,9 +409,10 @@ class WriteMobView extends React.Component {
         const {show, onClose, classes, EditorStore} = this.props;
         const articleObject = toJS(EditorStore.articleList);
         // console.log(articleObject, EditorStore.articleList);
+        const {deleteModeState} = EditorStore;
         const deleteNum = EditorStore.deleteArticleList.peek().length;
         return (
-            <Dialog open={show} onClose={onClose} fullScreen onEntered={this.onEntered}>
+            <Dialog open={show} onClose={onClose} fullScreen onEntered={this.onEntered} onExited={this.onExited}>
                 <AppBar style={{position: 'relative'}} className={classes.appBar}>
                     <Toolbar>
                         <Grid container alignItems="center">
@@ -472,7 +437,7 @@ class WriteMobView extends React.Component {
                                         <Button
                                             variant="raised"
                                             color="primary"
-                                            onClick={this.onSaveArticleOnline}
+                                            onClick={EditorStore.saveArticleOnline}
                                             disabled={!EditorStore.article}
                                         >
                                             Save Article
@@ -529,7 +494,7 @@ class WriteMobView extends React.Component {
                                                 onClick={this.onCreateCheckBoxChangeEvent(data.id || data.tempId)}
                                                 className='article-list-item'
                                             >
-                                                {this.deleteModeState && <Checkbox
+                                                {deleteModeState && <Checkbox
                                                     tabIndex={-1}
                                                     disableRipple
                                                     // onChange={this.onCreateCheckBoxChangeEvent(data.id)}
@@ -540,7 +505,7 @@ class WriteMobView extends React.Component {
                                                     secondary={dateTime}
                                                     className={classes.articleListItemText}
                                                 />
-                                                {!this.deleteModeState && (
+                                                {!deleteModeState && (
                                                     <ListItemSecondaryAction className='article-list-delete-btn'>
                                                         <IconButton
                                                             onClick={this.onCreateDeleteArticleEvent(data.id || data.tempId)}
@@ -555,7 +520,7 @@ class WriteMobView extends React.Component {
                                     })
                                 }
                             </List>
-                            {this.deleteModeState && <Button
+                            {deleteModeState && <Button
                                 variant="raised"
                                 color="secondary"
                                 className={classes.articleDeleteBtn}
