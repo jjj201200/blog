@@ -31,7 +31,7 @@ const ArticleReturnString = ArticleReturnKeys.join(' ');
 /**
  * 文章模型
  */
-module.exports = class ArticleService extends Service {
+class ArticleService extends Service {
     constructor(ctx) {
         super(ctx);
         const {service, model, helper, app} = ctx;
@@ -98,6 +98,8 @@ module.exports = class ArticleService extends Service {
     /**
      * 更新文章数据
      * 包括更新草稿 发布文章
+     * @param {string} articleId
+     * @param {object} params
      */
     async update(articleId, params) {
         const that = this;
@@ -178,18 +180,18 @@ module.exports = class ArticleService extends Service {
     }
 
     /**
-     * 获取一个用户的文章列表
+     * 获取一个文章列表
      * 支持分页
-     * @param {string} username 需要获取谁的文章列表
+     * @param {object} conditions 文章筛选条件
      * @param {number} [page=1] 需要文章列表的页数 从1开始计数
      * @param {number} [pageSize=10] 需要列表的长度
      */
-    async getListByUsername(username, page = 1, pageSize = 10) {
+    async getList(conditions, page = 1, pageSize = 10) {
         try {
             const list = this.Article.find()
-            // .populate('authorId', 'username email', this.User)
-                .select(ArticleListReturnKeys.join(' '))
-                .where({username})
+                .populate('authorId', 'username email', this.User)
+                .select(ArticleReturnString)
+                .where(conditions)
                 .skip((page - 1) * pageSize)
                 .limit(pageSize);
             await list.exec((err, resList) => {
@@ -218,6 +220,10 @@ module.exports = class ArticleService extends Service {
         }
     }
 
+    /**
+     * 根据文章id数组批量删除文章条目
+     * @param {array} articleIdArray
+     */
     async delete(articleIdArray) {
         try {
             const article = await this.Article
@@ -243,3 +249,5 @@ module.exports = class ArticleService extends Service {
         }
     }
 };
+
+module.exports = ArticleService;

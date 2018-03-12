@@ -25,6 +25,7 @@ class Article {
         hasPublished = false,
         hasSavedOnline = false,
         hasOpened = false,
+        author = {},
     } = {
         id: null,
         title: '',
@@ -35,8 +36,9 @@ class Article {
         hasPublished: false,
         hasSavedOnline: false,
         hasOpened: false,
+        author: {},
     }) {
-        this.set({id, title, tags, content, publishDate, lastUpdateDate, hasPublished, hasSavedOnline, hasOpened});
+        this.set({id, title, tags, content, publishDate, lastUpdateDate, hasPublished, hasSavedOnline, hasOpened, author});
     }
 
     @observable id = null;
@@ -50,9 +52,10 @@ class Article {
     @observable checked = false; // delete tag
     @observable hasSavedOnline = false; // save tag
     @observable hasOpened = false; // judge open on local editor
+    @observable author = {};
 
     @action('setArticle')
-    set({id, title, tags, content, publishDate, lastUpdateDate, hasPublished, hasSavedOnline, hasOpened}) {
+    set({id, title, tags, content, publishDate, lastUpdateDate, hasPublished, hasSavedOnline, hasOpened, author}) {
         if (id !== undefined) this.id = id;
         if (title !== undefined) this.title = title;
         if (tags !== undefined) this.tags = tags;
@@ -62,6 +65,7 @@ class Article {
         if (hasPublished !== undefined) this.hasPublished = hasPublished;
         if (hasSavedOnline !== undefined) this.hasSavedOnline = hasSavedOnline;
         if (hasOpened !== undefined) this.hasOpened = hasOpened;
+        if (author !== undefined) this.author = author;
     }
 }
 

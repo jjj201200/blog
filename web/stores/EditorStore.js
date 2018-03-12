@@ -58,7 +58,7 @@ class EditorStore extends BasicStore {
         const that = this;
         return Ajax({
             type: 'get',
-            url: 'api/article',
+            url: '/api/article',
             data: {
                 articleId,
                 method: 'get',
@@ -86,7 +86,7 @@ class EditorStore extends BasicStore {
         const that = this;
         return Ajax({
             type: 'get',
-            url: 'api/article',
+            url: '/api/article',
             data: {
                 username,
                 method: 'getListByUsername',
@@ -288,7 +288,7 @@ class EditorStore extends BasicStore {
         const deleteArticleList = toJS(this.deleteArticleList);
         return Ajax({
             type: 'post',
-            url: 'api/article',
+            url: '/api/article',
             data: JSON.stringify({
                 articleIdArray: deleteArticleList,
                 method: 'delete',
@@ -323,10 +323,11 @@ class EditorStore extends BasicStore {
             const articleId = this.article.id;
             return Ajax({
                 type: 'post',
-                url: 'api/article',
+                url: '/api/article',
                 data: JSON.stringify({
                     articleId,
                     hasPublished: true,
+                    publishDate: new Date(),
                     method: 'publish',
                 }),
                 contentType: JSON_CONTENT_TYPE,
@@ -356,7 +357,7 @@ class EditorStore extends BasicStore {
             const articleId = this.article.id;
             return Ajax({
                 type: 'post',
-                url: 'api/article',
+                url: '/api/article',
                 data: JSON.stringify({
                     articleId,
                     hasPublished: false,

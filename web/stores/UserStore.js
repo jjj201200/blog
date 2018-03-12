@@ -102,7 +102,7 @@ class UserStore extends BasicStore {
             success: (res) => {
                 if (res && res.code === 0) {
                     this.updateLoginStatus(true);
-                    console.log(res);
+                    // console.log(res);
                     this.updateCurrentUser({...res.data});
                 }
             },

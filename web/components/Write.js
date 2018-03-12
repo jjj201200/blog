@@ -112,14 +112,16 @@ class WriteMobView extends React.Component {
      */
     @action
     onEntered() {
-        this.props.EditorStore.deleteModeState = false;
-        if (this.props.UserStore.hasSignIn === true) { // 判断是否登录
+        const {UserStore, EditorStore} = this.props;
+        EditorStore.deleteModeState = false;
+        if (UserStore.hasSignIn === true) { // 判断是否登录
             // 拉取远程文章列表并初始化本地列表
-            const username = this.props.UserStore.currentUser.username;
-            this.props.EditorStore.initArticleListByUsername(username);
+            const username = UserStore.currentUser.username;
+            EditorStore.initArticleListByUsername(username);
             // 获取本地文章缓存数据
-            this.props.EditorStore.initLocalArticle();
+            EditorStore.initLocalArticle();
             this.hasInitialed = true;
+
         }
     }
 
@@ -306,8 +308,8 @@ class WriteMobView extends React.Component {
      * 渲染编辑器区域元素
      */
     renderEditor() {
-        const {classes, show, EditorStore} = this.props;
-        if (show && EditorStore.article) {
+        const {classes, EditorStore} = this.props;
+        if (EditorStore.article) {
             const {tags} = EditorStore.article;
             return (
                 <Grid container direction="column" className={classes.content}>

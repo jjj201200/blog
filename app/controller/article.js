@@ -31,6 +31,14 @@ module.exports = app => {
                             pageSize: {type: 'number'},
                         },
                     },
+                    getListByPublished: { // 获取文章列表
+                        name: 'getListByPublished',
+                        rule: {
+                            page: {type: 'number'},
+                            pageSize: {type: 'number'},
+                        },
+                        checkJWT: false,
+                    },
                 },
                 POST: {
                     create: { // 创建新文章
@@ -85,17 +93,18 @@ module.exports = app => {
             try {
                 const jwToken = cookies.get('jwt');
                 this.isPost = request.method === 'POST';
-                if (jwToken) {
-                    const {method} = this.isPost ? request.body : request.query; // 本次执行的方法参数
-                    if (this.methods[request.method]) { // 校验method类型
-                        service.jwt.verify(jwToken); // 因为没有需要用到的数据，就不用获取值了
-                        const execFuncObject = this.methods[request.method][method];
-                        if (execFuncObject) {
-                            const {name, rule} = execFuncObject;
-                            await this[name](rule);
-                        } else throw new Error('empty or invalid method: ' + method);
-                    } else throw new Error('no request method');
-                } else throw new Error('invalid jwt');
+                const {method} = this.isPost ? request.body : request.query; // 本次执行的方法参数
+                if (this.methods[request.method]) { // 校验method类型
+                    const execFuncObject = this.methods[request.method][method];
+                    if (execFuncObject) {
+                        const {name, rule, checkJWT = true} = execFuncObject;
+                        if (checkJWT) { // 因为没有需要用到的数据，就不用获取值了
+                            if (jwToken) service.jwt.verify(jwToken);
+                            else throw new Error('invalid jwt');
+                        }
+                        if (this[name] && rule) await this[name](rule);
+                    } else throw new Error('empty or invalid method: ' + method);
+                } else throw new Error('no request method');
             } catch (e) {
                 console.error(e);
                 ctx.body = {
@@ -133,8 +142,36 @@ module.exports = app => {
             try {
                 helper.checkParams(request.query, rule); // 校验get请求的参数
                 const {username, page, pageSize} = request.body;
-                await service.article.getListByUsername(
-                    username, page, pageSize,
+                const conditions = {
+                    username,
+                };
+                await service.article.getList(
+                    conditions, page, pageSize,
+                );
+            } catch (e) {
+                // TODO 标准的错误处理
+                console.error(e);
+                this.ctx.body = {
+                    code: -1,
+                    message: e.message,
+                };
+            }
+        }
+
+        /**
+         * 根据用户名返回文章列表
+         * 支持分页
+         */
+        async getListByPublished(rule) {
+            const {service, request, helper} = this.ctx;
+            try {
+                helper.checkParams(request.query, rule); // 校验get请求的参数
+                const {page, pageSize} = request.body;
+                const conditions = {
+                    hasPublished: true,
+                };
+                await service.article.getList(
+                    conditions, page, pageSize,
                 );
             } catch (e) {
                 // TODO 标准的错误处理
