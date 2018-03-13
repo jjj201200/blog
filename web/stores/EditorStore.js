@@ -170,9 +170,9 @@ class EditorStore extends BasicStore {
          * 是否有id 没有就是新建的
          */
         if (article.id) {
-            this.updateArticle(article.id, article.title, article.tags, article.content);
+            return this.updateArticle(article.id, article.title, article.tags, article.content);
         } else {
-            this.createArticle();
+            return this.createArticle();
         }
     }
 

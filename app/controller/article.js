@@ -12,7 +12,7 @@ module.exports = app => {
          * methods是一个校验请求方法的配置对象
          * 包含了允许请求的方法名称和参数校验规则
          * 区分不同类型的request 如GET、POST
-         * TODO 添加default
+         * TODO 添加default，default和required冲突
          */
         get methods() {
             return {

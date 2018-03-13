@@ -24,7 +24,7 @@ import {formDate2YMDHMS} from 'DFUtils';
 import {EditorState, ContentState, convertFromRaw, convertToRaw} from 'draft-js';
 import {Editor} from 'react-draft-wysiwyg';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import Dialog, {DialogTitle, DialogContent, DialogContentText} from 'material-ui/Dialog';
+import Dialog, {DialogTitle, DialogContent, DialogContentText, DialogActions} from 'material-ui/Dialog';
 import Input, {InputLabel, InputAdornment} from 'material-ui/Input';
 import {FormControl, FormHelperText} from 'material-ui/Form';
 import IconButton from 'material-ui/IconButton';
@@ -74,28 +74,22 @@ class WriteMobView extends React.Component {
 
         this.onAddTag = ::this.onAddTag;
         this.onCreateDeleteTagEvent = ::this.onCreateDeleteTagEvent;
-        this.onCreateCheckBoxChangeEvent = ::this.onCreateCheckBoxChangeEvent;
+        this.onCreateClickArticleEvent = ::this.onCreateClickArticleEvent;
 
         this.onArticleMenuClick = ::this.onArticleMenuClick;
         this.onCloseArticleMenu = ::this.onCloseArticleMenu;
-        this.onToggleArticleDeleteMode = ::this.onToggleArticleDeleteMode;
         this.onDeleteArticles = ::this.onDeleteArticles;
+        this.onToggleArticleDeleteMode = ::this.onToggleArticleDeleteMode;
         this.onCreateDeleteArticleEvent = ::this.onCreateDeleteArticleEvent;
 
         this.onEditorStateChange = ::this.onEditorStateChange;
 
-        // this.init();
+        /**
+         * unsaved dialog
+         */
+        this.onOpenUnsavedDialog = ::this.onOpenUnsavedDialog;
+        this.onCloseUnsavedDialog = ::this.onCloseUnsavedDialog;
 
-        autorun(() => {
-            // EditorStore.saveLocalArticle(toJS(this.currentArticle));
-            // 窗口被显示 且 用户已登录
-            // console.log(props.show, props.UserStore.hasSignIn, this.hasInitialed);
-            // if (props.show && props.UserStore.hasSignIn && !this.hasInitialed) {
-            //     this.init();
-            // } else if (!props.show) { // 关闭窗口
-            //     this.hasInitialed = false;
-            // }
-        });
     }
 
     @observable hasInitialed = false;
@@ -105,6 +99,16 @@ class WriteMobView extends React.Component {
     @observable tagsInputValue = ''; // 编辑器tags编辑框值
 
     @observable articleMenuEl = null; // 用于显示草稿箱菜单的定位对象
+
+    @observable unsavedDialogShow = false;
+
+    /**
+     * 未保存提示框的目标函数
+     * 即假设在创建新文章时因为没有保存之前编辑过的文章而弹出提示框，则目标函数为创建函数
+     * 其中备选函数为保存函数，无需配置
+     */
+    unsavedDialogTargetEvent = () => {
+    };
 
     /**
      * 当打开编辑器Dialog时
@@ -201,8 +205,17 @@ class WriteMobView extends React.Component {
     /**
      * 创建新文章
      */
-    createNewArticle() {
-        this.props.EditorStore.createLocalArticle();
+    createNewArticle({ignore = false} = {}) {
+        const {EditorStore} = this.props;
+        this.onCloseArticleMenu();
+        /**
+         * 判断有没有已经被打开的且没有保存到线上的文章
+         */
+        if ((EditorStore.article && EditorStore.article.hasSavedOnline) || ignore) { // 已经保存或忽略
+            EditorStore.createLocalArticle();
+        } else {
+            this.onOpenUnsavedDialog(EditorStore.createLocalArticle);
+        }
     }
 
     /**
@@ -244,29 +257,34 @@ class WriteMobView extends React.Component {
      * @param articleId
      * @returns {Function}
      */
-    onCreateCheckBoxChangeEvent(articleId) {
+    onCreateClickArticleEvent(articleId) {
         const that = this;
         const {EditorStore} = that.props;
         return function () {
-            // if (!that.props.EditorStore.deleteModeState) return;
+            //  确认删除模式开启 确认存在指定id的文章
             if (that.props.EditorStore.deleteModeState && EditorStore.articleList.has(articleId)) {
-                const article = EditorStore.articleList.get(articleId);
-                // console.log(article.id || article.tempId);
-                if (article.checked !== undefined) {
-                    article.checked = !article.checked;
-                } else {
-                    article.checked = true;
-                }
-                if (article.checked) {
+                const article = EditorStore.articleList.get(articleId); // 获取文章对象 - 被观察的
+                article.deleteDhecked = !article.deleteDhecked; // 将文章的[删除标记]置反
+                if (article.deleteDhecked) {
                     EditorStore.deleteArticleList.push(article.id); // 加入删除列表
                 } else {
                     EditorStore.deleteArticleList.remove(article.id);
                 }
-            } else if (EditorStore.article && EditorStore.article.id !== articleId) { // 切换不同的文章
+            } else if (EditorStore.article && EditorStore.article.id !== articleId) {
+                /**
+                 * 文章切换模式
+                 * 同时确认欲切换的文章是否存在
+                 */
                 if (EditorStore.article.hasSavedOnline) { // 被切换掉的文章已经被保存
                     EditorStore.openArticle(EditorStore.articleList.get(articleId));
                 } else {
                     // TODO 处理没有保存的时的保存提醒操作
+                    /**
+                     * 判断有没有已经被打开的且没有保存到线上的文章
+                     */
+                    that.onOpenUnsavedDialog(() => {
+                        EditorStore.openArticle(EditorStore.articleList.get(articleId))
+                    });
                 }
             } else if (!EditorStore.article) { // 没有被打开的文章时
                 EditorStore.openArticle(EditorStore.articleList.get(articleId));
@@ -297,6 +315,19 @@ class WriteMobView extends React.Component {
     // @action
     onEditorStateChange(editorState) {
         this.props.EditorStore.editorState = editorState;
+    }
+
+    // 打开未保存提示框事件
+    onOpenUnsavedDialog(targetEvent) {
+        if (targetEvent instanceof Function) {
+            this.unsavedDialogTargetEvent = targetEvent;
+        }
+        this.unsavedDialogShow = true;
+    }
+
+    // 关闭未保存提示框事件
+    onCloseUnsavedDialog() {
+        this.unsavedDialogShow = false;
     }
 
     /* @action('contentStateChange')
@@ -407,6 +438,7 @@ class WriteMobView extends React.Component {
 
     render() {
         // TODO tags换行
+        const that = this;
         const {show, onClose, classes, EditorStore} = this.props;
         const articleObject = toJS(EditorStore.articleList);
         // console.log(articleObject, EditorStore.articleList);
@@ -431,7 +463,8 @@ class WriteMobView extends React.Component {
                                             onClick={EditorStore.article && EditorStore.article.hasPublished ? EditorStore.unpublish : EditorStore.publish}
                                             disabled={!EditorStore.article || !EditorStore.article.id}
                                         >
-                                            {(EditorStore.article && EditorStore.article.hasPublished) && 'un'}Publish Article
+                                            {(EditorStore.article && EditorStore.article.hasPublished) && 'un'}Publish
+                                            Article
                                         </Button>
                                     </Grid>
                                     <Grid item>
@@ -455,6 +488,7 @@ class WriteMobView extends React.Component {
                     </Toolbar>
                 </AppBar>
                 <DialogContent className={classes.root}>
+                    {/* 左边栏 - 文章列表 */}
                     <Drawer
                         anchor="left"
                         variant="permanent"
@@ -463,6 +497,7 @@ class WriteMobView extends React.Component {
                         }}
                     >
                         <div className={classes.articleList}>
+                            {/* list header */}
                             <div className={classes.articleListHeader}>
                                 <ListSubheader className={classes.articleListHeaderText}>
                                     Article list
@@ -474,7 +509,7 @@ class WriteMobView extends React.Component {
                                         open={Boolean(this.articleMenuEl)}
                                         onClose={this.onCloseArticleMenu}
                                     >
-                                        <MenuItem>
+                                        <MenuItem onClick={this.createNewArticle}>
                                             New Article
                                         </MenuItem>
                                         <Divider/>
@@ -484,6 +519,7 @@ class WriteMobView extends React.Component {
                                     </Menu>
                                 </IconButton>
                             </div>
+                            {/* list content */}
                             <List className={classes.articleItemList}>
                                 {
                                     _.map(articleObject, (data) => {
@@ -492,14 +528,14 @@ class WriteMobView extends React.Component {
                                             <ListItem
                                                 button
                                                 key={data.id || data.tempId}
-                                                onClick={this.onCreateCheckBoxChangeEvent(data.id || data.tempId)}
+                                                onClick={this.onCreateClickArticleEvent(data.id || data.tempId)}
                                                 className='article-list-item'
                                             >
                                                 {deleteModeState && <Checkbox
                                                     tabIndex={-1}
                                                     disableRipple
-                                                    // onChange={this.onCreateCheckBoxChangeEvent(data.id)}
-                                                    checked={data.checked}
+                                                    // onChange={this.onCreateClickArticleEvent(data.id)}
+                                                    checked={data.deleteDhecked}
                                                 />}
                                                 <ListItemText
                                                     primary={data.title}
@@ -529,7 +565,43 @@ class WriteMobView extends React.Component {
                             >Delete {deleteNum} items</Button>}
                         </div>
                     </Drawer>
+                    {/* 编辑区域 */}
                     {this.renderEditor()}
+                    {/* 未保存提示框 */}
+                    <Dialog open={this.unsavedDialogShow} onClose={this.onCloseUnsavedDialog}>
+                        <DialogTitle>
+                            Article is not saved
+                        </DialogTitle>
+                        <DialogContent>
+                            <DialogContentText>
+                                The current edited article is not saved!
+                            </DialogContentText>
+                            <DialogContentText>
+                                Unsaved content may be lost!
+                            </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={this.onCloseUnsavedDialog}>
+                                Cancel
+                            </Button>
+                            <Button variant="raised" color="secondary" onClick={() => {
+                                that.onCloseUnsavedDialog();
+                                // that.createNewArticle({ignore: true});
+                                that.unsavedDialogTargetEvent();
+                            }}>
+                                Ignore
+                            </Button>
+                            <Button variant="raised" color="primary" onClick={() => {
+                                that.onCloseUnsavedDialog();
+                                EditorStore.saveArticleOnline().then(() => { // 先保存
+                                    // EditorStore.createLocalArticle(); // 再创建新文章
+                                    that.unsavedDialogTargetEvent();
+                                });
+                            }}>
+                                Save
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
                 </DialogContent>
             </Dialog>
         );
@@ -602,6 +674,8 @@ const styles = theme => ({
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
+        width: '100%',
+        textAlign: 'center',
     },
     emptyPageHeader: {
         padding: '20px 0',

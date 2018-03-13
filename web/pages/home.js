@@ -5,11 +5,11 @@
  */
 import _ from 'lodash';
 import React from 'react';
-import {observable, action, autorun, toJS} from 'mobx';
+import {observable, toJS} from 'mobx';
 import {observer, inject} from 'mobx-react';
 import styled from 'styled-components';
-import {Sidebar, SignUpMob, LoginMob, WriteMob, ArticleCard} from 'DFComponents';
-import {Body, Model} from 'DFUIs';
+import {Sidebar} from 'DFComponents';
+import {Body} from 'DFUIs';
 import {theme, rem} from 'DFStyles';
 import Reboot from 'material-ui/Reboot';
 import {Header} from 'DFComponents';
@@ -82,26 +82,27 @@ class Index extends React.Component {
                 <Reboot key="reboot-style"/>
                 <Header/>
                 <Body>
-                {_.map(articles, (v,k) => {
-                    console.log(v, k);
-                    const publishDate = new Date(v.publishDate);
-                    return (
-                        <Card key={k} style={{marginBottom: 20}}>
-                            <CardHeader
-                                title={v.title}
-                                subheader={`${publishDate.toLocaleDateString()} - ${v.author.username} - tags: ${v.tags.join(' + ')}`}
-                            />
-                            <CardContent style={{padding: 0, margin: 16}}>
-                                <div dangerouslySetInnerHTML={{__html: draftToHtml(v.content)}}/>
-                            </CardContent>
-                            <CardActions>
-                                <Button>Read More</Button>
-                            </CardActions>
-                        </Card>
-                    );
-                })}
+                <div className="article-list">
+                    {_.map(articles, (v, k) => {
+                        const publishDate = new Date(v.publishDate);
+                        return (
+                            <Card key={k} style={{marginBottom: 20}}>
+                                <CardHeader
+                                    title={v.title}
+                                    subheader={`${publishDate.toLocaleDateString()} - ${v.author.username} - tags: ${v.tags.join(' + ')}`}
+                                />
+                                <CardContent style={{padding: 0, margin: 16}}>
+                                    <div dangerouslySetInnerHTML={{__html: draftToHtml(v.content)}}/>
+                                </CardContent>
+                                <CardActions>
+                                    <Button>Read More</Button>
+                                </CardActions>
+                            </Card>
+                        );
+                    })}
+                </div>
+                {/*<Sidebar></Sidebar>*/}
                 </Body>
-                <Sidebar></Sidebar>
             </HomeWrapper>
         );
     }

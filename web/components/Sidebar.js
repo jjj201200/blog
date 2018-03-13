@@ -8,7 +8,7 @@ import styled from 'styled-components';
 import {theme, rem} from 'DFStyles';
 
 export const Sidebar = styled.div`
-  position: absolute;
+  /*position: absolute;
   top: ${rem(theme.headerHeight)};
   bottom: 0;
   left: ${rem(theme.mainWidth)};
@@ -16,5 +16,6 @@ export const Sidebar = styled.div`
   min-width: ${rem(theme.sidebarWidth)};
   width: ${rem(theme.sidebarWidth)};
   margin: 0 auto;
-  overflow: auto;
+  overflow: auto;*/
+  flex-grow: 2;
 `;

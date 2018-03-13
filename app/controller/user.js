@@ -6,7 +6,7 @@
  */
 // const Cookies = require('js-cookie');
 module.exports = app => {
-    const {Controller, mongoose} = app;
+    const {Controller} = app;
     return class UserController extends Controller {
         /**
          * 注册
@@ -67,7 +67,6 @@ module.exports = app => {
 
         /**
          * 获取用户数据
-         * @returns {Promise.<void>}
          */
         async getUser() {
             const {ctx} = this;

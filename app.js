@@ -1,3 +1,4 @@
+/* global require, module */
 /**
  * Author: Ruo
  * Create: 2018-01-20
@@ -9,6 +10,6 @@ require('babel-polyfill');
 require('babel-register')(babelRegisterConfig);
 
 // view engine
-module.exports = app => {
+module.exports = (app) => {
     app.view.use('reactViewEngine', require('./lib/reactRenderEngine'));
 };

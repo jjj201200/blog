@@ -49,12 +49,12 @@ class Article {
     @observable publishDate = null;
     @observable lastUpdateDate = formDate2YMDHMS(new Date());
     @observable hasPublished = false; // publish tag
-    @observable checked = false; // delete tag
+    @observable deleteDhecked = false; // delete tag
     @observable hasSavedOnline = false; // save tag
     @observable hasOpened = false; // judge open on local editor
     @observable author = {};
 
-    @action('setArticle')
+    // @action('setArticle')
     set({id, title, tags, content, publishDate, lastUpdateDate, hasPublished, hasSavedOnline, hasOpened, author}) {
         if (id !== undefined) this.id = id;
         if (title !== undefined) this.title = title;

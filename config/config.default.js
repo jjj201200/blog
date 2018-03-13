@@ -8,6 +8,7 @@ const jwtMaxAge = timeZoneIncrement + 24 * 60 * 60 * 1000
 module.exports = appInfo => {
     const config = {
         consoleLevel: 'DEBUG',
+        defaultLocale: 'zh-CN',
         keys: 'drowsy flesh',
         // middleware: [ 'jwt' ],
         security: { // 关闭csrf校验，使用jwt
@@ -18,7 +19,7 @@ module.exports = appInfo => {
                 // sessionName: 'csrfToken',
             },
         },
-        jwt: {
+        jwt: { // jwt鉴权模块设定
             secret: 'Jiangxin0037.',
             enable: true,
             match: '/api/',

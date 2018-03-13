@@ -10,11 +10,13 @@ import {theme, rem} from 'DFStyles';
 
 export const Body = styled.div`
   position: absolute;
-  top: ${rem(theme.headerHeight + 10)};
+  display: flex;
+  top: ${rem(theme.headerHeight)};
   bottom: 0;
-  left: -${rem(theme.sidebarWidth)};
+  left: 0;
   right: 0;
   min-width: ${rem(theme.mainWidth)};
-  width: ${rem(theme.mainWidth)};
+  // width: ${rem(theme.mainWidth)};
   margin: 0 auto;
+  padding: 1rem;
 `;
