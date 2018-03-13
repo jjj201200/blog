@@ -90,6 +90,11 @@ class WriteMobView extends React.Component {
         this.onOpenUnsavedDialog = ::this.onOpenUnsavedDialog;
         this.onCloseUnsavedDialog = ::this.onCloseUnsavedDialog;
 
+        /**
+         * delete dialog
+         */
+        this.onOpenDeleteDialog = ::this.onOpenDeleteDialog;
+        this.onCloseDeleteDialog = ::this.onCloseDeleteDialog;
     }
 
     @observable hasInitialed = false;
@@ -100,15 +105,21 @@ class WriteMobView extends React.Component {
 
     @observable articleMenuEl = null; // 用于显示草稿箱菜单的定位对象
 
-    @observable unsavedDialogShow = false;
+    @observable unsavedDialogShow = false; // 未保存提示框显示状态
+
+    @observable deleteDialogShow = false; // 删除提示框显示状态
 
     /**
      * 未保存提示框的目标函数
      * 即假设在创建新文章时因为没有保存之前编辑过的文章而弹出提示框，则目标函数为创建函数
      * 其中备选函数为保存函数，无需配置
      */
-    unsavedDialogTargetEvent = () => {
-    };
+    unsavedDialogTargetEvent = () => {};
+
+    /**
+     * 删除文章提示框的目标函数
+     */
+    deleteDialogTargetEvent = () => {};
 
     /**
      * 当打开编辑器Dialog时
@@ -211,7 +222,8 @@ class WriteMobView extends React.Component {
         /**
          * 判断有没有已经被打开的且没有保存到线上的文章
          */
-        if ((EditorStore.article && EditorStore.article.hasSavedOnline) || ignore) { // 已经保存或忽略
+        const articleHasSaved = EditorStore.article && EditorStore.article.hasSavedOnline;
+        if (!EditorStore.article || articleHasSaved || ignore) { // 已经保存或忽略
             EditorStore.createLocalArticle();
         } else {
             this.onOpenUnsavedDialog(EditorStore.createLocalArticle);
@@ -243,10 +255,12 @@ class WriteMobView extends React.Component {
             const {EditorStore} = that.props;
             if (articleId && articleId.length > 20) {
                 EditorStore.deleteArticleList.push(articleId);
-                that.onDeleteArticles();
+                that.onOpenDeleteDialog(that.onDeleteArticles);
             } else {
-                EditorStore.articleList.delete(articleId);
-                EditorStore.article = null;
+                that.onOpenDeleteDialog(() => {
+                    EditorStore.articleList.delete(articleId);
+                    EditorStore.article = null;
+                });
             }
         };
 
@@ -328,6 +342,19 @@ class WriteMobView extends React.Component {
     // 关闭未保存提示框事件
     onCloseUnsavedDialog() {
         this.unsavedDialogShow = false;
+    }
+
+    // 打开删除提示框事件
+    onOpenDeleteDialog(targetEvent) {
+        if (targetEvent instanceof Function) {
+            this.unsavedDialogTargetEvent = targetEvent;
+        }
+        this.deleteDialogShow = true;
+    }
+
+    // 关闭删除提示框事件
+    onCloseDeleteDialog() {
+        this.deleteDialogShow = false;
     }
 
     /* @action('contentStateChange')
@@ -602,6 +629,30 @@ class WriteMobView extends React.Component {
                             </Button>
                         </DialogActions>
                     </Dialog>
+                    <Dialog open={this.deleteDialogShow} onClose={this.onCloseDeleteDialog}>
+                        <DialogTitle>
+                            Delete Article
+                        </DialogTitle>
+                        <DialogContent>
+                            <DialogContentText>
+                                Do you need to delete this article?
+                            </DialogContentText>
+                            <DialogContentText>
+                                The content will not be recovered!
+                            </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={this.onCloseDeleteDialog}>
+                                Cancel
+                            </Button>
+                            <Button variant="raised" color="primary" onClick={() => {
+                                that.onCloseDeleteDialog();
+                                that.deleteDialogTargetEvent();
+                            }}>
+                                Delete
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
                 </DialogContent>
             </Dialog>
         );
@@ -648,6 +699,7 @@ const styles = theme => ({
         // bottom: 36,
         // left: 0,
         flexGrow: 1,
+        overflowX: 'hidden',
         overflow: 'auto',
         height: '100%',
         paddingTop: 0,

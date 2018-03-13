@@ -2,14 +2,14 @@
   & + .article-list-delete-btn {
     transition: transform 0.3s, opacity 0.3s;
     opacity: 0;
-    transform: translateX(100%);
+    //transform: translateX(100%);
     &:hover {
       opacity: 1;
-      transform: translateX(0%);
+      //transform: translateX(0%);
     }
   }
   &:hover + .article-list-delete-btn {
     opacity: 1;
-    transform: translateX(0%);
+    //transform: translateX(0%);
   }
 }
