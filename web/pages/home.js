@@ -8,7 +8,7 @@ import React from 'react';
 import {observable, toJS} from 'mobx';
 import {observer, inject} from 'mobx-react';
 import styled from 'styled-components';
-import {Sidebar} from 'DFComponents';
+// import {Sidebar} from 'DFComponents';
 import {Body} from 'DFUIs';
 import {theme, rem} from 'DFStyles';
 import Reboot from 'material-ui/Reboot';
