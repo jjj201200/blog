@@ -55,7 +55,7 @@ export default class ClientTemplate extends React.Component {
             </head>
             <body>
             <div id="root"/>
-            <script src={`${scriptFilename}.js`}></script>
+            <script src={`../public/${scriptFilename}.js`}></script>
             </body>
             </html>
         );

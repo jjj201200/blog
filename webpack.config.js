@@ -25,7 +25,8 @@ module.exports = {
     target: 'web',
     entry: entries,
     output: {
-        path: path.resolve(__dirname, './'),
+        path: path.join(appPath, 'public'),
+        publicPath: '/',
         filename: '[name].js',
     },
     module: {

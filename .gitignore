@@ -8,4 +8,5 @@ run/
 *.swp
 package-lock.json
 db
+app/public/
 
