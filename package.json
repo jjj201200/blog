@@ -19,6 +19,7 @@
         "egg": "^2.0.0",
         "egg-jwt": "^2.2.1",
         "egg-mongoose": "^2.1.1",
+        "egg-scripts": "^2.5.1",
         "egg-validate": "^1.0.0",
         "egg-webpack": "^3.3.2",
         "history": "^4.7.2",
@@ -99,7 +100,9 @@
         "lint": "eslint .",
         "ci": "npm run lint && egg-bin pkgfiles --check && npm run cov",
         "autod": "autod",
-        "pkgfiles": "egg-bin pkgfiles"
+        "pkgfiles": "egg-bin pkgfiles",
+        "start": "egg-scripts start --daemon",
+        "stop": "egg-scripts stop"
     },
     "license": "MIT"
 }
