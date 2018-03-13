@@ -10,6 +10,6 @@ require('babel-polyfill');
 require('babel-register')(babelRegisterConfig);
 
 // view engine
-module.exports = (app) => {
+module.exports = function(app) {
     app.view.use('reactViewEngine', require('./lib/reactRenderEngine'));
 };

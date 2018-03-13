@@ -64,6 +64,15 @@ $ mongod --dbpath=./db
 $ npm run dev
 ```
 
+#### Node-sass
+
+```Bash
+$ npm i node-sass --save-dev
+$ npm rebuild node-sass
+```
+
+
+
 ### FE
 
 Mobx:[https://mobx.js.org/](https://mobx.js.org/)
