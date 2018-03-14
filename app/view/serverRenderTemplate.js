@@ -49,13 +49,15 @@ export default class ClientTemplate extends React.Component {
                 <link
                     href="https://fonts.googleapis.com/css?family=Roboto|Geo:400,400i|Monsieur+La+Doulaise|Montserrat:400,700|Mountains+of+Christmas:400,700|Open+Sans+Condensed:300|Press+Start+2P"
                     rel="stylesheet"/>
-                <link href="/public/Draft.css" rel="stylesheet"/>
+                <link href="../public/Draft.css" rel="stylesheet"/>
+
                 {/*<meta name="theme-color" content="#131313"/>*/}
                 {/*{Style}*/}
             </head>
             <body>
             <div id="root"/>
-            <script src={`../public/${scriptFilename}.js`}></script>
+            <script type="text/javascript" charset="UTF-8" src={`../public/dll/bundle.dll.js`}></script>
+            <script type="text/javascript" charset="UTF-8" src={`../public/bundles/${scriptFilename}.js`}></script>
             </body>
             </html>
         );

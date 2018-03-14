@@ -31,8 +31,7 @@ const styles = {
     },
 };
 
-@inject('UserStore')
-@observer
+@inject('UserStore') @observer
 class HeaderView extends React.Component {
     @observable mobStatus = null;
 

@@ -16,14 +16,7 @@
         "transform-decorators",
         "syntax-dynamic-import",
         "transform-class-properties",
-        "transform-function-bind",
-        [
-            "import",
-            {
-                "libraryName": "antd",
-                "style": true
-            }
-        ]
+        "transform-function-bind"
     ],
     "comments": false
 }

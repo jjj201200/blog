@@ -48,8 +48,7 @@ import Checkbox from 'material-ui/Checkbox';
 
 import 'DFStyles/sass';
 
-@inject('UserStore', 'EditorStore')
-@observer
+@inject('UserStore', 'EditorStore') @observer
 class WriteMobView extends React.Component {
     /**
      * 文章发布Dialog的逻辑

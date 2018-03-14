@@ -10,7 +10,7 @@ import cookieStorage from 'store/storages/cookieStorage';
 import localStorage from 'store/storages/localStorage';
 import memoryStorage from 'store/storages/memoryStorage';
 import expirePlugin from 'store/plugins/expire';
-import {inClient} from 'DFUtils';
+// import {inClient} from 'DFUtils';
 
 class BasicStore {
     hasInitialed = false; // 是否初始化过
@@ -58,7 +58,8 @@ class BasicStore {
 
     @action('load')
     load() {
-        if (!inClient()) return; // ssr阶段没有storage
+        if (!process.node) return; // ssr阶段没有storage
+        // if (!inClient()) return; // ssr阶段没有storage
         const jsonStr = this.storeLib.get(`DFStore ${this.name}`);
         if (jsonStr && jsonStr.length > 0) {
             const json = JSON.parse(jsonStr);

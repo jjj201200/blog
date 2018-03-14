@@ -73,6 +73,22 @@ $ npm rebuild node-sass
 
 
 
+
+
+## 部署
+
+```Bash
+# 构建
+## dll - 当外部库(node_modules)变化时重新构建
+$ npm run build:dll
+## development
+$ npm run build:dev
+## production
+$ npm run build
+```
+
+
+
 ### FE
 
 Mobx:[https://mobx.js.org/](https://mobx.js.org/)

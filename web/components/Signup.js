@@ -24,8 +24,7 @@ import List, {ListItem, ListItemIcon, ListItemText} from 'material-ui/List';
 import Button from 'material-ui/Button';
 import Grid from 'material-ui/Grid';
 
-@inject('UserStore')
-@observer
+@inject('UserStore') @observer
 class SignUpMob extends React.Component {
     constructor(props) {
         super(props);
