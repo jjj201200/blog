@@ -43,22 +43,13 @@ module.exports = {
             verbose: false,
             exclude: [],
         }),
-        // new webpack.optimize.ModuleConcatenationPlugin(),
+        new webpack.optimize.ModuleConcatenationPlugin(),
         new webpack.DllPlugin({
             path: path.join(dllPath, '[name]-manifest.json'),
             name: '[name]_library'
         }),
         new UglifyJsPlugin({
             parallel: true,
-            // keep_fnames: true,
         }),
-        // new MinifyPlugin({
-        //     removeConsole: true,
-        //     removeDebugger: true,
-        // }, {
-        //     // exclude: [
-        //     //     path.join(webPath, 'stores', '*.js'),
-        //     // ],
-        // }),
     ]
 };
