@@ -3,6 +3,9 @@
     "version": "1.0.0",
     "description": "drowsy flesh's blog",
     "scripts": {
+        "start": "egg-scripts start --port=80 --daemon",
+        "start:7001": "egg-scripts start --port=7001 --daemon",
+        "stop": "egg-scripts stop",
         "build:dll": "NODE_ENV=production && webpack --config webpack.dll.config.js",
         "build:dev": "webpack --config=./webpack.development.config.js",
         "build": "NODE_ENV=production && BABEL_ENV=production && webpack --config=./webpack.config.js",
@@ -14,9 +17,7 @@
         "lint": "eslint .",
         "ci": "npm run lint && egg-bin pkgfiles --check && npm run cov",
         "autod": "autod",
-        "pkgfiles": "egg-bin pkgfiles",
-        "start": "npm run build:dll && npm run build && egg-scripts start --daemon",
-        "stop": "egg-scripts stop"
+        "pkgfiles": "egg-bin pkgfiles"
     },
     "ci": {
         "version": "8, 9"

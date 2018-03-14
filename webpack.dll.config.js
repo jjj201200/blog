@@ -49,8 +49,8 @@ module.exports = {
             name: '[name]_library'
         }),
         new UglifyJsPlugin({
-            // parallel: true,
-            keep_fnames: true,
+            parallel: true,
+            // keep_fnames: true,
         }),
         // new MinifyPlugin({
         //     removeConsole: true,

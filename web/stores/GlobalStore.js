@@ -10,7 +10,7 @@ import {BasicStore, memoryStorage} from './BasicStore';
 import {inClient} from 'DFUtils';
 
 export default class GlobalStore extends BasicStore{
-    constructor() {
+    constructor(subStoresArray) {
         super('GlobalStore',null, [memoryStorage]);
         /* init logger */
         enableLogging({
@@ -20,6 +20,9 @@ export default class GlobalStore extends BasicStore{
             transaction: false,
             compute: false,
         })
+        for (let index in subStoresArray) {
+            this.addStore(subStoresArray[index]);
+        }
     }
     @observable stores = {};
 
