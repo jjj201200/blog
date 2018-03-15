@@ -13,9 +13,6 @@ const {config} = require('./webpack.basic.config');
 
 config.devtool = 'false';
 config.plugins.push(
-    new webpack.DefinePlugin({
-        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
-    }),
     new MinifyPlugin({
         keepFnName: true,
         removeConsole: true,

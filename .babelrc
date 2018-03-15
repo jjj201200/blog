@@ -16,7 +16,8 @@
         "transform-decorators",
         "syntax-dynamic-import",
         "transform-class-properties",
-        "transform-function-bind"
+        "transform-function-bind",
+        "lodash"
     ],
     "comments": false
 }

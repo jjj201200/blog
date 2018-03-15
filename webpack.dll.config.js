@@ -8,28 +8,27 @@ const path = require('path');
 const webpack = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-const MinifyPlugin = require("babel-minify-webpack-plugin");
+// const MinifyPlugin = require("babel-minify-webpack-plugin");
 
 const appPath = path.join(process.cwd(), 'app');
 const publicPath = path.join(appPath, 'public');
 const dllPath = path.join(publicPath, 'dll');
-const webPath = path.join(process.cwd(), 'web');
+// const webPath = path.join(process.cwd(), 'web');
 // const webPagesPath = path.join(webPath, 'pages');
 
 module.exports = {
     entry: {
         // 公共模块
         bundle: [
-            'lodash',
+            // 'lodash', 使用babel-lodash-plugin
             'store',
             'react',
             'react-dom',
             'mobx',
             'mobx-react',
             'styled-components',
-            'material-ui',
             'draft-js',
-            'jquery',
+            // 'jquery', 使用cdn
             'react-draft-wysiwyg',
         ],
     },

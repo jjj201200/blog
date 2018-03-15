@@ -49,6 +49,7 @@ export default class ClientTemplate extends React.Component {
                 <link
                     href="https://fonts.googleapis.com/css?family=Roboto|Geo:400,400i|Monsieur+La+Doulaise|Montserrat:400,700|Mountains+of+Christmas:400,700|Open+Sans+Condensed:300|Press+Start+2P"
                     rel="stylesheet"/>
+                <script type="text/javascript" charset="UTF-8" src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
                 <link href="../public/Draft.css" rel="stylesheet"/>
 
                 {/*<meta name="theme-color" content="#131313"/>*/}

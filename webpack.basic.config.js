@@ -31,6 +31,9 @@ let config = {
         publicPath: '/',
         filename: '[name].js',
     },
+    externals: {
+        jquery: '$',
+    },
     resolve: {
         alias: { // 这里需要个app.js里保持一致
             DFPages: path.join(webPath, 'pages'),
@@ -87,7 +90,10 @@ let config = {
         ],
     },
     plugins: [
-        // new webpack.optimize.ModuleConcatenationPlugin(),
+        new webpack.optimize.ModuleConcatenationPlugin(),
+        new webpack.DefinePlugin({
+            'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
+        }),
         // 编译文件清理插件
         new CleanWebpackPlugin([bundlesPath], {
             verbose: false,

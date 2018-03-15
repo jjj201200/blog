@@ -5,7 +5,7 @@
  */
 
 import $ from 'jquery';
-import {runInAction} from 'mobx';
+// import {runInAction} from 'mobx';
 
 export const JSON_CONTENT_TYPE = 'application/json'; // 发送数据格式
 

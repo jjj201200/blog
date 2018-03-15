@@ -18,6 +18,7 @@ module.exports = function (content, map, meta) {
                 </Provider>,
                 document.getElementById('root'),
             );
+            window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = ({ isDisabled: true });
         `;
     } catch (err) {
         throw new Error(err);

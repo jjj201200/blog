@@ -10,12 +10,12 @@ $ sudo vi /etc/yum.repos.d/mongodb-org.repo
 ```ini
 # /etc/yum.repos.d/mongodb-org.repo
 # 注意版本号
-[mongodb-org-3.4]
+[mongodb-org-3.6]
 name=MongoDB Repository
-baseurl=https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/3.4/x86_64/
+baseurl=https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/3.6/x86_64/
 gpgcheck=1
 enabled=1
-gpgkey=https://www.mongodb.org/static/pgp/server-3.4.asc
+gpgkey=https://www.mongodb.org/static/pgp/server-3.6.asc
 ```
 ```Bash
 # 执行这行确认添加成功
@@ -64,14 +64,12 @@ $ mongod --dbpath=./db
 $ npm run dev
 ```
 
-#### Node-sass
+#### 安装Node-sass
 
 ```Bash
-$ npm i node-sass --save-dev
-$ npm rebuild node-sass
+$ sudo npm i node-sass --save-dev
+$ sudo npm rebuild node-sass
 ```
-
-
 
 
 
@@ -85,6 +83,13 @@ $ npm run build:dll
 $ npm run build:dev
 ## production
 $ npm run build
+# 启动
+$ npm run start
+$ npm run start:7001 #在7001端口打开
+$ npm run stop
+
+# 包分析 - 不能在服务端启用
+$ npm run analysis
 ```
 
 
