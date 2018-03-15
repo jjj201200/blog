@@ -33,7 +33,7 @@ const externals = {
     'mobx': 'mobx',
     'mobx-react': 'mobxReact',
     'styled-components': 'styled',
-    // 'draft-js': 'Draft',
+    lodash: '_',
 };
 
 /**

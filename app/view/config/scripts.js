@@ -6,6 +6,9 @@
 
 module.exports = {
     development: [
+        //lodash-core
+        'https://cdn.bootcss.com/lodash.js/4.17.5/lodash.core.js',
+
         // react & react-dom
         'https://cdn.bootcss.com/react/16.2.0/umd/react.development.js',
         'https://cdn.bootcss.com/react-dom/16.2.0/umd/react-dom.development.js',
@@ -24,6 +27,9 @@ module.exports = {
         // 'https://cdn.bootcss.com/draft-js/0.10.5/Draft.js',
     ],
     production: [
+        //lodash-core
+        'https://cdn.bootcss.com/lodash.js/4.17.5/lodash.core.min.js',
+
         // react & react-dom
         'https://cdn.bootcss.com/react/16.2.0/umd/react.production.min.js',
         'https://cdn.bootcss.com/react-dom/16.2.0/umd/react-dom.production.min.js',
