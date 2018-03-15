@@ -21,7 +21,6 @@ module.exports = {
         // 公共模块
         bundle: [
             // 'lodash', 使用babel-lodash-plugin
-            'store',
             'react',
             'react-dom',
             'mobx',

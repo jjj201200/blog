@@ -11,7 +11,7 @@ import {inClient} from 'DFUtils';
 
 export default class GlobalStore extends BasicStore{
     constructor(subStoresArray) {
-        super('GlobalStore',null, [memoryStorage]);
+        super('GlobalStore', null, [memoryStorage]);
         /* init logger */
         enableLogging({
             predicate: () => inClient(),

@@ -5,13 +5,13 @@
  */
 
 const React = require('react');
+const {SCRIPTS, createScriptTag} = require('./config');
 // import Cookie from 'js-cookie';
 // const {Provider} = require('mobx-react');
 // const {StaticRouter} = require('react-router');
 // const {ServerStyleSheet} = require('styled-components');
 
 // import 'DFStyles';
-
 
 export default class ClientTemplate extends React.Component {
     // componentWillMount() {
@@ -25,6 +25,7 @@ export default class ClientTemplate extends React.Component {
         const {title = 'title1', componentName, styleSheet} = this.props;
         // const Component = this.props.Component;
         const scriptFilename = componentName.toLowerCase();
+        const scriptTags = createScriptTag(SCRIPTS[process.env.NODE_ENV]);
         // const Style = this.styleSheet;
         return (
             <html>
@@ -49,7 +50,9 @@ export default class ClientTemplate extends React.Component {
                 <link
                     href="https://fonts.googleapis.com/css?family=Roboto|Geo:400,400i|Monsieur+La+Doulaise|Montserrat:400,700|Mountains+of+Christmas:400,700|Open+Sans+Condensed:300|Press+Start+2P"
                     rel="stylesheet"/>
-                <script type="text/javascript" charset="UTF-8" src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+                {scriptTags}
+                <script type="text/javascript" charset="UTF-8"
+                        src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
                 <link href="../public/Draft.css" rel="stylesheet"/>
 
                 {/*<meta name="theme-color" content="#131313"/>*/}

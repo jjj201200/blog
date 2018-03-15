@@ -5,7 +5,6 @@
  */
 const path = require('path');
 const webpack = require('webpack');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 const appPath = path.join(process.cwd(), 'app');
 const publicPath = path.join(appPath, 'public');
@@ -33,6 +32,8 @@ let config = {
     },
     externals: {
         jquery: '$',
+        react: 'React',
+        'react-dom': 'ReactDOM',
     },
     resolve: {
         alias: { // 这里需要个app.js里保持一致
@@ -90,15 +91,10 @@ let config = {
         ],
     },
     plugins: [
-        new webpack.optimize.ModuleConcatenationPlugin(),
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
         }),
-        // 编译文件清理插件
-        new CleanWebpackPlugin([bundlesPath], {
-            verbose: false,
-            exclude:  ['Draft.css', 'dll/*.dll.js', 'dll/*.json'],
-        }),
+        new webpack.optimize.ModuleConcatenationPlugin(),
         new webpack.DllReferencePlugin({
             context: __dirname,
             manifest: require(path.join(dllPath, 'bundle-manifest.json')),
@@ -110,6 +106,7 @@ module.exports = {
     appPath,
     webPath,
     publicPath,
+    bundlesPath,
     dllPath,
     webPagesPath,
     config

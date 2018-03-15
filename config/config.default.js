@@ -32,7 +32,7 @@ module.exports = appInfo => {
         },
         webpack: {
             proxyMapping: {
-                js: 'text/javascript; charset=UTF-8;',
+                js: 'text/javascript;',
             },
             webpackConfigList: [require('../webpack.development.config.js')],
         },
