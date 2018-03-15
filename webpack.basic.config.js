@@ -3,49 +3,65 @@
  * Create: 2018-02-07
  * Description:
  */
+
 const path = require('path');
 const webpack = require('webpack');
 
-const appPath = path.join(process.cwd(), 'app');
-const publicPath = path.join(appPath, 'public');
-const dllPath = path.join(publicPath, 'dll');
-const bundlesPath = path.join(publicPath, 'bundles');
-const webPath = path.join(process.cwd(), 'web');
-const webPagesPath = path.join(webPath, 'pages');
+// paths
+const rootPath = process.cwd();
+const appPath = path.resolve(rootPath, 'app');
+const publicPath = path.resolve(appPath, 'public');
+const dllPath = path.resolve(publicPath, 'dll');
+const bundlesPath = path.resolve(publicPath, 'bundles');
+const webPath = path.resolve(rootPath, 'web');
+const webPagesPath = path.resolve(webPath, 'pages');
 
 // 配置入口文件
-const entries = {
-    home: path.join(webPagesPath, 'home.js'),
+const entry = {
+    home: path.resolve(webPagesPath, 'home.js'),
 };
 const entriesArray = [];
-for (let key in entries) {
-    entriesArray.push(entries[key]);
+for (let key in entry) {
+    entriesArray.push(entry[key]);
 }
 
+// 外部引用映射 - 于全局变量中查找
+const externals = {
+    jquery: '$',
+    react: 'React',
+    'react-dom': 'ReactDOM',
+    'mobx': 'mobx',
+    'mobx-react': 'mobxReact',
+    'styled-components': 'styled',
+    // 'draft-js': 'Draft',
+};
+
+/**
+ * 编译导出配置 - 注意dev下egg-webpack内存编译，它的path是rootPath根目录
+ */
+
+const output = {
+    // path: process.env.NODE_ENV === 'production' ? bundlesPath : rootPath,
+    publicPath: '/',
+    filename: '[name].js',
+};
+
 let config = {
+    cache: false,
     target: 'web',
-    entry: entries,
-    output: {
-        path: bundlesPath,
-        publicPath: '/',
-        filename: '[name].js',
-    },
-    externals: {
-        jquery: '$',
-        react: 'React',
-        'react-dom': 'ReactDOM',
-    },
+    entry,
+    output,
     resolve: {
         alias: { // 这里需要个app.js里保持一致
-            DFPages: path.join(webPath, 'pages'),
-            DFLibs: path.join(webPath, 'libs'),
-            DFUIs: path.join(webPath, 'uis'),
-            DFComponents: path.join(webPath, 'components'),
-            DFStyles: path.join(webPath, 'styles'),
-            DFStores: path.join(webPath, 'stores'),
-            DFUtils: path.join(webPath, 'utils'),
-            DFPlugins: path.join(webPath, 'plugins'),
-            DFModels: path.join(webPath, 'models'),
+            DFPages: path.resolve(webPath, 'pages'),
+            DFLibs: path.resolve(webPath, 'libs'),
+            DFUIs: path.resolve(webPath, 'uis'),
+            DFComponents: path.resolve(webPath, 'components'),
+            DFStyles: path.resolve(webPath, 'styles'),
+            DFStores: path.resolve(webPath, 'stores'),
+            DFUtils: path.resolve(webPath, 'utils'),
+            DFPlugins: path.resolve(webPath, 'plugins'),
+            DFModels: path.resolve(webPath, 'models'),
         },
         mainFiles: ['index'],
         extensions: ['.js', '.json', '.jsx', '.css', '.less', '.scss', '.sass'],
@@ -56,7 +72,7 @@ let config = {
                 test: /\.js$/,
                 loaders: [
                     'babel-loader',
-                    path.join(__dirname, 'loaders', 'clientEntryLoader.js'),
+                    path.resolve(__dirname, 'loaders', 'clientEntryLoader.js'),
                 ],
                 include: entriesArray,
             },
@@ -90,24 +106,17 @@ let config = {
             },
         ],
     },
-    plugins: [
-        new webpack.DefinePlugin({
-            'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
-        }),
-        new webpack.optimize.ModuleConcatenationPlugin(),
-        new webpack.DllReferencePlugin({
-            context: __dirname,
-            manifest: require(path.join(dllPath, 'bundle-manifest.json')),
-        }),
-    ],
+    plugins: [],
 };
 
 module.exports = {
+    rootPath,
     appPath,
     webPath,
     publicPath,
     bundlesPath,
     dllPath,
     webPagesPath,
-    config
+    config,
+    externals,
 };

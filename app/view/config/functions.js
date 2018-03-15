@@ -6,19 +6,30 @@
 const React = require('react');
 
 module.exports = {
-    createScriptTag: function (scriptsArray) {
+    createScriptTags: function (scriptsArray) {
         const Scripts = [];
         for (let index in scriptsArray) {
             Scripts.push(
                 <script
                     key={index}
-                    crossorigin
-                    charset="utf-8"
                     type="text/javascript"
                     src={scriptsArray[index]}
                 />
             );
         }
         return Scripts;
-    }
+    },
+    createStyleTags: function (stylesArray) {
+        const Styles = [];
+        for (let index in stylesArray) {
+            Styles.push(
+                <link
+                    key={index}
+                    type="text/css"
+                    src={stylesArray[index]}
+                />
+            );
+        }
+        return Styles;
+    },
 };

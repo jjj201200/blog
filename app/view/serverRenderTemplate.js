@@ -5,13 +5,14 @@
  */
 
 const React = require('react');
-const {SCRIPTS, createScriptTag} = require('./config');
+const {STYLES, SCRIPTS, createStyleTags, createScriptTags} = require('./config');
 // import Cookie from 'js-cookie';
 // const {Provider} = require('mobx-react');
 // const {StaticRouter} = require('react-router');
 // const {ServerStyleSheet} = require('styled-components');
 
 // import 'DFStyles';
+const inProduction = process.env.NODE_ENV === 'production';
 
 export default class ClientTemplate extends React.Component {
     // componentWillMount() {
@@ -22,16 +23,16 @@ export default class ClientTemplate extends React.Component {
     // }
 
     render() {
-        const {title = 'title1', componentName, styleSheet} = this.props;
+        const {title = 'title1', componentName} = this.props;
         // const Component = this.props.Component;
         const scriptFilename = componentName.toLowerCase();
-        const scriptTags = createScriptTag(SCRIPTS[process.env.NODE_ENV]);
+        const scriptTags = createScriptTags(SCRIPTS[process.env.NODE_ENV]);
+        const styleTags = createStyleTags(STYLES[process.env.NODE_ENV]);
         // const Style = this.styleSheet;
         return (
             <html>
             <head>
                 <title>{title}</title>
-                {/*<meta charset="utf-8" />*/}
                 <meta name="robots" content="all"/>
                 <meta name="viewport"
                       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, minimal-ui"/>
@@ -50,18 +51,17 @@ export default class ClientTemplate extends React.Component {
                 <link
                     href="https://fonts.googleapis.com/css?family=Roboto|Geo:400,400i|Monsieur+La+Doulaise|Montserrat:400,700|Mountains+of+Christmas:400,700|Open+Sans+Condensed:300|Press+Start+2P"
                     rel="stylesheet"/>
+                {styleTags}
                 {scriptTags}
-                <script type="text/javascript" charset="UTF-8"
-                        src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
-                <link href="../public/Draft.css" rel="stylesheet"/>
 
                 {/*<meta name="theme-color" content="#131313"/>*/}
                 {/*{Style}*/}
             </head>
             <body>
             <div id="root"/>
-            <script type="text/javascript" charset="UTF-8" src={`../public/dll/bundle.dll.js`}></script>
-            <script type="text/javascript" charset="UTF-8" src={`../public/bundles/${scriptFilename}.js`}></script>
+            <script type="text/javascript" src={`../public/dll/bundle.dll.js`}/>
+            {inProduction && <script type="text/javascript" src={`../public/bundles/${scriptFilename}.js`}/>}
+            {!inProduction && <script type="text/javascript" src={`../${scriptFilename}.js`}/>}
             </body>
             </html>
         );

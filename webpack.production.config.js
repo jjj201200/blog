@@ -3,21 +3,31 @@
  * Create: 2018-02-07
  * Description:
  */
-// const path = require('path');
+const path = require('path');
 const webpack = require('webpack');
 const MinifyPlugin = require("babel-minify-webpack-plugin");
 // const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-const {config, bundlesPath} = require('./webpack.basic.config');
+const {config, externals, bundlesPath, dllPath} = require('./webpack.basic.config');
 
+config.output.path = bundlesPath;
+config.externals = externals;
 config.devtool = 'false';
 config.plugins.push(
-    // 编译文件清理插件
+    new webpack.DefinePlugin({
+        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
+    }),
+    // 清理编译目录
     new CleanWebpackPlugin([bundlesPath], {
         verbose: false,
-        exclude: ['Draft.css', 'dll/*.dll.js', 'dll/*.json'],
+        exclude: [],
+    }),
+    new webpack.optimize.ModuleConcatenationPlugin(),
+    new webpack.DllReferencePlugin({
+        context: __dirname,
+        manifest: require(path.join(dllPath, 'bundle-manifest.json')),
     }),
     new MinifyPlugin({
         keepFnName: true,
