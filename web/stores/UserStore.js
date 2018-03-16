@@ -33,6 +33,8 @@ class UserStore extends BasicStore {
         this.store.get('currentUser', new User(value));
     }
 
+    @observable requestSending = false;
+
     @action('initUserStore')
     init() {
         // if (!inClient()) return;
@@ -47,6 +49,8 @@ class UserStore extends BasicStore {
 
     @action('getUser')
     getUser() {
+        if (this.requestSending) return;
+        this.requestSending = true;
         return Ajax({
             type: 'post',
             url: '/api/get_user',
@@ -63,6 +67,8 @@ class UserStore extends BasicStore {
                 this.updateLoginStatus(false);
                 console.log(res);
             },
+        }).done(() => {
+            this.requestSending = false;
         });
     }
 
@@ -73,6 +79,8 @@ class UserStore extends BasicStore {
     @action
     signUp(params) {
         // TODO 参数校验
+        if (this.requestSending) return;
+        this.requestSending = true;
         Ajax({
             type: 'post',
             url: '/api/sign_up',
@@ -86,6 +94,8 @@ class UserStore extends BasicStore {
                 this.updateLoginStatus(false);
                 console.error(res);
             },
+        }).done(() => {
+            this.requestSending = false;
         });
     }
 
@@ -95,6 +105,8 @@ class UserStore extends BasicStore {
      */
     @action('signIn')
     login(params) { // TODO 参数校验
+        if (this.requestSending) return;
+        this.requestSending = true;
         Ajax({
             type: 'post',
             url: '/api/sign_in',
@@ -110,6 +122,8 @@ class UserStore extends BasicStore {
                 this.updateLoginStatus(false);
                 console.error(res);
             },
+        }).done(() => {
+            this.requestSending = false;
         });
     }
 
@@ -118,6 +132,8 @@ class UserStore extends BasicStore {
      */
     @action
     logout() {
+        if (this.requestSending) return;
+        this.requestSending = true;
         Ajax({
             type: 'post',
             url: '/api/sign_out',
@@ -136,6 +152,8 @@ class UserStore extends BasicStore {
                 this.updateLoginStatus(false);
                 console.error(res);
             },
+        }).done(() => {
+            this.requestSending = false;
         });
 
     }

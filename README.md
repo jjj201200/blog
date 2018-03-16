@@ -150,7 +150,7 @@ mobx-logger:[https://github.com/winterbe/mobx-logger](https://github.com/winterb
 
 ```bash
 project
-┣━	app - egg.js后端文件目录
+┣━ app - egg.js后端文件目录
 ┃  ┣━ controller - CMS中的c部分
 ┃  ┣━ extend
 ┃  ┣━ middleware - 中间件
@@ -159,7 +159,7 @@ project
 ┃  ┣━ service
 ┃  ┣━ view
 ┃  ┗━ router.js
-┣━	config
+┣━ config
 ┃  ┣━ babelRegister.config.js
 ┃  ┣━ config.default.js - egg.js默认配置文件
 ┃  ┗━ plugin.js

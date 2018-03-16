@@ -53,11 +53,15 @@ class BlogStore extends BasicStore {
         super('BlogStore', rootStore, [localStorage]);
     }
 
+    @observable requestSending = false;
+
     articleList = observable.map({});
 
     @action
     getArticleListByPublished() {
         const that = this;
+        if (this.requestSending) return;
+        this.requestSending = true;
         return Ajax({
             type: 'get',
             url: '/api/article',
@@ -87,6 +91,8 @@ class BlogStore extends BasicStore {
             fail: (e) => {
                 console.error(e);
             }
+        }).done(() => {
+            this.requestSending = false;
         })
     }
 }

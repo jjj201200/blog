@@ -26,12 +26,22 @@ class EditorStore extends BasicStore {
         this.unpublish = ::this.unpublish;
     }
 
-    @observable newNumberId = 0;
-    @observable article = null;
-    articleList = observable.map({});
-    deleteArticleList = observable.array([]); // 待删除文章id列表
+    @observable newNumberId = 0; // 本地新建文章是使用的临时编号
+
+    @observable article = null; // 用来初始化编辑区域的对象
+
     @observable deleteModeState = false; // 是否处在草稿删除模式
+
     @observable editorState = null; // 编辑器状态对象
+
+    @observable requestSending = false; // 请求状态，如果在请求中，这个状态可用于置灰按钮
+
+    articleList = observable.map({});
+
+    deleteArticleList = observable.array([]); // 待删除文章id列表
+
+
+
 
     /**
      * temp local number id
@@ -56,6 +66,8 @@ class EditorStore extends BasicStore {
     @action
     getArticle(articleId) {
         const that = this;
+        if (this.requestSending) return;
+        this.requestSending = true;
         return Ajax({
             type: 'get',
             url: '/api/article',
@@ -75,6 +87,8 @@ class EditorStore extends BasicStore {
             fail: (e) => {
                 console.error(e);
             },
+        }).done(() => {
+            this.requestSending = false;
         });
     }
 
@@ -84,6 +98,8 @@ class EditorStore extends BasicStore {
     @action
     initArticleListByUsername(username) {
         const that = this;
+        if (this.requestSending) return;
+        this.requestSending = true;
         return Ajax({
             type: 'get',
             url: '/api/article',
@@ -114,6 +130,8 @@ class EditorStore extends BasicStore {
             fail: (e) => {
                 console.error(e);
             },
+        }).done(() => {
+            this.requestSending = false;
         });
     }
 
@@ -202,6 +220,8 @@ class EditorStore extends BasicStore {
             if (!this.article) {
                 throw new Error('no article need to create online');
             }
+            if (this.requestSending) return;
+            this.requestSending = true;
             const {tempId, title, tags, content} = this.article;
             // TODO 参数校验
             // console.log(title, tags, content);
@@ -229,6 +249,8 @@ class EditorStore extends BasicStore {
                 fail: (res) => {
                     console.error(res);
                 },
+            }).done(() => {
+                this.requestSending = false;
             });
         } catch (e) {
             console.error(e);
@@ -250,6 +272,8 @@ class EditorStore extends BasicStore {
             if (!this.article) {
                 throw new Error('no article need to update');
             }
+            if (this.requestSending) return;
+            this.requestSending = true;
             const {id, title, tags, content} = this.article;
             return Ajax({
                 type: 'post',
@@ -272,6 +296,8 @@ class EditorStore extends BasicStore {
                 fail: (res) => {
                     console.error(res);
                 },
+            }).done(() => {
+                this.requestSending = false;
             });
         } catch (e) {
             console.error(e);
@@ -285,6 +311,8 @@ class EditorStore extends BasicStore {
     @action
     deleteArticle() {
         const that = this;
+        if (this.requestSending) return;
+        this.requestSending = true;
         const deleteArticleList = toJS(this.deleteArticleList);
         return Ajax({
             type: 'post',
@@ -309,6 +337,8 @@ class EditorStore extends BasicStore {
             fail: (e) => {
                 console.error(e);
             },
+        }).done(() => {
+            this.requestSending = false;
         });
     }
 
@@ -320,6 +350,8 @@ class EditorStore extends BasicStore {
     publish() {
         if (this.article) {
             const that = this;
+            if (this.requestSending) return;
+            this.requestSending = true;
             const articleId = this.article.id;
             return Ajax({
                 type: 'post',
@@ -342,6 +374,8 @@ class EditorStore extends BasicStore {
                 fail: (e) => {
                     console.error(new Error(e));
                 },
+            }).done(() => {
+                this.requestSending = false;
             });
         }
     }
@@ -354,6 +388,8 @@ class EditorStore extends BasicStore {
     unpublish() {
         if (this.article) {
             const that = this;
+            if (this.requestSending) return;
+            this.requestSending = true;
             const articleId = this.article.id;
             return Ajax({
                 type: 'post',
@@ -375,6 +411,8 @@ class EditorStore extends BasicStore {
                 fail: (e) => {
                     console.error(new Error(e));
                 },
+            }).done(() => {
+                this.requestSending = false;
             });
         }
     }

@@ -108,8 +108,6 @@ class WriteMobView extends React.Component {
 
     @observable deleteDialogShow = false; // 删除提示框显示状态
 
-    // @observable requestSending = false; // 请求状态，如果在请求中，这个状态可用于置灰按钮
-
     /**
      * 未保存提示框的目标函数
      * 即假设在创建新文章时因为没有保存之前编辑过的文章而弹出提示框，则目标函数为创建函数
@@ -252,7 +250,7 @@ class WriteMobView extends React.Component {
 
     onCreateDeleteArticleEvent(articleId) {
         const that = this;
-        return function () {
+        return () => {
             const {EditorStore} = that.props;
             if (articleId && articleId.length > 20) {
                 EditorStore.deleteArticleList.push(articleId);
@@ -304,7 +302,6 @@ class WriteMobView extends React.Component {
             } else if (!EditorStore.article) { // 没有被打开的文章时
                 EditorStore.openArticle(EditorStore.articleList.get(articleId));
             }
-            // console.log(EditorStore.articleList);
         };
     }
 
@@ -348,7 +345,7 @@ class WriteMobView extends React.Component {
     // 打开删除提示框事件
     onOpenDeleteDialog(targetEvent) {
         if (targetEvent instanceof Function) {
-            this.unsavedDialogTargetEvent = targetEvent;
+            this.deleteDialogTargetEvent = targetEvent;
         }
         this.deleteDialogShow = true;
     }
@@ -469,7 +466,6 @@ class WriteMobView extends React.Component {
         const that = this;
         const {show, onClose, classes, EditorStore} = this.props;
         const articleObject = toJS(EditorStore.articleList);
-        // console.log(articleObject, EditorStore.articleList);
         const {deleteModeState} = EditorStore;
         const deleteNum = EditorStore.deleteArticleList.peek().length;
         return (
@@ -489,10 +485,9 @@ class WriteMobView extends React.Component {
                                             variant="raised"
                                             color="primary"
                                             onClick={EditorStore.article && EditorStore.article.hasPublished ? EditorStore.unpublish : EditorStore.publish}
-                                            disabled={!EditorStore.article || !EditorStore.article.id}
+                                            disabled={!EditorStore.article || !EditorStore.article.id || EditorStore.requestSending}
                                         >
                                             {(EditorStore.article && EditorStore.article.hasPublished) && 'un'}Publish
-                                            Article
                                         </Button>
                                     </Grid>
                                     <Grid item>
@@ -500,13 +495,18 @@ class WriteMobView extends React.Component {
                                             variant="raised"
                                             color="primary"
                                             onClick={EditorStore.saveArticleOnline}
-                                            disabled={!EditorStore.article}
+                                            disabled={!EditorStore.article || EditorStore.requestSending}
                                         >
-                                            Save Article
+                                            Save
                                         </Button>
                                     </Grid>
                                     <Grid item>
-                                        <Button variant="raised" color="secondary" onClick={onClose}>
+                                        <Button
+                                            variant="raised"
+                                            color="secondary"
+                                            onClick={onClose}
+                                            disabled={EditorStore.requestSending}
+                                        >
                                             Close
                                         </Button>
                                     </Grid>
