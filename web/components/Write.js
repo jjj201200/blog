@@ -284,6 +284,8 @@ class WriteMobView extends React.Component {
                     EditorStore.deleteArticleList.remove(article.id);
                 }
             } else if (EditorStore.article && EditorStore.article.id !== articleId) {
+                // 判断临时草稿
+                if (EditorStore.article.tempId === articleId) return;
                 /**
                  * 文章切换模式
                  * 同时确认欲切换的文章是否存在
