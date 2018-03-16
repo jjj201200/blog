@@ -6,11 +6,12 @@
 
 const SCRIPTS = require('./scripts');
 const STYLES = require('./styles');
-const {createStyleTags, createScriptTags} = require('./functions');
+const {createStyleTags, createScriptTags, createMetaTags} = require('./functions');
 
 module.exports = {
     STYLES,
     SCRIPTS,
     createStyleTags,
     createScriptTags,
+    createMetaTags,
 }

@@ -17,9 +17,9 @@ import {Article} from 'DFModels';
 // import {theme, rem} from 'DFStyles';
 // import {Form, Label, LabelName, Submit} from 'DFUIs';
 // import {Mob} from 'DFComponents';
-import GBS from 'DFStores';
+// import GBS from 'DFStores';
 // import {DFEditor} from 'DFComponents';
-import {formDate2YMDHMS} from 'DFUtils';
+// import {formDate2YMDHMS} from 'DFUtils';
 // import LzEditor from 'react-lz-editor';
 import {EditorState, ContentState, convertFromRaw, convertToRaw} from 'draft-js';
 import {Editor} from 'react-draft-wysiwyg';
@@ -107,6 +107,8 @@ class WriteMobView extends React.Component {
     @observable unsavedDialogShow = false; // 未保存提示框显示状态
 
     @observable deleteDialogShow = false; // 删除提示框显示状态
+
+    // @observable requestSending = false; // 请求状态，如果在请求中，这个状态可用于置灰按钮
 
     /**
      * 未保存提示框的目标函数

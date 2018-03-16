@@ -16,6 +16,8 @@ const bundlesPath = path.resolve(publicPath, 'bundles');
 const webPath = path.resolve(rootPath, 'web');
 const webPagesPath = path.resolve(webPath, 'pages');
 
+const inProduction = process.env.NODE_ENV === 'production';
+
 // 配置入口文件
 const entry = {
     home: path.resolve(webPagesPath, 'home.js'),
@@ -27,13 +29,13 @@ for (let key in entry) {
 
 // 外部引用映射 - 于全局变量中查找
 const externals = {
+    lodash: '_',
     jquery: '$',
     react: 'React',
     'react-dom': 'ReactDOM',
     'mobx': 'mobx',
     'mobx-react': 'mobxReact',
     'styled-components': 'styled',
-    lodash: '_',
 };
 
 /**
@@ -43,7 +45,7 @@ const externals = {
 const output = {
     // path: process.env.NODE_ENV === 'production' ? bundlesPath : rootPath,
     publicPath: '/',
-    filename: '[name].js',
+    filename: '[name].bundle.js',
 };
 
 let config = {
@@ -72,7 +74,7 @@ let config = {
                 test: /\.js$/,
                 loaders: [
                     'babel-loader',
-                    path.resolve(__dirname, 'loaders', 'clientEntryLoader.js'),
+                    path.resolve(rootPath, 'loaders', 'clientEntryLoader.js'),
                 ],
                 include: entriesArray,
             },

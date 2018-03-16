@@ -5,7 +5,7 @@
  */
 
 const React = require('react');
-const {STYLES, SCRIPTS, createStyleTags, createScriptTags} = require('./config');
+const {createStyleTags, createScriptTags, createMetaTags} = require('./config');
 // import Cookie from 'js-cookie';
 // const {Provider} = require('mobx-react');
 // const {StaticRouter} = require('react-router');
@@ -26,42 +26,30 @@ export default class ClientTemplate extends React.Component {
         const {title = 'title1', componentName} = this.props;
         // const Component = this.props.Component;
         const scriptFilename = componentName.toLowerCase();
-        const scriptTags = createScriptTags(SCRIPTS[process.env.NODE_ENV]);
-        const styleTags = createStyleTags(STYLES[process.env.NODE_ENV]);
+        const scriptTags = createScriptTags();
+        const styleTags = createStyleTags();
+        const metaTags = createMetaTags({title});
         // const Style = this.styleSheet;
         return (
             <html>
             <head>
                 <title>{title}</title>
-                <meta name="robots" content="all"/>
-                <meta name="viewport"
-                      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, minimal-ui"/>
-                <meta content="yes" name="apple-mobile-web-app-capable"/>
-                <meta content="black" name="apple-mobile-web-app-status-bar-style"/>
-                {/*<meta content="QNA,blockchain" name="keywords"/>*/}
-                {/*<meta content="A new platform that fairly compensates users for their contributions using on blockchain technology" name="description"/>*/}
                 <meta content="telephone=no" name="format-detection"/>
                 {/*<link rel="apple-touch-icon" sizes="180x180" href="public/static/apple-touch-icon.png"/>*/}
                 {/*<link rel="icon" type="image/png" sizes="32x32" href="public/static/favicon-32x32.png"/>*/}
                 {/*<link rel="icon" type="image/png" sizes="16x16" href="public/static/favicon-16x16.png"/>*/}
                 {/*<link rel="manifest" href="public/static/manifest.json"/>*/}
                 {/*<link rel="mask-icon" href="public/static/safari-pinned-tab.svg" color="#131313"/>*/}
-                <meta name="apple-mobile-web-app-title" content={title}/>
-                <meta name="application-name" content={title}/>
-                <link
-                    href="https://fonts.googleapis.com/css?family=Roboto|Geo:400,400i|Monsieur+La+Doulaise|Montserrat:400,700|Mountains+of+Christmas:400,700|Open+Sans+Condensed:300|Press+Start+2P"
-                    rel="stylesheet"/>
+                <link rel="manifest" href="../public/bundles/manifest.json"/>
+                {metaTags}
                 {styleTags}
                 {scriptTags}
-
-                {/*<meta name="theme-color" content="#131313"/>*/}
-                {/*{Style}*/}
             </head>
             <body>
             <div id="root"/>
             <script type="text/javascript" src={`../public/dll/bundle.dll.js`}/>
-            {inProduction && <script type="text/javascript" src={`../public/bundles/${scriptFilename}.js`}/>}
-            {!inProduction && <script type="text/javascript" src={`../${scriptFilename}.js`}/>}
+            {inProduction && <script type="text/javascript" src={`../public/bundles/${scriptFilename}.bundle.js`}/>}
+            {!inProduction && <script type="text/javascript" src={`../${scriptFilename}.bundle.js`}/>}
             </body>
             </html>
         );

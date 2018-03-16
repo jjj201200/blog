@@ -8,9 +8,10 @@ const webpack = require('webpack');
 const MinifyPlugin = require("babel-minify-webpack-plugin");
 // const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const ManifestPlugin = require('webpack-manifest-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-const {config, externals, bundlesPath, dllPath} = require('./webpack.basic.config');
+const {config, externals, publicPath, bundlesPath, dllPath} = require('./webpack.basic.config');
 
 config.output.path = bundlesPath;
 config.externals = externals;
@@ -38,6 +39,10 @@ config.plugins.push(
         analyzerMode: 'disabled',
         generateStatsFile: true,
         statsFilename: 'production.analysis.json',
+    }),
+    new ManifestPlugin({
+        publicPath: '/public/bundles/',
+        basePath: '/public/bundles/',
     }),
 );
 
