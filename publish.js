@@ -26,15 +26,20 @@ const getCurrentGitCommitHash = () => {
 const rsyncFolders = (from, to) => {
     const useKey = fs.existsSync(`${USER_HOME_DIR}/.ssh/nginx_rsync`)
         ? `-e "ssh -i ${USER_HOME_DIR}/.ssh/nginx_rsync"` : '';
-    shelljs.exec(`rsync "${from}" "${to}" ${useKey}  --checksum --recursive `)
+    shelljs.exec(`rsync "${from}" "${to}" --checksum --recursive `)
 }
 
 const serverList = [{
-    branch: 'master',
-    ip: 'root@47.91.213.147',
-    path: '/root/blog',
-    webpack: require.resolve('./webpack.production.config.js'),
-    web: 'http://www.drowsyflesh.com',
+    key: 'aliyun:hongkong',
+    name: 'aliyun - hongkong',
+    short: 'aliyun - hongkong',
+    value: {
+        branch: 'master',
+        host: 'root@47.91.213.147',
+        path: '/root/blog',
+        webpack: require.resolve('./webpack.production.config.js'),
+        web: 'http://www.drowsyflesh.com',
+    }
 }];
 
 inquirer.prompt([
@@ -59,6 +64,7 @@ inquirer.prompt([
         }
     },
 ]).then(answers => {
+    const {host, branch} = answers.server;
     if (!answers.sure) {
         console.log(`未输入 y ，退出发布脚本`.red);
         return;
@@ -78,6 +84,6 @@ inquirer.prompt([
     shelljs.exec(`npm run build`);
 
     message('开始上传文件到目标服务器');
-
+    rsyncFolders('./', `${answers.host}:${answers.prot}/`);
     // shelljs.exec('yarn');
 });
