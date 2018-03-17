@@ -2,78 +2,26 @@
 
 ### 安装
 
-### MongoDB
+### Mongdb → [link](./install_mongodb.md)
+
+### Node-sass
 
 ```bash
-# 添加安装库配置
-$ sudo vi /etc/yum.repos.d/mongodb-org.repo
+$ sudo npm i node-sass --save-dev
+$ sudo npm rebuild node-sass
 ```
 
-```ini
-# /etc/yum.repos.d/mongodb-org.repo
-# 注意版本号
-[mongodb-org-3.6]
-name=MongoDB Repository
-baseurl=https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/3.6/x86_64/
-gpgcheck=1
-enabled=1
-gpgkey=https://www.mongodb.org/static/pgp/server-3.6.asc
-```
-```Bash
-# 执行这行确认添加成功
-$ yum repolist
-```
-**mac 下可以使用下面的代码安装来替代以上配置安装方法**
-```Bash
-$ sudo brew install mongodb
-```
-**安装**
-```Bash
-$ sudo yum install mongodb-org -y
-```
-
-**设置为系统服务**
-
-```Bash
-$ sudo systemctl start mongod # 启动服务
-$ sudo systemctl start mongod # 停止服务
-$ sudo systemctl status mongod.service # 查看服务状态
-$ sudo systemctl reload mongod # 重新读取/etc/mongod.conf配置
-```
-
-**log**
-
-```Bash
-$ sudo tail /var/log/mongodb/mongod.log # 查看最后10条log
-```
-
-**other**
-
-```Bash
-$ mongo # 进入当前运行文本行界面
-```
-
-默认数据库目录在 `/var/lib/mongo`
-
-### Other
+### Rest packages
 
 ```bash
 $ mkdir db
-$ npm install
+$ npm i
+$ npm install shelljs -g
 # launch mongodb
 $ mongod --dbpath=./db # 在该目录启动数据库软件
 # launch server
 $ npm run dev
 ```
-
-### Node-sass
-
-```Bash
-$ sudo npm i node-sass --save-dev
-$ sudo npm rebuild node-sass
-```
-
-
 
 ## 部署
 
@@ -105,6 +53,8 @@ $ npm run analysis
    2. development 和 production 仅对`devtool`，`output`和`plugin`进行修改和补充
 2. development 和 production 都采用了DLL方式加载，所以都需要先跑一下`$ npm run build:dll`
 3. production 时的output目录在`app/public` 也就是`appPath`，这是egg.js约定的，可以改，但是需要改egg.js的配置，不推荐
+
+
 
 
 
@@ -142,17 +92,16 @@ mobx-logger:[https://github.com/winterbe/mobx-logger](https://github.com/winterb
 
 
 
-***本工程支持 css in js, sass, styled component 和 less***
-
-
-
 ## 文件目录
 
 ```bash
 project
 ┣━ app - egg.js后端文件目录
-┃  ┣━ controller - CMS中的c部分
-┃  ┣━ extend
+┃  ┣━ controller
+┃  ┣━ extend - egg.js中约定的扩展目录
+┃  ┃  ┣━ application.js - 对app对象的扩展
+┃  ┃  ┣━ context.js - 对ctx对象的扩展
+┃  ┃  ┣━ helper.js - 对ctx.helper对象的扩展
 ┃  ┣━ middleware - 中间件
 ┃  ┣━ model
 ┃  ┣━ public
@@ -190,7 +139,6 @@ project
 ┃  ┃  ┣━ var.js - 以Styled-component语法风格编写的变量/方法导出文件，不包含参数设定
 ┃  ┣━ uis - ui组件，以后改为ui库
 ┃  ┗━ utils
-┣━ run
 ┣━ .babelrc
 ┣━ .eslintignore
 ┣━ .eslintrc.json
@@ -200,11 +148,19 @@ project
 ┣━ package.json
 ┣━ README
 ┣━ webpack.basic.config.js - 不能用来直接编译
-┣━ webpack.development.config.js
-┣━ webpack.production.config.js
+┣━ webpack.development.config.js - 先编译dll脚本
+┣━ webpack.production.config.js - 先编译dll脚本
 ┗━ webpack.dll.config.js - 提前编译
 
 ```
+
+
+
+##样式
+
+提倡使用Styled-component定制全局样式，将常用样式组合模块化，个别特殊的/不常用的样式使用sass/less
+
+***支持 css in js, sass, styled component 和 less***
 
 
 
