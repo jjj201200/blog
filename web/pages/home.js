@@ -7,7 +7,7 @@ import React from 'react';
 import styled from 'styled-components';
 import {Body} from 'DFUIs';
 import {theme} from 'DFStyles';
-import Reboot from 'material-ui/Reboot';
+import CssBaseline from 'material-ui/CssBaseline';
 import {Header, ArticleList} from 'DFComponents';
 // import Cookies from 'js-cookie';
 
@@ -28,7 +28,7 @@ const HomeWrapper = styled.div`
 const Index = () => {
     return (
         <HomeWrapper className={this.mobStatus ? 'fix' : null}>
-            <Reboot key="reboot-style"/>
+            <CssBaseline key="reboot-style"/>
             <Header/>
             <Body>
             <ArticleList/>
