@@ -58,7 +58,7 @@ class SignUpMob extends React.Component {
     };
 
     render() {
-        const {show, onClose} = this.props;
+        const {show, onClose, UserStore} = this.props;
         return (
             <Dialog open={show} onClose={onClose} fullWidth>
                 <DialogTitle>Sign Up</DialogTitle>
@@ -135,7 +135,12 @@ class SignUpMob extends React.Component {
                             </ListItem>
                             <ListItem>
                                 <Grid container justify={'flex-end'}>
-                                    <Button variant="raised" color="primary" onClick={this.handleSubmit}>Sign Up</Button>
+                                    <Button
+                                        variant="raised"
+                                        color="primary"
+                                        onClick={this.handleSubmit}
+                                        disabled={UserStore.requestSending}
+                                    >Sign Up</Button>
                                 </Grid>
                             </ListItem>
                         </List>

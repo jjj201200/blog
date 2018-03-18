@@ -52,7 +52,7 @@ class LoginMob extends React.Component {
     };
 
     render() {
-        const {show, onClose} = this.props;
+        const {show, onClose, UserStore} = this.props;
         return (
             <Dialog open={show} onClose={onClose} fullWidth>
                 <DialogTitle>Sign In</DialogTitle>
@@ -87,7 +87,12 @@ class LoginMob extends React.Component {
                             </ListItem>
                             <ListItem>
                                 <Grid container justify={'flex-end'}>
-                                    <Button variant="raised" color="primary" onClick={this.handleSubmit}>Sign In</Button>
+                                    <Button
+                                        variant="raised"
+                                        color="primary"
+                                        onClick={this.handleSubmit}
+                                        disabled={UserStore.requestSending}
+                                    >Sign In</Button>
                                 </Grid>
                             </ListItem>
                         </List>
