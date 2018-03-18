@@ -26,6 +26,10 @@ export default class GlobalStore extends BasicStore{
     }
     @observable stores = {};
 
+    @observable snackbar = {
+        open: false,
+    };
+
     @action
     addStore(SubStore) {
         this.stores[SubStore.name] = new SubStore(this);

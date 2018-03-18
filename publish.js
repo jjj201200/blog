@@ -4,28 +4,29 @@
  * Description: 发布脚本
  */
 'use strict'
-const fs = require('fs');
-const Path = require('path');
+// const fs = require('fs');
+// const Path = require('path');
 const colors = require('colors');
-const moment = require('moment');
+// const moment = require('moment');
 const shelljs = require('shelljs');
-const program = require('commander');
+// const program = require('commander');
 const inquirer = require('inquirer');
 
-const USER_HOME_DIR = process.env.HOME || process.env.USERPROFILE || '/root';
+// const USER_HOME_DIR = process.env.HOME || process.env.USERPROFILE || '/root';
 
 let stepNum = 1;
 const message = (msg) => {
     console.log(`\n${stepNum}. ${msg}`.green);
     stepNum += 1;
-}
+};
+
 const getCurrentGitCommitHash = () => {
     return shelljs.exec(`git rev-parse HEAD`).stdout.trim();
-}
+};
 
 const rsyncFolders = (from, to) => {
-    shelljs.exec(`rsync -e ssh --exclude-from './rsync-exclude' "${from}" "${to}" --checksum --recursive --progress --delete`)
-}
+    shelljs.exec(`rsync -e ssh --exclude-from './rsync-exclude' "${from}" "${to}" --checksum --recursive --delete`)
+};
 
 const serverList = [{
     key: 'aliyun:hongkong',

@@ -3,7 +3,7 @@
  * Create: 2018-03-03
  * Description:
  */
-
+import _ from 'lodash';
 import {observable, action, toJS} from 'mobx';
 import {Ajax, inClient, JSON_CONTENT_TYPE} from 'DFUtils';
 import {BasicStore, localStorage} from './BasicStore';
@@ -165,7 +165,7 @@ class EditorStore extends BasicStore {
     @action
     initEditorState() {
         const article = toJS(this.article);
-        if (_.isEmpty(article.content)) { // 获取content
+        if (_.isEmpty(article.content)) { // 文章没有内容
             this.editorState = EditorState.createEmpty();
         } else {
             if (!article.content.entityMap) article.content.entityMap = {};
@@ -199,10 +199,10 @@ class EditorStore extends BasicStore {
      */
     openArticle(article) {
         this.article = article;
-        if (_.isEmpty(article.content)) { // 如果没有拉过数据就拉一下content
+        if (_.isEmpty(toJS(article.content)) && article.id) { // 如果没有拉过数据就拉一下content
             this.getArticle(article.id);
         } else { // 否则就直接加载本地数据
-            this.initEditorState();
+            this.initEditorState(article);
         }
     }
 

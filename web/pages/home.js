@@ -9,6 +9,7 @@ import {Body} from 'DFUIs';
 import {theme} from 'DFStyles';
 import CssBaseline from 'material-ui/CssBaseline';
 import {Header, ArticleList} from 'DFComponents';
+import Snackbar from 'material-ui/Snackbar';
 // import Cookies from 'js-cookie';
 
 const HomeWrapper = styled.div`
@@ -33,6 +34,12 @@ const Index = () => {
             <Body>
             <ArticleList/>
             </Body>
+            <Snackbar
+                anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center',
+                }}
+            />
         </HomeWrapper>
     )
 };
