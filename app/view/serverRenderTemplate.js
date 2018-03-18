@@ -1,7 +1,7 @@
 /**
  * Author: Ruo
  * Create: 2018-02-07
- * Description:
+ * Description: html 渲染模板
  */
 
 const React = require('react');
@@ -24,32 +24,26 @@ export default class ClientTemplate extends React.Component {
 
     render() {
         const {title = 'title1', componentName} = this.props;
-        // const Component = this.props.Component;
         const scriptFilename = componentName.toLowerCase();
         const scriptTags = createScriptTags();
         const styleTags = createStyleTags();
         const metaTags = createMetaTags({title});
-        // const Style = this.styleSheet;
+        const dllFileUrl = `../public/dll/bundle.dll${inProduction ? '' : '.dev'}.js`
+        const scriptFileUrl = `../${inProduction ? 'public/bundles/' : ''}${scriptFilename}.bundle.js`
         return (
             <html>
             <head>
                 <title>{title}</title>
                 <meta content="telephone=no" name="format-detection"/>
-                {/*<link rel="apple-touch-icon" sizes="180x180" href="public/static/apple-touch-icon.png"/>*/}
-                {/*<link rel="icon" type="image/png" sizes="32x32" href="public/static/favicon-32x32.png"/>*/}
-                {/*<link rel="icon" type="image/png" sizes="16x16" href="public/static/favicon-16x16.png"/>*/}
-                {/*<link rel="manifest" href="public/static/manifest.json"/>*/}
-                {/*<link rel="mask-icon" href="public/static/safari-pinned-tab.svg" color="#131313"/>*/}
                 <link rel="manifest" href="../public/bundles/manifest.json"/>
                 {metaTags}
                 {styleTags}
-                {scriptTags}
+                {inProduction && scriptTags}
             </head>
             <body>
             <div id="root"/>
-            <script type="text/javascript" src={`../public/dll/bundle.dll.js`}/>
-            {inProduction && <script type="text/javascript" src={`../public/bundles/${scriptFilename}.bundle.js`}/>}
-            {!inProduction && <script type="text/javascript" src={`../${scriptFilename}.bundle.js`}/>}
+            <script type="text/javascript" src={dllFileUrl}/>
+            <script type="text/javascript" src={scriptFileUrl}/>
             </body>
             </html>
         );

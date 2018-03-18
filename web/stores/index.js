@@ -11,7 +11,7 @@ import BlogStore from './BlogStore';
 const GBS = new GlobalStore([
     UserStore,
     BlogStore,
-    EditorStore
+    EditorStore,
 ]);
 
 export default GBS;

@@ -34,7 +34,7 @@ module.exports = appInfo => {
             proxyMapping: {
                 js: 'text/javascript;',
             },
-            webpackConfigList: [require('../webpack.development.config.js')],
+            webpackConfigList: [require('../webpack.config.development.js')],
         },
         view: {
             defaultViewEngine: 'reactViewEngine', // 默认模板渲染引擎

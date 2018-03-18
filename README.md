@@ -2,7 +2,7 @@
 
 ### 安装
 
-### Mongdb → [link](./install_mongodb.md)
+### Mongdb → [link](./install_mongodb.m)
 
 ### Node-sass
 
@@ -147,14 +147,15 @@ project
 ┣━ app.js - egg.js后端入口，使用了babel-polyfill和babel-register，注册了react模板编译器
 ┣━ package.json
 ┣━ README
-┣━ webpack.basic.config.js - 不能用来直接编译
-┣━ webpack.development.config.js - 先编译dll脚本
-┣━ webpack.production.config.js - 先编译dll脚本
-┗━ webpack.dll.config.js - 提前编译
+┣━ webpack.config.js - 这个文件仅仅用来给IDE读取alias用，不用来编译!!
+┣━ webpack.config.basic.js - 不能用来直接编译
+┣━ webpack.config.development.js - 先编译dll脚本
+┣━ webpack.config.production.js - 先编译dll脚本
+┗━ webpack.config.dll.js - 提前编译
 
 ```
 
-
+*** 不知道为什么webstorm明明可以指定webpack设置文件，但是只有默认的webpack文件名才有用**
 
 ##样式
 

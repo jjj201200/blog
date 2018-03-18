@@ -6,38 +6,38 @@
 
 const path = require('path');
 const webpack = require('webpack');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 // const MinifyPlugin = require("babel-minify-webpack-plugin");
 
-const {externals, dllPath} = require('./webpack.basic.config');
+const {externals, dllPath} = require('./webpack.config.basic');
 
 module.exports = {
     entry: {
         // 公共模块
         bundle: [
-            // 'lodash', 使用babel-lodash-plugin
-            // 'react', 使用cdn
-            // 'react-dom', 使用cdn
-            // 'mobx', 使用cdn
-            // 'mobx-react', 使用cdn
-            // 'styled-components', 使用cdn
-            // 'draft-js', 使用cdn
-            // 'jquery', 使用cdn
+            // 'lodash', // 使用babel-lodash-plugin
+            'react',  // 使用cdn
+            'react-dom', // 使用cdn
+            'mobx', // 使用cdn
+            'mobx-react', // 使用cdn
+            'styled-components', // 使用cdn
+            'draft-js', // 使用cdn
+            'jquery', // 使用cdn
             'react-draft-wysiwyg',
         ],
     },
     output: {
         path: dllPath,
-        filename: '[name].dll.js',
+        filename: '[name].dll.dev.js',
         library: '[name]_library'
     },
-    externals: externals,
+    // externals: externals,
     plugins: [
         // 清理编译目录
         new CleanWebpackPlugin([dllPath], {
             verbose: false,
-            exclude: [],
+            exclude: ['bundle.dll.js'],
         }),
         new webpack.optimize.ModuleConcatenationPlugin(),
         new webpack.DllPlugin({
