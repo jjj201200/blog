@@ -24,7 +24,7 @@ const getCurrentGitCommitHash = () => {
 }
 
 const rsyncFolders = (from, to) => {
-    shelljs.exec(`rsync -e ssh "${from}" "${to}" --checksum --recursive --progress --delete`)
+    shelljs.exec(`rsync -e ssh --exclude-from './rsync-exclude' "${from}" "${to}" --checksum --recursive --progress --delete`)
 }
 
 const serverList = [{
@@ -33,7 +33,7 @@ const serverList = [{
     short: 'aliyun - hongkong',
     value: {
         branch: 'master',
-        host: 'root@47.91.213.147',
+        host: 'root@47.91.213.174',
         path: 'blog',
         webpack: require.resolve('./webpack.config.production'),
         web: 'http://www.drowsyflesh.com',
