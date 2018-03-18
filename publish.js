@@ -24,9 +24,7 @@ const getCurrentGitCommitHash = () => {
 }
 
 const rsyncFolders = (from, to) => {
-    const useKey = fs.existsSync(`${USER_HOME_DIR}/.ssh/nginx_rsync`)
-        ? `-e "ssh -i ${USER_HOME_DIR}/.ssh/nginx_rsync"` : '';
-    shelljs.exec(`rsync "${from}" "${to}" --checksum --recursive `)
+    shelljs.exec(`rsync -e ssh "${from}" "${to}" --checksum --recursive --progress --delete`)
 }
 
 const serverList = [{
@@ -36,8 +34,8 @@ const serverList = [{
     value: {
         branch: 'master',
         host: 'root@47.91.213.147',
-        path: '/root/blog',
-        webpack: require.resolve('./webpack.production.config.js'),
+        path: 'blog',
+        webpack: require.resolve('./webpack.config.production'),
         web: 'http://www.drowsyflesh.com',
     }
 }];
@@ -55,13 +53,15 @@ inquirer.prompt([
         default: false,
         message: answers => {
             const {host, branch} = answers.server;
-            console.log(`【注意： 请确保已经将代码推送到 github ！！！！】`.yellow);
+            console.log(`【注意： 请确保已经将代码推送到 github ！！！！】`.red);
+            console.log(`【注意： 请确保已经将代码推送到 github ！！！！】`.red);
+            console.log(`【注意： 请确保已经将代码推送到 github ！！！！】`.red);
             console.log(`【本地所有内容将git reset，请注意保存未提交代码】`.yellow);
             console.log(`【请确保有 ${host.green.bold} 的ssh权限】`.yellow);
             console.log('=====================================');
             console.log(`准备发布 ${branch.green.bold} 分支到 ${host.green.bold} 服务器`);
             return `请输入 ${'y'.green.bold} 继续，否则退出`;
-        }
+        },
     },
 ]).then(answers => {
     const {host, branch} = answers.server;
@@ -84,6 +84,6 @@ inquirer.prompt([
     shelljs.exec(`npm run build`);
 
     message('开始上传文件到目标服务器');
-    rsyncFolders('./', `${answers.host}:${answers.prot}/`);
+    rsyncFolders('./', `${answers.server.host}:${answers.server.path}`);
     // shelljs.exec('yarn');
 });
