@@ -8,6 +8,7 @@
 module.exports = app => {
     const {controller, router} = app;
     router.get('/', controller.page.index);
+    router.get('/gayme', controller.page.gayme);
     // TODO router.get('/blog', controller.page.blog);
     router.post('/api/sign_up', controller.user.signUp);
     router.post('/api/sign_in', controller.user.signIn);

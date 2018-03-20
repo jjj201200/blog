@@ -13,3 +13,4 @@ export * from './ArticleCard';
 export * from './Mob';
 export * from './Header';
 export * from './ArticleList';
+export * from './Gayme';

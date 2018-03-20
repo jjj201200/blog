@@ -21,5 +21,15 @@ module.exports = app => {
             };
             await ctx.render('serverRenderTemplate.js', props);
         }
+
+        async gayme() {
+            const {ctx} = this;
+            const props = {
+                title: 'Gayme',
+                location: ctx.request.url,
+                componentName: 'Gayme',
+            };
+            await ctx.render('serverRenderTemplate.js', props);
+        }
     };
 };

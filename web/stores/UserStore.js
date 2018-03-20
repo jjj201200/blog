@@ -61,6 +61,9 @@ class UserStore extends BasicStore {
                     const user = res.data;
                     this.store.set('currentUser', new User(user));
                     this.updateLoginStatus(true);
+                    this.root.stores.GlobalStore.onOpenSnackbar({
+                        msg: 'sign in successfully'
+                    });
                 }
             },
             fail: (res) => {
@@ -88,6 +91,9 @@ class UserStore extends BasicStore {
             success: (res) => {
                 if (res && res.code === 0) {
                     this.updateLoginStatus(true);
+                    this.root.stores.GlobalStore.onOpenSnackbar({
+                        msg: 'sign up successfully'
+                    });
                 }
             },
             fail: (res) => {
@@ -116,6 +122,9 @@ class UserStore extends BasicStore {
                     this.updateLoginStatus(true);
                     // console.log(res);
                     this.updateCurrentUser({...res.data});
+                    this.root.stores.GlobalStore.onOpenSnackbar({
+                        msg: 'sign in successfully'
+                    });
                 }
             },
             fail: (res) => {
@@ -144,6 +153,9 @@ class UserStore extends BasicStore {
                         username: '',
                         email: '',
                         loginDate: '',
+                    });
+                    this.root.stores.GlobalStore.onOpenSnackbar({
+                        msg: 'sign out successfully'
                     });
                     console.log(res);
                 }

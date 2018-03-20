@@ -28,6 +28,9 @@ class EditorStore extends BasicStore {
 
     @observable newNumberId = 0; // 本地新建文章是使用的临时编号
 
+    /**
+     * TODO 审查，如果有必要的话，将article的content优化为浅拷贝对象
+     */
     @observable article = null; // 用来初始化编辑区域的对象
 
     @observable deleteModeState = false; // 是否处在草稿删除模式
@@ -39,9 +42,6 @@ class EditorStore extends BasicStore {
     articleList = observable.map({});
 
     deleteArticleList = observable.array([]); // 待删除文章id列表
-
-
-
 
     /**
      * temp local number id
@@ -82,6 +82,10 @@ class EditorStore extends BasicStore {
                     // console.log(res.data);
                     that.article.content = res.data.content;
                     this.initEditorState();
+                    console.log(1);
+                    this.root.stores.GlobalStore.onOpenSnackbar({
+                        msg: 'get article successfully'
+                    });
                 }
             },
             fail: (e) => {
@@ -110,6 +114,9 @@ class EditorStore extends BasicStore {
             dataType: 'json',
             success: (res) => {
                 if (res && res.data && res.code === 0) {
+                    this.root.stores.GlobalStore.onOpenSnackbar({
+                        msg: 'get article list successfully'
+                    });
                     _.forEach(res.data, (value) => {
                         if (!that.articleList.has(value._id)) {
                             const articleObject = {id: value._id, hasSavedOnline: true, ...value};
@@ -243,6 +250,9 @@ class EditorStore extends BasicStore {
                         that.articleList.delete(tempId);
                         that.articleList.set(id, that.article);
                         that.initEditorState();
+                        this.root.stores.GlobalStore.onOpenSnackbar({
+                            msg: 'create article successfully'
+                        });
                         console.log(that.article);
                     }
                 },
@@ -291,6 +301,9 @@ class EditorStore extends BasicStore {
                         that.article.set({
                             id, hasSavedOnline: true, ...rest,
                         });
+                        this.root.stores.GlobalStore.onOpenSnackbar({
+                            msg: 'update article successfully'
+                        });
                     }
                 },
                 fail: (res) => {
@@ -333,6 +346,9 @@ class EditorStore extends BasicStore {
                 });
                 if (that.articleList.size === 0) this.deleteModeState = false;
                 console.log(res);
+                this.root.stores.GlobalStore.onOpenSnackbar({
+                    msg: 'delete article(s) successfully'
+                });
             },
             fail: (e) => {
                 console.error(e);
@@ -368,6 +384,9 @@ class EditorStore extends BasicStore {
                         const {_id: id, ...rest} = res.data;
                         that.article.set({
                             id, hasSavedOnline: true, ...rest,
+                        });
+                        this.root.stores.GlobalStore.onOpenSnackbar({
+                            msg: 'pubish article successfully'
                         });
                     }
                 },
@@ -405,6 +424,9 @@ class EditorStore extends BasicStore {
                         const {_id: id, ...rest} = res.data;
                         that.article.set({
                             id, hasSavedOnline: true, ...rest,
+                        });
+                        this.root.stores.GlobalStore.onOpenSnackbar({
+                            msg: 'unpublish article successfully'
                         });
                     }
                 },

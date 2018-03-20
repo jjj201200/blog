@@ -50,7 +50,7 @@ module.exports = {
             for (let i in metas) {
                 const dynamicType = {[type]: i};
                 Metas.push(
-                    <link
+                    <meta
                         key={type + '-' + i}
                         {...dynamicType}
                         content={metas[i]}

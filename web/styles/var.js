@@ -9,9 +9,9 @@ import styled, {css} from 'styled-components';
 import Color from 'color';
 
 /**
- * rem
- * @param size
- * @param baseFontSize
+ * rem，将px单位转化为rem单位
+ * @param {number} size
+ * @param {number} [baseFontSize=16]
  */
 export const rem = (size, baseFontSize = 16) => `${size / baseFontSize}rem`;
 
@@ -52,8 +52,7 @@ export const textOverflow = (lineNum = 1) => lineNum === 1 ? css`
 `;
 
 /**
- * color
- * @type {{white: string, red: string, black: string}}
+ * colors
  */
 export const colors = {
     white: Color('#fff').alpha(1).rgb().string(),
@@ -67,9 +66,24 @@ export const colors = {
  * @param color 颜色（16进制）
  * @param alpha 透明度（0-1）
  */
-export const boxShadow = ({dp = 1, shadowColor = colors.black, alpha = 0.5}) => css`
-    box-shadow: 0 ${dp * 1}px ${dp * 5}px ${Color(shadowColor).alpha(alpha).rgb().string()};
-`;
+export const boxShadow = ([...rest]) => {
+    const dp = 1, shadowColor = colors.black, alpha = 0.5;
+    let boxShadowString = '';
+    for (i in rest) {
+        const {
+            h,
+            v,
+            blur,
+            spread,
+            color = Color(shadowColor).alpha(alpha).rgb().string(),
+            inset = '',
+        } = rest[i];
+        boxShadowString += `${h * dp}px ${v * dp}px ${blur * 5}px ${spread * 5}px ${color} ${inset},`;
+    }
+    return css`
+        box-shadow: ${boxShadowString};
+    `;
+};
 
 /**
  * transition

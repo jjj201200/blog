@@ -63,7 +63,7 @@ class HeaderView extends React.Component {
     }
 
     render() {
-        const {UserStore, classes} = this.props;
+        const {UserStore, classes, title} = this.props;
         const hasSignIn = UserStore.hasSignIn;
         return [
             <AppBar key="app-bar" className={classes.root} position="fixed">
@@ -73,9 +73,16 @@ class HeaderView extends React.Component {
                     </IconButton>*/}
                     <Grid container alignItems="center">
                         <Grid item xs={6}>
-                            <Typography className={classes.flex} variant="title" color="inherit">
-                                Playground
-                            </Typography>
+                            <Grid container spacing={16} justify="flex-start" alignItems="center">
+                                <Grid item>
+                                    <Typography className={classes.flex} variant="title" color="inherit">
+                                        {title || 'Playground'}
+                                    </Typography>
+                                </Grid>
+                                <Grid item>
+                                    <Button color="inherit" onClick={() => this.toggleMob('signUp')}>Gayme</Button>
+                                </Grid>
+                            </Grid>
                         </Grid>
                         <Grid item xs={6}>
                             <Grid container spacing={16} justify="flex-end">

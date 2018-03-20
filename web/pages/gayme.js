@@ -9,9 +9,10 @@ import styled from 'styled-components';
 import {Body} from 'DFUIs';
 import {theme} from 'DFStyles';
 import CssBaseline from 'material-ui/CssBaseline';
-import {Header, ArticleList} from 'DFComponents';
+import {Header, Gayme} from 'DFComponents';
 import Snackbar from 'material-ui/Snackbar';
 // import Cookies from 'js-cookie';
+
 
 @inject('GlobalStore') @observer
 class Index extends React.Component {
@@ -21,9 +22,9 @@ class Index extends React.Component {
         return (
             <div>
                 {/*<CssBaseline key="reboot-style"/>*/}
-                <Header/>
+                <Header title="GayMe"/>
                 <Body>
-                <ArticleList/>
+                <Gayme/>
                 </Body>
                 <Snackbar
                     className="global-snackbar"
