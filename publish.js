@@ -25,7 +25,7 @@ const getCurrentGitCommitHash = () => {
 };
 
 const rsyncFolders = (from, to) => {
-    shelljs.exec(`rsync -e ssh --exclude-from './rsync-exclude' "${from}" "${to}" --checksum --recursive --delete`)
+    shelljs.exec(`rsync -e ssh --include '.rsync-include' --exclude-from './rsync-exclude' "${from}" "${to}" --checksum --recursive --delete`)
 };
 
 const serverList = [{
