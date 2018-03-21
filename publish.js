@@ -36,7 +36,7 @@ const serverList = [{
         srcDir: './app/public',
         branch: 'master',
         host: 'root@47.91.213.174',
-        path: 'blog/app/public',
+        path: 'blog/app/',
         webpack: require.resolve('./webpack.config.production'),
         web: 'http://www.drowsyflesh.com',
     }
@@ -86,6 +86,6 @@ inquirer.prompt([
     shelljs.exec(`npm run build`);
 
     message('开始上传文件到目标服务器');
-    rsyncFolders('./', `${answers.server.host}:${answers.server.path}`);
+    rsyncFolders(`${answers.server.srcDir}`, `${answers.server.host}:${answers.server.path}`);
     // shelljs.exec('yarn');
 });
