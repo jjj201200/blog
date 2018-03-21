@@ -63,9 +63,6 @@ const modules = {
             test: /.(js|jsx)?$/,
             loader: 'babel-loader',
             exclude: /node_modules/,
-            query: {
-                plugins: ['transform-object-assign']
-            }
         },
         {
             test: /\.(less)$/,
