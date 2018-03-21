@@ -11,7 +11,7 @@ import {BasicStore, localStorage} from './BasicStore';
 import {EditorState, convertFromRaw} from 'draft-js';
 import {Article} from 'DFModels';
 
-class Blog {
+export class Blog {
     constructor({
         author = null,
         title = null,
@@ -48,7 +48,7 @@ class Blog {
     }
 }
 
-class BlogStore extends BasicStore {
+export class BlogStore extends BasicStore {
     constructor(rootStore) {
         super('BlogStore', rootStore, [localStorage]);
     }
@@ -96,5 +96,3 @@ class BlogStore extends BasicStore {
         })
     }
 }
-
-export default BlogStore;

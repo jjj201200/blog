@@ -6,13 +6,13 @@
 import React from 'react';
 import {observer, inject} from 'mobx-react';
 import styled from 'styled-components';
-import {Body} from 'DFUIs';
+import {Body} from 'DFComponents/uis';
 import {theme} from 'DFStyles';
 import CssBaseline from 'material-ui/CssBaseline';
-import {Header, Gayme} from 'DFComponents';
+import {Header, ArticleList, Gayme} from 'DFComponents';
 import Snackbar from 'material-ui/Snackbar';
 // import Cookies from 'js-cookie';
-
+const {Route, Link} = require("react-router-dom");
 
 @inject('GlobalStore') @observer
 class Index extends React.Component {
@@ -24,7 +24,8 @@ class Index extends React.Component {
                 {/*<CssBaseline key="reboot-style"/>*/}
                 <Header title="GayMe"/>
                 <Body>
-                <Gayme/>
+                <Route path="/gayme" component={Gayme}/>
+                <Route exact path="/" component={ArticleList}/>
                 </Body>
                 <Snackbar
                     className="global-snackbar"

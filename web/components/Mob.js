@@ -8,7 +8,7 @@ import React from 'react';
 import styled from 'styled-components';
 import {observer} from 'mobx-react';
 import {theme, rem, color} from 'DFStyles';
-import {Button, CardCss} from 'DFUIs';
+import {Button, CardCss} from 'DFComponents/uis';
 
 const MobWrapper = styled.div`
     position: fixed;

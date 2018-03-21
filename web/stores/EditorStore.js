@@ -15,7 +15,7 @@ import {Article} from 'DFModels';
  * 初始化文章发布界面
  * 保存文章发布界面当前的状态
  */
-class EditorStore extends BasicStore {
+export class EditorStore extends BasicStore {
     constructor(rootStore) {
         super('EditorStore', rootStore, [localStorage]);
         this.load(); // 载入本地localstorage的数据（如果有的话）
@@ -466,5 +466,3 @@ class EditorStore extends BasicStore {
         this.store.set('localDraft', draftObject);
     }
 }
-
-export default EditorStore;

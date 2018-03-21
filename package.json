@@ -52,6 +52,7 @@
         "mobx": "^3.5.1",
         "moment": "^2.21.0",
         "npm": "^5.7.1",
+        "object-assign": "^4.1.1",
         "prop-types": "^15.6.1",
         "react-dom": "^16.2.0",
         "react-draft-wysiwyg": "^1.12.10",
@@ -59,7 +60,8 @@
         "react-router": "^4.2.0",
         "react-router-dom": "^4.2.2",
         "store": "^2.0.12",
-        "uniqid": "^4.1.1"
+        "uniqid": "^4.1.1",
+        "url": "^0.11.0"
     },
     "devDependencies": {
         "autod": "^3.0.1",

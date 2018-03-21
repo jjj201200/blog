@@ -38,7 +38,7 @@ config.plugins.push(
     }),
     new webpack.DllReferencePlugin({
         context: rootPath,
-        manifest: require(path.resolve(dllPath, 'bundle-manifest.json')),
+        manifest: require(path.resolve(dllPath, 'bundle-manifest-dev.json')),
     }),
     new webpack.NamedModulesPlugin(),
 );

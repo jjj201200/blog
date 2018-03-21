@@ -25,6 +25,12 @@ module.exports = {
 
         // draft.js
         // 'https://cdn.bootcss.com/draft-js/0.10.5/Draft.js',
+
+        // react-router
+        'https://cdn.bootcss.com/react-router/4.2.0/react-router.js',
+
+        // history
+        'https://cdn.bootcss.com/history/4.7.2/history.js',
     ],
     production: [
         //lodash-core
@@ -46,5 +52,11 @@ module.exports = {
 
         // draft.js
         // 'https://cdn.bootcss.com/draft-js/0.10.5/Draft.min.js',
-    ]
+
+        // react-router
+        'https://cdn.bootcss.com/react-router/4.2.0/react-router.min.js',
+
+        // history
+        'https://cdn.bootcss.com/history/4.7.2/history.min.js',
+    ],
 }

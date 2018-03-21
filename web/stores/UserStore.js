@@ -10,7 +10,7 @@ import {Ajax, inClient} from 'DFUtils';
 import {BasicStore, memoryStorage} from './BasicStore';
 import {User} from 'DFModels';
 
-class UserStore extends BasicStore {
+export class UserStore extends BasicStore {
     constructor(rootStore) {
         super('UserStore', rootStore, [memoryStorage]);
         this.load(); // 先尝试载入本地数据
@@ -193,5 +193,3 @@ class UserStore extends BasicStore {
         else this.store.set('currentUser', new User({username, email, loginDate}));
     }
 }
-
-export default UserStore;

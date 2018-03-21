@@ -58,4 +58,4 @@ class GlobalStore extends BasicStore {
     }
 }
 
-export default GlobalStore;
+export {GlobalStore};

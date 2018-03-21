@@ -21,6 +21,7 @@ const inProduction = process.env.NODE_ENV === 'production';
 // 配置入口文件
 const entry = {
     home: path.resolve(webPagesPath, 'home.js'),
+    gayme: path.resolve(webPagesPath, 'gayme.js'),
 };
 const entriesArray = [];
 for (let key in entry) {
@@ -48,16 +49,58 @@ const output = {
     filename: '[name].bundle.js',
 };
 
+const modules = {
+    loaders: [
+        {
+            test: /\.js$/,
+            loaders: [
+                'babel-loader',
+                path.resolve(rootPath, 'loaders', 'clientEntryLoader.js'),
+            ],
+            include: entriesArray,
+        },
+        {
+            test: /.(js|jsx)?$/,
+            loader: 'babel-loader',
+            exclude: /node_modules/,
+            query: {
+                plugins: ['transform-object-assign']
+            }
+        },
+        {
+            test: /\.(less)$/,
+            use: [
+                {loader: 'style-loader'},
+                {loader: 'css-loader'},
+                {
+                    loader: 'less-loader',
+                    options: {
+                        javascriptEnabled: true,
+                    },
+                },
+            ],
+        },
+        {
+            test: /\.(css|scss|sass)$/,
+            loader: 'style-loader!css-loader!sass-loader',
+        },
+        {
+            test: /\.html$/,
+            loader: 'html-loader',
+        },
+    ],
+};
+
 let config = {
     cache: false,
     target: 'web',
     entry,
     output,
+    module: modules,
     resolve: {
         alias: { // 这里需要个app.js里保持一致
             DFPages: path.resolve(webPath, 'pages'),
             DFLibs: path.resolve(webPath, 'libs'),
-            DFUIs: path.resolve(webPath, 'uis'),
             DFComponents: path.resolve(webPath, 'components'),
             DFStyles: path.resolve(webPath, 'styles'),
             DFStores: path.resolve(webPath, 'stores'),
@@ -67,46 +110,6 @@ let config = {
         },
         mainFiles: ['index'],
         extensions: ['.js', '.json', '.jsx', '.css', '.less', '.scss', '.sass'],
-    },
-    module: {
-        loaders: [
-            {
-                test: /\.js$/,
-                loaders: [
-                    'babel-loader',
-                    path.resolve(rootPath, 'loaders', 'clientEntryLoader.js'),
-                ],
-                include: entriesArray,
-            },
-            {
-                test: /.(js|jsx)?$/,
-                loaders: [
-                    'babel-loader',
-                ],
-                exclude: /node_modules/,
-            },
-            {
-                test: /\.(less)$/,
-                use: [
-                    {loader: 'style-loader'},
-                    {loader: 'css-loader'},
-                    {
-                        loader: 'less-loader',
-                        options: {
-                            javascriptEnabled: true,
-                        },
-                    },
-                ],
-            },
-            {
-                test: /\.(css|scss|sass)$/,
-                loader: 'style-loader!css-loader!sass-loader',
-            },
-            {
-                test: /\.html$/,
-                loader: 'html-loader',
-            },
-        ],
     },
     plugins: [],
 };
@@ -121,4 +124,5 @@ module.exports = {
     webPagesPath,
     config,
     externals,
+    modules,
 };

@@ -9,7 +9,7 @@ import {enableLogging} from 'DFPlugins/logger';
 import {BasicStore, memoryStorage} from './BasicStore';
 import {inClient} from 'DFUtils';
 
-export default class GBS{
+export class GBS{
     constructor(subStoresArray) {
         /* init logger */
         enableLogging({

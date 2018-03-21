@@ -26,7 +26,6 @@ module.exports = {
         ['module-alias',[ // 这里需要个webpack.config.js里保持一致
             {src: path.join(webPath, 'pages'), expose: 'DFPages'}, // 客户端页面
             {src: path.join(webPath, 'libs'), expose: 'DFLibs'},
-            {src: path.join(webPath, 'uis'), expose: 'DFUIs'},
             {src: path.join(webPath, 'components'), expose: 'DFComponents'},
             {src: path.join(webPath, 'styles'), expose: 'DFStyles'},
             {src: path.join(webPath, 'stores'), expose: 'DFStores'},

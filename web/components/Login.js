@@ -10,7 +10,7 @@ import {observable, action} from 'mobx';
 import {observer, inject} from 'mobx-react';
 import styled from 'styled-components';
 import {theme, rem} from 'DFStyles';
-import {Form, Label, LabelName, Submit} from 'DFUIs';
+import {Form, Label, LabelName, Submit} from 'DFComponents/uis';
 import {Mob} from 'DFComponents';
 import GBS from 'DFStores';
 import Dialog, {DialogTitle, DialogContent, DialogContentText} from 'material-ui/Dialog';

@@ -15,7 +15,6 @@ let config = {
         alias: { // 这里需要个app.js里保持一致
             DFPages: path.resolve(webPath, 'pages'),
             DFLibs: path.resolve(webPath, 'libs'),
-            DFUIs: path.resolve(webPath, 'uis'),
             DFComponents: path.resolve(webPath, 'components'),
             DFStyles: path.resolve(webPath, 'styles'),
             DFStores: path.resolve(webPath, 'stores'),

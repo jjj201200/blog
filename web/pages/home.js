@@ -5,25 +5,29 @@
  */
 import React from 'react';
 import {observer, inject} from 'mobx-react';
-import styled from 'styled-components';
-import {Body} from 'DFUIs';
-import {theme} from 'DFStyles';
-import CssBaseline from 'material-ui/CssBaseline';
-import {Header, ArticleList} from 'DFComponents';
+import {Body} from 'DFComponents/uis';
+import {Header, ArticleList, Gayme} from 'DFComponents';
 import Snackbar from 'material-ui/Snackbar';
+// import {Route} from "../components/lib/Route";
+// import styled from 'styled-components';
+// import {theme} from 'DFStyles';
+// import CssBaseline from 'material-ui/CssBaseline';
 // import Cookies from 'js-cookie';
 
-@inject('GlobalStore') @observer
+const {Route, Link} = require("react-router-dom");
+
+@inject('GlobalStore', 'Routing') @observer
 class Index extends React.Component {
     render() {
-        const {GlobalStore} = this.props;
+        const {GlobalStore, Routing} = this.props;
+        console.log(Routing);
         const {open, anchorOrigin, autoHideDuration, onClose, message, action} = GlobalStore.snackbar;
         return (
             <div>
-                {/*<CssBaseline key="reboot-style"/>*/}
                 <Header/>
                 <Body>
-                <ArticleList/>
+                <Route path="/gayme" component={Gayme}/>
+                <Route exact path="/" component={ArticleList}/>
                 </Body>
                 <Snackbar
                     className="global-snackbar"

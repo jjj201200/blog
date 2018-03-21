@@ -18,6 +18,8 @@ import Button from 'material-ui/Button';
 import Grid from 'material-ui/Grid';
 import {SignUpMob, LoginMob, WriteMob} from 'DFComponents';
 
+const {Route, Link} = require("react-router-dom");
+
 const styles = {
     root: {
         flexGrow: 1,
@@ -31,7 +33,7 @@ const styles = {
     },
 };
 
-@inject('UserStore') @observer
+@inject('UserStore', 'Routing') @observer
 class HeaderView extends React.Component {
     @observable mobStatus = null;
 
@@ -63,7 +65,8 @@ class HeaderView extends React.Component {
     }
 
     render() {
-        const {UserStore, classes, title} = this.props;
+        const {Routing, UserStore, classes, title} = this.props;
+        const {push, goBack, location} = Routing;
         const hasSignIn = UserStore.hasSignIn;
         return [
             <AppBar key="app-bar" className={classes.root} position="fixed">
@@ -80,14 +83,15 @@ class HeaderView extends React.Component {
                                     </Typography>
                                 </Grid>
                                 <Grid item>
-                                    <Button color="inherit" onClick={() => this.toggleMob('signUp')}>Gayme</Button>
+                                    <Button color="inherit" onClick={() => {push('/gayme');console.log(location);}}>Gayme</Button>
+                                    <Button color="inherit" onClick={() => {push('/');console.log(location);}}>back</Button>
                                 </Grid>
                             </Grid>
                         </Grid>
                         <Grid item xs={6}>
                             <Grid container spacing={16} justify="flex-end">
                                 {!hasSignIn && <Grid item>
-                                     <Button color="inherit" onClick={() => this.toggleMob('login')}>Sign In</Button>
+                                    <Button color="inherit" onClick={() => this.toggleMob('login')}>Sign In</Button>
                                 </Grid>}
                                 {!hasSignIn && <Grid item>
                                     <Button color="inherit" onClick={() => this.toggleMob('signUp')}>Sign Up</Button>

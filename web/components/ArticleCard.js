@@ -7,7 +7,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import {theme, rem} from 'DFStyles';
-import {Card, Button} from 'DFUIs';
+import {Card, Button} from 'DFComponents/uis';
 
 const ArticleCardWrapper = Card.extend`
     padding: 0;
