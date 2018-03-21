@@ -59,6 +59,7 @@ export class UserStore extends BasicStore {
                     //TODO
                 } else {
                     const user = res.data;
+                    this.requestSending = false;
                     this.store.set('currentUser', new User(user));
                     this.updateLoginStatus(true);
                     this.root.stores.GlobalStore.onOpenSnackbar({
@@ -68,6 +69,7 @@ export class UserStore extends BasicStore {
             },
             fail: (res) => {
                 this.updateLoginStatus(false);
+                this.requestSending = false;
                 console.log(res);
             },
         }).done(() => {
@@ -98,6 +100,7 @@ export class UserStore extends BasicStore {
             },
             fail: (res) => {
                 this.updateLoginStatus(false);
+                this.requestSending = false;
                 console.error(res);
             },
         }).done(() => {
@@ -129,6 +132,7 @@ export class UserStore extends BasicStore {
             },
             fail: (res) => {
                 this.updateLoginStatus(false);
+                this.requestSending = false;
                 console.error(res);
             },
         }).done(() => {
@@ -162,6 +166,7 @@ export class UserStore extends BasicStore {
             },
             fail: (res) => {
                 this.updateLoginStatus(false);
+                this.requestSending = false;
                 console.error(res);
             },
         }).done(() => {

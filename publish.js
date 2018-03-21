@@ -33,10 +33,10 @@ const serverList = [{
     name: 'aliyun - hongkong',
     short: 'aliyun - hongkong',
     value: {
-        srcDir: './',
+        srcDir: './app/public',
         branch: 'master',
         host: 'root@47.91.213.174',
-        path: 'blog/',
+        path: 'blog/app/public',
         webpack: require.resolve('./webpack.config.production'),
         web: 'http://www.drowsyflesh.com',
     }
