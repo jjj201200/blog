@@ -115,6 +115,7 @@ module.exports = app => {
         }
 
         /**
+         * method - get
          * 根据文章id返回文章数据
          */
         async get(rule) {
@@ -134,6 +135,7 @@ module.exports = app => {
         }
 
         /**
+         * method - get
          * 根据用户名返回文章列表
          * 支持分页
          */
@@ -141,7 +143,7 @@ module.exports = app => {
             const {service, request, helper} = this.ctx;
             try {
                 helper.checkParams(request.query, rule); // 校验get请求的参数
-                const {username, page, pageSize} = request.body;
+                const {username, page, pageSize} = request.query;
                 const conditions = {
                     username,
                 };

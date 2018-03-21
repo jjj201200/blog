@@ -35,6 +35,8 @@ export class UserStore extends BasicStore {
 
     @observable requestSending = false;
 
+    @observable userInitialed = false;
+
     @action('initUserStore')
     init() {
         // if (!inClient()) return;
@@ -59,12 +61,14 @@ export class UserStore extends BasicStore {
                     //TODO
                 } else {
                     const user = res.data;
-                    this.requestSending = false;
+
                     this.store.set('currentUser', new User(user));
                     this.updateLoginStatus(true);
                     this.root.stores.GlobalStore.onOpenSnackbar({
                         msg: 'sign in successfully'
                     });
+                    this.requestSending = false;
+                    this.userInitialed = true;
                 }
             },
             fail: (res) => {
