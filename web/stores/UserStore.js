@@ -69,10 +69,9 @@ export class UserStore extends BasicStore {
             },
             fail: (res) => {
                 this.updateLoginStatus(false);
-                this.requestSending = false;
                 console.log(res);
             },
-        }).done(() => {
+        }).always(() => {
             this.requestSending = false;
         });
     }
@@ -100,10 +99,9 @@ export class UserStore extends BasicStore {
             },
             fail: (res) => {
                 this.updateLoginStatus(false);
-                this.requestSending = false;
                 console.error(res);
             },
-        }).done(() => {
+        }).always(() => {
             this.requestSending = false;
         });
     }
@@ -132,10 +130,9 @@ export class UserStore extends BasicStore {
             },
             fail: (res) => {
                 this.updateLoginStatus(false);
-                this.requestSending = false;
                 console.error(res);
             },
-        }).done(() => {
+        }).always(() => {
             this.requestSending = false;
         });
     }
@@ -166,10 +163,9 @@ export class UserStore extends BasicStore {
             },
             fail: (res) => {
                 this.updateLoginStatus(false);
-                this.requestSending = false;
                 console.error(res);
             },
-        }).done(() => {
+        }).always(() => {
             this.requestSending = false;
         });
 

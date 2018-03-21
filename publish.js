@@ -86,6 +86,7 @@ inquirer.prompt([
     shelljs.exec(`npm run build`);
 
     message('开始上传文件到目标服务器');
+    console.log(`将 ${answers.server.srcDir} 传输到 ${answers.server.host}:${answers.server.path} 目录下`.yellow.blod);
     rsyncFolders(`${answers.server.srcDir}`, `${answers.server.host}:${answers.server.path}`);
     // shelljs.exec('yarn');
 });

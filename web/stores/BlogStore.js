@@ -91,7 +91,7 @@ export class BlogStore extends BasicStore {
             fail: (e) => {
                 console.error(e);
             }
-        }).done(() => {
+        }).always(() => {
             this.requestSending = false;
         })
     }

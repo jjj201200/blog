@@ -91,7 +91,7 @@ export class EditorStore extends BasicStore {
             fail: (e) => {
                 console.error(e);
             },
-        }).done(() => {
+        }).always(() => {
             this.requestSending = false;
         });
     }
@@ -137,7 +137,7 @@ export class EditorStore extends BasicStore {
             fail: (e) => {
                 console.error(e);
             },
-        }).done(() => {
+        }).always(() => {
             this.requestSending = false;
         });
     }
@@ -259,7 +259,7 @@ export class EditorStore extends BasicStore {
                 fail: (res) => {
                     console.error(res);
                 },
-            }).done(() => {
+            }).always(() => {
                 this.requestSending = false;
             });
         } catch (e) {
@@ -309,7 +309,7 @@ export class EditorStore extends BasicStore {
                 fail: (res) => {
                     console.error(res);
                 },
-            }).done(() => {
+            }).always(() => {
                 this.requestSending = false;
             });
         } catch (e) {
@@ -353,7 +353,7 @@ export class EditorStore extends BasicStore {
             fail: (e) => {
                 console.error(e);
             },
-        }).done(() => {
+        }).always(() => {
             this.requestSending = false;
         });
     }
@@ -393,7 +393,7 @@ export class EditorStore extends BasicStore {
                 fail: (e) => {
                     console.error(new Error(e));
                 },
-            }).done(() => {
+            }).always(() => {
                 this.requestSending = false;
             });
         }
@@ -433,7 +433,7 @@ export class EditorStore extends BasicStore {
                 fail: (e) => {
                     console.error(new Error(e));
                 },
-            }).done(() => {
+            }).always(() => {
                 this.requestSending = false;
             });
         }
