@@ -20,7 +20,6 @@ const {Route, Link} = require("react-router-dom");
 class Index extends React.Component {
     render() {
         const {GlobalStore, Routing} = this.props;
-        console.log(Routing);
         const {open, anchorOrigin, autoHideDuration, onClose, message, action} = GlobalStore.snackbar;
         return (
             <div>

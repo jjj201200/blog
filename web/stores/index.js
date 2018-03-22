@@ -6,14 +6,15 @@
 import {GBS} from './GBS';
 import {GlobalStore} from './GlobalStore';
 // import {RouterStore} from './RouterStore';
+import {GaymeStore} from './GaymeStore';
 import {UserStore} from './UserStore';
 import {EditorStore} from './EditorStore';
 import {BlogStore} from './BlogStore';
 
 export default new GBS([
     GlobalStore,
-    // RouterStore,
     UserStore,
+    GaymeStore,
     BlogStore,
     EditorStore,
 ]);

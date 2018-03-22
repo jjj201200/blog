@@ -6,7 +6,10 @@
 'use strict';
 
 module.exports = app => {
-    const {controller, router} = app;
+    const {controller, router, io} = app;
+    // socket.io 这里匹配的是接受事件名
+    io.of('/').route('livingRoom', io.controller.livingRoom.index);
+
     router.get('/', controller.page.index);
     router.get('/gayme', controller.page.gayme);
     // TODO router.get('/blog', controller.page.blog);

@@ -83,8 +83,8 @@ class HeaderView extends React.Component {
                                     </Typography>
                                 </Grid>
                                 <Grid item>
-                                    <Button color="inherit" onClick={() => {push('/gayme');console.log(location);}}>Gayme</Button>
-                                    <Button color="inherit" onClick={() => {push('/');console.log(location);}}>back</Button>
+                                    <Button color="inherit" onClick={() => {push('/gayme');}}>Gayme</Button>
+                                    <Button color="inherit" onClick={() => {push('/');}}>back</Button>
                                 </Grid>
                             </Grid>
                         </Grid>

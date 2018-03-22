@@ -1,0 +1,10 @@
+.gayme {
+  .player-list {
+    .me *{
+      color: #f50056;
+    }
+    .divider:last-of-type {
+      display: none;
+    }
+  }
+}

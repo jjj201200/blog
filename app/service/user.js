@@ -38,15 +38,19 @@ class UserService extends Service {
                 // TODO 标准的错误处理
                 ctx.body = {code: -1, message: 'has user'};
             } else {
+                const loginDate = helper.currentTime;
                 const user = new User({ // 新用户实例
-                    username, password, email,
-                    loginDate: helper.currentTime,
+                    username, password, email, loginDate,
                 });
                 await user.save().then((newUser) => { // 插入新用户到数据库
                     const {username, email} = newUser;
                     service.jwt.create({username, email}); // 创建登录凭据
-                    that.setUserSession({signIn: true}); // 设置登录状态
-                    ctx.body = {code: 0, message: 'sign up successfully'};
+                    that.setUserSession({username, signIn: true}); // 设置登录状态
+                    ctx.body = {
+                        code: 0,
+                        message: 'sign up successfully',
+                        data: {username, email, loginDate},
+                    };
                 }).catch((e) => {
                     // TODO 标准的错误处理
                     ctx.body = {code: -1, message: e};
@@ -76,7 +80,7 @@ class UserService extends Service {
                     const loginDate = helper.currentTime;
                     user.set({loginDate}); // 设置登录时间
                     await user.save().then(() => {
-                        that.setUserSession({signIn: true});
+                        that.setUserSession({username, signIn: true});
                         service.jwt.create({username, email, loginDate}); // 更新jwt
                         ctx.body = {code: 0, data: {username, email, loginDate}};
                     }).catch((err) => {

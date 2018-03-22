@@ -4,6 +4,7 @@
  * Description: 入口页面组件名必须为Index
  */
 import React from 'react';
+import {autorun} from 'mobx';
 import {observer, inject} from 'mobx-react';
 import styled from 'styled-components';
 import {Body} from 'DFComponents/uis';
@@ -13,6 +14,8 @@ import {Header, ArticleList, Gayme} from 'DFComponents';
 import Snackbar from 'material-ui/Snackbar';
 // import Cookies from 'js-cookie';
 const {Route, Link} = require("react-router-dom");
+// import Sockette from 'sockette';
+import io from 'socket.io-client';
 
 @inject('GlobalStore') @observer
 class Index extends React.Component {
