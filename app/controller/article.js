@@ -7,7 +7,7 @@
 module.exports = app => {
     const {Controller} = app;
 
-    class ArticleController extends Controller {
+    return class ArticleController extends Controller {
         /**
          * methods是一个校验请求方法的配置对象
          * 包含了允许请求的方法名称和参数校验规则
@@ -247,6 +247,4 @@ module.exports = app => {
             }
         }
     }
-
-    return ArticleController;
 };

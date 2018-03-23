@@ -7,7 +7,7 @@
 module.exports = app => {
     const {Controller} = app;
 
-    class GaymeControler extends Controller {
+    return class GaymePlayerController extends Controller {
         /**
          * methods是一个校验请求方法的配置对象
          * 包含了允许请求的方法名称和参数校验规则
@@ -20,27 +20,30 @@ module.exports = app => {
                     get: { // 获取文章数据
                         name: 'get',
                         rule: {
-                            articleId: {type: 'string', required: true},
+                            userId: {type: 'string', required: true},
                         },
                     },
-                    getListByUsername: { // 获取文章列表
-                        name: 'getListByUsername',
-                        rule: {
-                            username: {type: 'string', required: true},
-                            page: {type: 'number'},
-                            pageSize: {type: 'number'},
-                        },
-                    },
-                    getListByPublished: { // 获取文章列表
-                        name: 'getListByPublished',
-                        rule: {
-                            page: {type: 'number'},
-                            pageSize: {type: 'number'},
-                        },
-                        checkJWT: false,
-                    },
+                    // getListByUsername: { // 获取文章列表
+                    //     name: 'getListByUsername',
+                    //     rule: {
+                    //         username: {type: 'string', required: true},
+                    //         page: {type: 'number'},
+                    //         pageSize: {type: 'number'},
+                    //     },
+                    // },
+                    // getListByPublished: { // 获取文章列表
+                    //     name: 'getListByPublished',
+                    //     rule: {
+                    //         page: {type: 'number'},
+                    //         pageSize: {type: 'number'},
+                    //     },
+                    //     checkJWT: false,
+                    // },
                 },
                 POST: {
+                    addCard: {
+
+                    },
                     create: { // 创建新文章
                         name: 'create',
                         rule: {
@@ -49,36 +52,36 @@ module.exports = app => {
                             content: {type: 'object', required: true},
                         },
                     },
-                    update: { // 更新文章
-                        name: 'update',
-                        rule: {
-                            articleId: {type: 'string', required: true},
-                            title: {type: 'string'},
-                            tags: {type: 'array'},
-                            content: {type: 'object'},
-                            username: {type: 'string'},
-                        },
-                    },
-                    delete: { // 删除文章
-                        name: 'delete',
-                        rule: {
-                            articleIdArray: {type: 'array', required: true},
-                        },
-                    },
-                    publish: { // 发布文章
-                        name: 'update',
-                        rule: {
-                            articleId: {type: 'string', required: true},
-                            hasPublished: {type: 'boolean'},
-                        },
-                    },
-                    unpublish: { // 取消发布文章
-                        name: 'update',
-                        rule: {
-                            articleId: {type: 'string', required: true},
-                            hasPublished: {type: 'boolean'},
-                        },
-                    },
+                    // update: { // 更新文章
+                    //     name: 'update',
+                    //     rule: {
+                    //         articleId: {type: 'string', required: true},
+                    //         title: {type: 'string'},
+                    //         tags: {type: 'array'},
+                    //         content: {type: 'object'},
+                    //         username: {type: 'string'},
+                    //     },
+                    // },
+                    // delete: { // 删除文章
+                    //     name: 'delete',
+                    //     rule: {
+                    //         articleIdArray: {type: 'array', required: true},
+                    //     },
+                    // },
+                    // publish: { // 发布文章
+                    //     name: 'update',
+                    //     rule: {
+                    //         articleId: {type: 'string', required: true},
+                    //         hasPublished: {type: 'boolean'},
+                    //     },
+                    // },
+                    // unpublish: { // 取消发布文章
+                    //     name: 'update',
+                    //     rule: {
+                    //         articleId: {type: 'string', required: true},
+                    //         hasPublished: {type: 'boolean'},
+                    //     },
+                    // },
                 },
             };
         };
@@ -111,6 +114,10 @@ module.exports = app => {
                     message: e.message,
                 };
             }
+        }
+
+        async addCard(rule) {
+
         }
     }
 }

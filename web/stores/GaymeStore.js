@@ -9,12 +9,16 @@ import {Ajax} from 'DFUtils';
 import io from 'socket.io-client';
 import {BasicStore, memoryStorage} from "./BasicStore";
 
+/**
+ * Gayme游戏框架的变量仓库
+ */
 export class GaymeStore extends BasicStore {
     constructor(rootStore) {
         super('GaymeStore', rootStore, [memoryStorage]);
         this.load();
         const that = this;
         autorun(() => {
+            // 用户没有登录 且 socket已经连接
             if (!rootStore.stores.UserStore.userInitialed && that.socket && that.socket.connected) {
                 that.disconnect();
             }
@@ -31,11 +35,11 @@ export class GaymeStore extends BasicStore {
 
     init() {
         const that = this;
-        this.socket.on('getRoomId', (roomId) => {
+        // 获取房间号
+        this.socket.on('getRoomId', (roomId) => { // 获取被分配的房间号
             that.roomId = roomId;
-            console.log(roomId);
-            console.log(`${'roomId'.padEnd(6, ' ')} ${roomId}`)
-            that.getPlayerList();
+            console.log(`${'roomId'.padEnd(6, ' ')} ${roomId}`);
+            that.getPlayerList(roomId);
         })
 
         this.socket.on('getBattlePost', (postId) => {
@@ -43,9 +47,9 @@ export class GaymeStore extends BasicStore {
         })
     }
 
-    getPlayerList() {
+    getPlayerList(roomId) {
         const that = this;
-        this.socket.emit('livingRoom', {method: 'getPlayerList'});
+        this.socket.emit('livingRoom', {method: 'getPlayerList', data: {roomId}});
         this.socket.on('playerList', (listData) => {
             console.table(listData.sockets);
             that.playerList = listData.sockets;
@@ -67,7 +71,9 @@ export class GaymeStore extends BasicStore {
         if (user) { // 已经登录
             this.socket = io('http://127.0.0.1:7001/', {forceNew: false});
             this.socket.on('connect', function (e) {
+                // 成功连接时，打印自己的id
                 console.log(`${'id'.padEnd(6, ' ')} ${that.socket.id}`);
+                // 初始化
                 that.init();
                 that.root.stores.GlobalStore.onOpenSnackbar({
                     msg: 'Connect successfully',
@@ -78,6 +84,12 @@ export class GaymeStore extends BasicStore {
             });
             this.socket.on('roomId', function (data) {
                 console.log('roomId', data);
+            });
+            this.socket.on('connect_timeout', function (e) {
+                console.log('connect timeout', e);
+                that.root.stores.GlobalStore.onOpenSnackbar({
+                    msg: 'Connect timeout',
+                });
             });
             this.socket.on('reconnect', function (e) {
                 console.log('reconnect', e);

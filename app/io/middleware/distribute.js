@@ -11,7 +11,7 @@ module.exports = app => {
         const {socket} = ctx;
         const rooms = app.io.sockets.adapter.rooms; // 房间
         const roomsKey = Object.keys(rooms);
-        console.log(roomsKey);
+        // console.log(roomsKey);
         // if (roomsKey.length) {
         socket.join('room0');
         socket.emit('getRoomId', 'room0');

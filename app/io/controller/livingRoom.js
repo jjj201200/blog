@@ -26,10 +26,12 @@ module.exports = app => {
         /**
          * 返回大厅玩家列表
          */
-        getPlayerList() {
+        getPlayerList(requestBody) {
             const {socket, app} = this.ctx;
+            const {data} = requestBody;
+            console.log(data);
             // console.log(socket.id, socket.rooms, app.io.sockets.adapter.rooms);
-            app.io.to('room0').emit('playerList', app.io.sockets.adapter.rooms['room0']);
+            app.io.to(data.roomId).emit('playerList', app.io.sockets.adapter.rooms['room0']);
         }
 
         sendBattlePost(requestBody) {
