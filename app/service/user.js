@@ -116,6 +116,7 @@ class UserService extends Service {
      * @param {string} username
      */
     async getUser(username) {
+        const that = this;
         const {ctx} = this;
         const {User} = ctx.model;
         try {
@@ -125,6 +126,7 @@ class UserService extends Service {
                     console.error(err);
                 } else if (user) {
                     const {username, email} = user;
+                    that.setUserSession({username, signIn: true});
                     ctx.body = {
                         code: 0,
                         data: {username, email},

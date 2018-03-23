@@ -13,6 +13,7 @@ module.exports = app => {
             type: Schema.Types.ObjectId,
             required: true,
             ref: 'user',
+            unique: true,
         },
         nickname: {
             type: String,
@@ -28,6 +29,6 @@ module.exports = app => {
             ref: 'card',
         }],
         loginDate: {type: Date, default: Date.now},
-    });
+    }, { id: false });
     return Player;
 }

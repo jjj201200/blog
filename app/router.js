@@ -6,19 +6,21 @@
 'use strict';
 
 module.exports = app => {
-    const {controller, router, io} = app;
+    const {router, io} = app;
+    const {page, user, article} = app.controller;
+    const {livingRoom, connection} = io.controller;
     // socket.io 这里匹配的是接受事件名
-    io.of('/').route('livingRoom', io.controller.livingRoom.index);
+    io.of('/').route('livingRoom', livingRoom.index);
 
-    router.get('/', controller.page.index);
-    router.get('/gayme', controller.page.gayme);
-    // TODO router.get('/blog', controller.page.blog);
-    router.post('/api/sign_up', controller.user.signUp);
-    router.post('/api/sign_in', controller.user.signIn);
-    router.post('/api/sign_out', controller.user.signOut);
-    router.post('/api/get_user', controller.user.getUser);
+    router.get('/', page.index);
+    router.get('/gayme', page.gayme);
+    // TODO router.get('/blog', page.blog);
+    router.post('/api/sign_up', user.signUp);
+    router.post('/api/sign_in', user.signIn);
+    router.post('/api/sign_out', user.signOut);
+    router.post('/api/get_user', user.getUser);
 
     // 文章
-    router.get('/api/article', controller.article.index);
-    router.post('/api/article', controller.article.index);
+    router.get('/api/article', article.index);
+    router.post('/api/article', article.index);
 };

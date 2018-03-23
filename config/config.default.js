@@ -47,11 +47,13 @@ module.exports = appInfo => {
         },
         io: {
             init: {
+                pingInterval: 30000,
+                cookie: true,
             }, // passed to engine.io
             namespace: {
                 '/': {
-                    connectionMiddleware: ['distribute'],
-                    packetMiddleware: ['filter'],
+                    connectionMiddleware: ['connection'],
+                    packetMiddleware: [],
                 },
             },
             // redis: {

@@ -17,10 +17,18 @@ export class GaymeStore extends BasicStore {
         super('GaymeStore', rootStore, [memoryStorage]);
         this.load();
         const that = this;
+        const {UserStore} = rootStore.stores;
         autorun(() => {
             // 用户没有登录 且 socket已经连接
-            if (!rootStore.stores.UserStore.userInitialed && that.socket && that.socket.connected) {
+            if (!UserStore.userInitialed && that.socket && that.socket.connected) {
                 that.disconnect();
+            }
+            if (UserStore.userInitialed) { // 是否登录
+                if (!that.socket) { // 是否连接过
+                    that.connect(UserStore.currentUser);
+                } else if (!that.socket.connected) { // 没有连接过就重连
+                    that.reconnect();
+                }
             }
         })
     }
@@ -31,20 +39,29 @@ export class GaymeStore extends BasicStore {
 
     @observable requestSending = false; // 请求状态，如果在请求中，这个状态可用于置灰按钮
 
-    @observable playerList = {}; // 大厅的玩家列表
+    @observable.shallow playerList = {}; // 大厅的玩家列表
+
+
 
     init() {
         const that = this;
         // 获取房间号
-        this.socket.on('getRoomId', (roomId) => { // 获取被分配的房间号
-            that.roomId = roomId;
-            console.log(`${'roomId'.padEnd(6, ' ')} ${roomId}`);
-            that.getPlayerList(roomId);
-        })
+        this.socket.on('getInitData', (initData) => { // 获取初始化游戏数据
+            that.roomId = initData.roomId;
+            console.log(`${'roomId'.padEnd(6, ' ')} ${initData.roomId}`);
+            that.getPlayerList(initData.roomId);
+        });
 
         this.socket.on('getBattlePost', (postId) => {
             console.log(postId);
-        })
+        });
+
+        this.socket.on('disconnect', function (e) {
+            console.log('disconnect', e);
+            that.root.stores.GlobalStore.onOpenSnackbar({
+                msg: 'Disconnect successfully',
+            });
+        });
     }
 
     getPlayerList(roomId) {
@@ -53,7 +70,10 @@ export class GaymeStore extends BasicStore {
         this.socket.on('playerList', (listData) => {
             console.table(listData.sockets);
             that.playerList = listData.sockets;
-        })
+        });
+        this.socket.on('res', function (data) {
+            console.log(data);
+        });
     }
 
     sendBattlePost(targetId) {
@@ -68,22 +88,25 @@ export class GaymeStore extends BasicStore {
     @action
     connect(user) {
         const that = this;
+        const {UserStore} = this.root.stores;
         if (user) { // 已经登录
-            this.socket = io('http://127.0.0.1:7001/', {forceNew: false});
+            this.socket = io('http://127.0.0.1:7001/', {
+                reconnection: true, // 开启重连
+                reconnectionAttempts: 10, // 重连尝试次数
+                reconnectionDelay: 5000, // 重连间隔
+                forceNew: true,
+                query: {
+                    username: UserStore.currentUser.username,
+                },
+            });
             this.socket.on('connect', function (e) {
                 // 成功连接时，打印自己的id
-                console.log(`${'id'.padEnd(6, ' ')} ${that.socket.id}`);
-                // 初始化
-                that.init();
                 that.root.stores.GlobalStore.onOpenSnackbar({
                     msg: 'Connect successfully',
                 });
-            });
-            this.socket.on('res', function (data) {
-                console.log(data);
-            });
-            this.socket.on('roomId', function (data) {
-                console.log('roomId', data);
+                console.log(`${'id'.padEnd(6, ' ')} ${that.socket.id}`);
+                // 初始化
+                that.init();
             });
             this.socket.on('connect_timeout', function (e) {
                 console.log('connect timeout', e);
@@ -96,12 +119,6 @@ export class GaymeStore extends BasicStore {
                 that.init();
                 that.root.stores.GlobalStore.onOpenSnackbar({
                     msg: 'Reconnect successfully',
-                });
-            });
-            this.socket.on('disconnect', function (e) {
-                console.log('disconnect', e);
-                that.root.stores.GlobalStore.onOpenSnackbar({
-                    msg: 'Disconnect successfully',
                 });
             });
         } else { // 没有登录

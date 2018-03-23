@@ -22,20 +22,6 @@ const GameBox = styled(Card)`
 
 @inject('GlobalStore', 'UserStore', 'GaymeStore') @observer
 export class Gayme extends React.Component {
-    constructor(props) {
-        super(props);
-        const {GaymeStore, UserStore} = props;
-        autorun(() => {
-            if (UserStore.userInitialed) { // 是否登录
-                if (!GaymeStore.socket) { // 是否连接过
-                    GaymeStore.connect(UserStore.currentUser);
-                } else if (!GaymeStore.socket.connected) { // 没有连接过就重连
-                    GaymeStore.reconnect();
-                }
-            }
-        })
-    }
-
     componentWillUnmount() {
         const {GaymeStore} = this.props;
         GaymeStore.disconnect();
@@ -43,7 +29,7 @@ export class Gayme extends React.Component {
 
     render() {
         const {GaymeStore} = this.props;
-        const playerList = toJS(GaymeStore.playerList);
+        const playerList = GaymeStore.playerList;
         return (
             <GameBox className="gayme">
                 <CardHeader

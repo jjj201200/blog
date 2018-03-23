@@ -58,7 +58,7 @@ $ npm run analysis
 
 
 
-### FE - 前端
+#### FE - 前端
 
 Mobx:[https://mobx.js.org/](https://mobx.js.org/)
 
@@ -69,14 +69,7 @@ Draft.js:[https://draftjs.org/docs/](https://draftjs.org/docs/)
 react-draft-wysiwyg:[https://jpuri.github.io/react-draft-wysiwyg/#/docs](https://jpuri.github.io/react-draft-wysiwyg/#/docs)
 
 
-
-### ME - 中端
-
-NONE
-
-
-
-### BE - 后端
+#### BE - 后端
 
 mongoose:[http://mongoosejs.com/docs/guide.html](http://mongoosejs.com/docs/guide.html)
 
@@ -86,13 +79,13 @@ MongoDB:[https://docs.mongodb.com/](https://docs.mongodb.com/)
 
 
 
-### Other
+#### Other
 
 mobx-logger:[https://github.com/winterbe/mobx-logger](https://github.com/winterbe/mobx-logger)
 
 
 
-## 文件目录
+### 文件目录
 
 ```bash
 project
@@ -101,17 +94,24 @@ project
 ┃  ┣━ extend - egg.js中约定的扩展目录
 ┃  ┃  ┣━ application.js - 对app对象的扩展
 ┃  ┃  ┣━ context.js - 对ctx对象的扩展
-┃  ┃  ┣━ helper.js - 对ctx.helper对象的扩展
+┃  ┃  ┗━ helper.js - 对ctx.helper对象的扩展
+┃  ┣━ io - socket.io 服务相关
+┃  ┃  ┣━ controller - 服务端匹配收到的事件
+┃  ┃  ┃  ┗━ livingRoom.js - 游戏大厅相关
+┃  ┃  ┗━ middleware - 中间件
+┃  ┃  　  ┗━ connection.js - 处理链接创建相关
 ┃  ┣━ middleware - 中间件
 ┃  ┣━ model
 ┃  ┣━ public
+┃  ┣━ shedule - 定时任务
+┃  ┣━ schema - 数据库对象模型
 ┃  ┣━ service
 ┃  ┣━ view
 ┃  ┗━ router.js
 ┣━ config
 ┃  ┣━ babelRegister.config.js
-┃  ┣━ config.default.js - egg.js默认配置文件
-┃  ┗━ plugin.js
+┃  ┣┅ config.{default|local|prod}.js
+┃  ┗┅ plugin.{default|local|prod}.js
 ┣━ db - 数据库
 ┣━ lib
 ┃  ┣━ framework.js
@@ -120,7 +120,9 @@ project
 ┣━ logs
 ┣━ node_modules
 ┣━ web
-┃  ┣━ components - 基于ui库的组件
+┃  ┣━ components - 组件库
+┃  ┃  ┣━ gayme
+┃  ┃  ┗━ uis - ui组件，以后改为ui库
 ┃  ┣━ libs
 ┃  ┣━ models - 对应于后端model的模型，用于mobx实例化数据对象，便于管理
 ┃  ┣━ pages - 页面入口，即需要添加在webpack entry中的文件
@@ -132,12 +134,12 @@ project
 ┃  ┃  ┣━ index.js - 实例化并初始化GBS的入口文件
 ┃  ┃  ┣━ UserStore - 用户数据相关Store，包含登录注册和是否需要登录校验等
 ┃  ┃  ┣━ EditorStore - 文章编辑器相关数据Store，包含发布，上传，下载等
+┃  ┃  ┣━ GaymeStore - Gayme游戏相关
 ┃  ┃  ┗━ BlogStore - 文章数据相关Store，文章列表数据和文章相信数据相关的操作和管理
 ┃  ┣━ styles
 ┃  ┃  ┣━ globalInject.js - 使用Styled-component注入全局样式
 ┃  ┃  ┣━ theme.js - 以Styled-component语法风格编写的方便调用的样式库对象，包含参数设定
 ┃  ┃  ┣━ var.js - 以Styled-component语法风格编写的变量/方法导出文件，不包含参数设定
-┃  ┣━ uis - ui组件，以后改为ui库
 ┃  ┗━ utils
 ┣━ .babelrc
 ┣━ .eslintignore
@@ -148,16 +150,14 @@ project
 ┣━ package.json
 ┣━ README
 ┣━ webpack.config.js - 这个文件仅仅用来给IDE读取alias用，不用来编译!!
-┣━ webpack.config.basic.js - 不能用来直接编译
-┣━ webpack.config.development.js - 先编译dll脚本
-┣━ webpack.config.production.js - 先编译dll脚本
-┗━ webpack.config.dll.js - 提前编译
+┣━ webpack.config.{basic|development|production}.js - 不能用来直接编译
+┗━ webpack.config.dll.{basic|development|production}.js - 提前编译
 
 ```
 
 *** 不知道为什么webstorm明明可以指定webpack设置文件，但是只有默认的webpack文件名才有用**
 
-##样式
+### 样式
 
 提倡使用Styled-component定制全局样式，将常用样式组合模块化，个别特殊的/不常用的样式使用sass/less
 
@@ -165,11 +165,14 @@ project
 
 
 
-## 数据持久化
+### 数据持久化
 全局对象: GBS - GlobalStore
 二级对象: UserStore, BlogStore 等
 
 UserStore等二级Store需要继承BasicStore，其提供了初始化方法，如下:
+
+其中你可以指定该二级Store内数据的存储方式，如memoryStorage、localStorage等
+
 ``` javaScript
     class BlogStore extends BasicStore {
         constructor(rootStore) {
@@ -182,6 +185,9 @@ UserStore等二级Store需要继承BasicStore，其提供了初始化方法，�
         }
     }
 ```
+
+### Socket.io
+
 
 
 ## Questions & Suggestions

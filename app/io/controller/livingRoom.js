@@ -5,7 +5,7 @@
  */
 
 module.exports = app => {
-    class LivingRoomController extends app.Controller {
+    return class LivingRoomController extends app.Controller {
         async index() {
             const {socket, args} = this.ctx;
             try {
@@ -29,7 +29,7 @@ module.exports = app => {
         getPlayerList(requestBody) {
             const {socket, app} = this.ctx;
             const {data} = requestBody;
-            console.log(data);
+            console.log(socket.session);
             // console.log(socket.id, socket.rooms, app.io.sockets.adapter.rooms);
             app.io.to(data.roomId).emit('playerList', app.io.sockets.adapter.rooms['room0']);
         }
@@ -41,6 +41,4 @@ module.exports = app => {
             console.log(data.targetId);
         }
     }
-
-    return LivingRoomController;
 }

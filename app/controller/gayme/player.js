@@ -134,11 +134,76 @@ module.exports = app => {
         }
 
         /**
+         * method - get
+         * 根据用户id返回游戏数据
+         */
+        async get(rule) {
+            const {service, request, helper} = this.ctx;
+            try {
+                helper.checkParams(request.query, rule); // 校验get请求的参数
+                const {userId} = request.query;
+                await service.gayme.player.get(userId);
+            } catch (e) {
+                // TODO 标准的错误处理
+                console.error(e);
+                this.ctx.body = {
+                    code: -1,
+                    message: e.message,
+                };
+            }
+        }
+
+        /**
          * 给已登录用户创建玩家数据
-         * @param rule
          */
         async create(rule) {
+            const {service, request, helper} = this.ctx;
+            try {
+                helper.checkParams(request.body, rule);
+                const {userId, nickname} = request.body;
+                await service.gayme.player.create(
+                    userId, nickname,
+                );
+            } catch (e) {
+                // TODO 标准的错误处理
+                console.error(e);
+                this.ctx.body = {
+                    code: -1,
+                    message: e.message,
+                };
+            }
+        }
 
+        async addCard(rule) {
+            const {service, request, helper} = this.ctx;
+            try {
+                helper.checkParams(request.body, rule);
+                const {userId, cardId} = request.body;
+                await service.gayme.player.addCard(userId, cardId);
+            } catch (e) {
+                // TODO 标准的错误处理
+                console.error(e);
+                this.ctx.body = {
+                    code: -1,
+                    message: e.message,
+                };
+            }
+        }
+
+        async removeCard(rule) {
+            const {service, request, helper} = this.ctx;
+            try {
+                helper.checkParams(request.body, rule);
+                const {userId, cardId} = request.body;
+                await service.gayme.player.removeCard(userId, cardId);
+            } catch (e) {
+                // TODO 标准的错误处理
+                console.error(e);
+                this.ctx.body = {
+                    code: -1,
+                    message: e.message,
+                };
+            }
         }
     }
 }
