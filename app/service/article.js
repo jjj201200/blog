@@ -31,7 +31,7 @@ const ArticleReturnString = ArticleReturnKeys.join(' ');
 /**
  * 文章模型
  */
-class ArticleService extends Service {
+module.exports = class ArticleService extends Service {
     constructor(ctx) {
         super(ctx);
         const {service, model, helper, app} = ctx;
@@ -249,5 +249,3 @@ class ArticleService extends Service {
         }
     }
 };
-
-module.exports = ArticleService;

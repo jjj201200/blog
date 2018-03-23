@@ -5,13 +5,5 @@
  * Description: 用户数据表
  */
 module.exports = app => {
-    const {mongoose} = app;
-    const {Schema} = mongoose;
-    const UserSchema = new Schema({
-        username: {type: String, unique: true},
-        password: {type: String},
-        email: {type: String},
-        loginDate: {type: Date, default: Date.now},
-    });
-    return mongoose.model('User', UserSchema);
+    return app.mongoose.model('User', app.Schema.User);
 }

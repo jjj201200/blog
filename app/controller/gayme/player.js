@@ -17,7 +17,7 @@ module.exports = app => {
         get methods() {
             return {
                 GET: {
-                    get: { // 获取文章数据
+                    get: { // 获取玩家数据
                         name: 'get',
                         rule: {
                             userId: {type: 'string', required: true},
@@ -41,17 +41,34 @@ module.exports = app => {
                     // },
                 },
                 POST: {
-                    addCard: {
-
-                    },
-                    create: { // 创建新文章
+                    create: { // 给已登录用户创建玩家数据
                         name: 'create',
                         rule: {
-                            title: {type: 'string', required: true},
-                            tags: {type: 'array', required: true},
-                            content: {type: 'object', required: true},
+                            nickname: {type: 'string', required: true},
                         },
                     },
+                    addCard: { // 给玩家增加卡牌
+                        name: 'addCard',
+                        rule: {
+                            cardId: {type: 'number', required: true},
+                            number: {type: 'number', required: true},
+                        },
+                    },
+                    update: { // 更新玩家胜负数据及场数
+                        name: 'update',
+                        rule: {
+                            userId: {type: 'string', required: true},
+                            win: {type: 'boolean', required: true},
+                        },
+                    },
+                    // create: { // 创建新文章
+                    //     name: 'create',
+                    //     rule: {
+                    //         title: {type: 'string', required: true},
+                    //         tags: {type: 'array', required: true},
+                    //         content: {type: 'object', required: true},
+                    //     },
+                    // },
                     // update: { // 更新文章
                     //     name: 'update',
                     //     rule: {
@@ -116,7 +133,11 @@ module.exports = app => {
             }
         }
 
-        async addCard(rule) {
+        /**
+         * 给已登录用户创建玩家数据
+         * @param rule
+         */
+        async create(rule) {
 
         }
     }

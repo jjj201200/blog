@@ -8,13 +8,13 @@ module.exports = app => {
     const {mongoose} = app;
     const {Schema} = mongoose;
 
-    const GaymePlayer = new Schema({
+    const Player = new Schema({
         userId: {
             type: Schema.Types.ObjectId,
             required: true,
             ref: 'user',
         },
-        name: {
+        nickname: {
             type: String,
             required: true,
             trim: true,
@@ -29,5 +29,5 @@ module.exports = app => {
         }],
         loginDate: {type: Date, default: Date.now},
     });
-    return mongoose.model('GaymePlayer', GaymePlayer);
+    return Player;
 }
