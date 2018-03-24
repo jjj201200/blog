@@ -20,19 +20,6 @@ import {SignUpMob, LoginMob, WriteMob} from 'DFComponents';
 
 const {Route, Link} = require("react-router-dom");
 
-const styles = {
-    root: {
-        flexGrow: 1,
-    },
-    flex: {
-        flex: 1,
-    },
-    menuButton: {
-        marginLeft: -12,
-        marginRight: 20,
-    },
-};
-
 @inject('UserStore', 'Routing') @observer
 class HeaderView extends React.Component {
     @observable mobStatus = null;
@@ -42,7 +29,7 @@ class HeaderView extends React.Component {
         this.toggleMob = ::this.toggleMob;
         this.closeMob = ::this.closeMob;
         autorun(() => {
-            if (this.props.UserStore && this.props.UserStore.hasSignIn === true) {
+            if (this.props.UserStore && this.props.UserStore.userInitialed === true) {
                 this.closeMob();
             }
         });
@@ -67,7 +54,7 @@ class HeaderView extends React.Component {
     render() {
         const {Routing, UserStore, classes, title} = this.props;
         const {push, goBack, location} = Routing;
-        const hasSignIn = UserStore.hasSignIn;
+        const userInitialed = UserStore.userInitialed;
         return [
             <AppBar key="app-bar" className={classes.root} position="fixed">
                 <Toolbar>
@@ -78,28 +65,33 @@ class HeaderView extends React.Component {
                         <Grid item xs={6}>
                             <Grid container spacing={16} justify="flex-start" alignItems="center">
                                 <Grid item>
-                                    <Typography className={classes.flex} variant="title" color="inherit">
+                                    <Typography
+                                        variant="title"
+                                        color="inherit"
+                                        className={classes.flex}
+                                        onClick={() => {push('/');}}
+                                    >
                                         {title || 'Playground'}
                                     </Typography>
                                 </Grid>
                                 <Grid item>
                                     <Button color="inherit" onClick={() => {push('/gayme');}}>Gayme</Button>
-                                    <Button color="inherit" onClick={() => {push('/');}}>back</Button>
+                                    <Button color="inherit" onClick={() => {push('/cards');}}>Cards</Button>
                                 </Grid>
                             </Grid>
                         </Grid>
                         <Grid item xs={6}>
                             <Grid container spacing={16} justify="flex-end">
-                                {!hasSignIn && <Grid item>
+                                {!userInitialed && <Grid item>
                                     <Button color="inherit" onClick={() => this.toggleMob('login')}>Sign In</Button>
                                 </Grid>}
-                                {!hasSignIn && <Grid item>
+                                {!userInitialed && <Grid item>
                                     <Button color="inherit" onClick={() => this.toggleMob('signUp')}>Sign Up</Button>
                                 </Grid>}
-                                {hasSignIn && <Grid item>
+                                {userInitialed && <Grid item>
                                     <Button color="inherit" onClick={() => UserStore.logout()}>Log Out</Button>
                                 </Grid>}
-                                {hasSignIn && <Grid item>
+                                {userInitialed && <Grid item>
                                     <Button color="secondary" variant="raised" onClick={() => this.toggleMob('write')}>Write</Button>
                                 </Grid>}
                             </Grid>
@@ -109,17 +101,17 @@ class HeaderView extends React.Component {
             </AppBar>,
             <SignUpMob
                 key="sign-up"
-                show={!hasSignIn && this.mobStatus === 'signUp'}
+                show={!userInitialed && this.mobStatus === 'signUp'}
                 onClose={this.closeMob}
             />,
             <LoginMob
                 key="sign-in"
-                show={!hasSignIn && this.mobStatus === 'login'}
+                show={!userInitialed && this.mobStatus === 'login'}
                 onClose={this.closeMob}
             />,
-            (hasSignIn && <WriteMob
+            (userInitialed && <WriteMob
                 key="write"
-                show={hasSignIn && this.mobStatus === 'write'}
+                show={userInitialed && this.mobStatus === 'write'}
                 onClose={this.closeMob}
             />),
         ];
@@ -128,6 +120,19 @@ class HeaderView extends React.Component {
 
 HeaderView.propTypes = {
     classes: PropTypes.object.isRequired,
+};
+const styles = {
+    root: {
+        flexGrow: 1,
+    },
+    flex: {
+        flex: 1,
+        cursor: 'pointer',
+    },
+    menuButton: {
+        marginLeft: -12,
+        marginRight: 20,
+    },
 };
 const Header = withStyles(styles)(HeaderView);
 export {Header};

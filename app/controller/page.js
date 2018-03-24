@@ -31,5 +31,15 @@ module.exports = app => {
             };
             await ctx.render('serverRenderTemplate.js', props);
         }
+
+        async cards() {
+            const {ctx} = this;
+            const props = {
+                title: 'Cards',
+                location: ctx.request.url,
+                componentName: 'Cards',
+            };
+            await ctx.render('serverRenderTemplate.js', props);
+        }
     };
 };

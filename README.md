@@ -4,6 +4,23 @@
 
 ### Mongdb → [link](./install_mongodb.m)
 
+### ***[暂时不用]***  sokcet.io - Redis 
+
+Download page: [click here](https://redis.io/download)
+
+```Bash
+$ tar xzf redis-x.x.x.tar.gz
+$ cd redis-x.x.x
+$ make
+
+$ redis-server ./redis-x.x.x/redis.conf #launch
+$ redis-cli shutdown
+```
+
+config file: ./redis-x.x.x/redis.conf
+
+Configs: [click here](http://www.runoob.com/redis/redis-conf.html)
+
 ### Node-sass
 
 ```bash

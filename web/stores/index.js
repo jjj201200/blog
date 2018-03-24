@@ -5,16 +5,18 @@
  */
 import {GBS} from './GBS';
 import {GlobalStore} from './GlobalStore';
-// import {RouterStore} from './RouterStore';
 import {GaymeStore} from './GaymeStore';
 import {UserStore} from './UserStore';
 import {EditorStore} from './EditorStore';
+import {CardsStore} from './CardsStore';
 import {BlogStore} from './BlogStore';
+// import {RouterStore} from './RouterStore';
 
 export default new GBS([
     GlobalStore,
     UserStore,
-    GaymeStore,
     BlogStore,
+    CardsStore,
+    GaymeStore,
     EditorStore,
 ]);

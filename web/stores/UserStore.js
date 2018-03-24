@@ -17,14 +17,6 @@ export class UserStore extends BasicStore {
         this.init();
     }
 
-    get hasSignIn() {
-        return this.store.get('hasSignIn');
-    }
-
-    set hasSignIn(value) {
-        this.store.get('hasSignIn', value);
-    }
-
     get currentUser() {
         return this.store.get('currentUser');
     }
@@ -40,7 +32,7 @@ export class UserStore extends BasicStore {
     @action('initUserStore')
     init() {
         // if (!inClient()) return;
-        this.store.set('hasSignIn', false);
+        // this.store.set('hasSignIn', false);
         let user = this.currentUser;
         if (!user) {
             this.getUser();
@@ -61,6 +53,7 @@ export class UserStore extends BasicStore {
                     //TODO
                 } else {
                     const user = res.data;
+                    console.log(user);
                     this.updateCurrentUser({...user});
                     this.root.stores.GlobalStore.onOpenSnackbar({
                         msg: 'sign in successfully'
@@ -69,7 +62,7 @@ export class UserStore extends BasicStore {
                 }
             },
             fail: (res) => {
-                this.updateLoginStatus(false);
+                // this.updateLoginStatus(false);
                 console.log(res);
             },
         }).always(() => {
@@ -99,7 +92,7 @@ export class UserStore extends BasicStore {
                 }
             },
             fail: (res) => {
-                this.updateLoginStatus(false);
+                // this.updateLoginStatus(false);
                 console.error(res);
             },
         }).always(() => {
@@ -122,7 +115,6 @@ export class UserStore extends BasicStore {
             success: (res) => {
                 if (res && res.code === 0) {
                     // this.updateLoginStatus(true);
-                    // console.log(res);
                     this.updateCurrentUser({...res.data});
                     this.root.stores.GlobalStore.onOpenSnackbar({
                         msg: 'sign in successfully'
@@ -130,7 +122,7 @@ export class UserStore extends BasicStore {
                 }
             },
             fail: (res) => {
-                this.updateLoginStatus(false);
+                // this.updateLoginStatus(false);
                 console.error(res);
             },
         }).always(() => {
@@ -150,8 +142,9 @@ export class UserStore extends BasicStore {
             url: '/api/sign_out',
             success: (res) => {
                 if (res && res.code === 0) {
-                    this.updateLoginStatus(false);
+                    // this.updateLoginStatus(false);
                     this.updateCurrentUser({
+                        id: '',
                         username: '',
                         email: '',
                         loginDate: '',
@@ -165,7 +158,7 @@ export class UserStore extends BasicStore {
                 }
             },
             fail: (res) => {
-                this.updateLoginStatus(false);
+                // this.updateLoginStatus(false);
                 console.error(res);
             },
         }).always(() => {
@@ -178,10 +171,10 @@ export class UserStore extends BasicStore {
      * 更新登录状态变量
      * @param hasSignIn
      */
-    @action
-    updateLoginStatus(hasSignIn) {
-        this.store.set('hasSignIn', hasSignIn);
-    }
+    // @action
+    // updateLoginStatus(hasSignIn) {
+    //     this.store.set('hasSignIn', hasSignIn);
+    // }
 
     /**
      * 更新当前登录用户信息
@@ -190,12 +183,12 @@ export class UserStore extends BasicStore {
      * @param loginDate
      */
     @action
-    updateCurrentUser({username, email, loginDate, initial = true, loginState = true}) {
+    updateCurrentUser({id, username, email, loginDate, initial = true}) {
         const currentUser = this.store.get('currentUser');
         if (currentUser)
-            currentUser.set({username, email, loginDate});
-        else this.store.set('currentUser', new User({username, email, loginDate}));
+            currentUser.set({id, username, email, loginDate});
+        else this.store.set('currentUser', new User({id, username, email, loginDate}));
         this.userInitialed = initial;
-        this.updateLoginStatus(loginState);
+        // this.updateLoginStatus(loginState);
     }
 }

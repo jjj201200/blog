@@ -10,6 +10,7 @@ const Service = require('egg').Service;
 const UserReturnKeys = [
     'username',
     'email',
+    '_id',
 ];
 const UserReturnString = UserReturnKeys.join(' ');
 
@@ -43,13 +44,13 @@ class UserService extends Service {
                     username, password, email, loginDate,
                 });
                 await user.save().then((newUser) => { // 插入新用户到数据库
-                    const {username, email} = newUser;
+                    const {username, email, _id: id} = newUser;
                     service.jwt.create({username, email}); // 创建登录凭据
                     that.setUserSession({username, signIn: true}); // 设置登录状态
                     ctx.body = {
                         code: 0,
                         message: 'sign up successfully',
-                        data: {username, email, loginDate},
+                        data: {username, email, loginDate, id},
                     };
                 }).catch((e) => {
                     // TODO 标准的错误处理
@@ -79,10 +80,11 @@ class UserService extends Service {
                     const {email} = user;
                     const loginDate = helper.currentTime;
                     user.set({loginDate}); // 设置登录时间
-                    await user.save().then(() => {
+                    await user.save().then((newUser) => {
+                        const {_id: id} = newUser;
                         that.setUserSession({username, signIn: true});
                         service.jwt.create({username, email, loginDate}); // 更新jwt
-                        ctx.body = {code: 0, data: {username, email, loginDate}};
+                        ctx.body = {code: 0, data: {username, email, loginDate, id}};
                     }).catch((err) => {
                         // TODO 标准的错误处理
                         ctx.throw(500, {code: -1, err});
@@ -125,11 +127,12 @@ class UserService extends Service {
                     //TODO 标准的错误处理
                     console.error(err);
                 } else if (user) {
-                    const {username, email} = user;
+                    const {username, email, loginDate, _id: id} = user;
+                    ctx.service.jwt.create({username, email, loginDate}); // 更新jwt
                     that.setUserSession({username, signIn: true});
                     ctx.body = {
                         code: 0,
-                        data: {username, email},
+                        data: {username, email, loginDate, id},
                     };
                 } else {
                     ctx.body = {

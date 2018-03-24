@@ -8,7 +8,7 @@ module.exports = app => {
     const {mongoose} = app;
     const {Schema} = mongoose;
 
-    const Player = new Schema({
+    const PlayerSchema = new Schema({
         userId: {
             type: Schema.Types.ObjectId,
             required: true,
@@ -30,5 +30,5 @@ module.exports = app => {
         }],
         loginDate: {type: Date, default: Date.now},
     }, { id: false });
-    return Player;
+    return PlayerSchema;
 }

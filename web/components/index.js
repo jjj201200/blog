@@ -4,7 +4,6 @@
  * Description: index
  */
 
-export * from './lib';
 export * from './Sidebar';
 export * from './Signup';
 export * from './Write';

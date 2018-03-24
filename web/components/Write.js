@@ -128,7 +128,7 @@ class WriteMobView extends React.Component {
     onEntered() {
         const {UserStore, EditorStore} = this.props;
         EditorStore.deleteModeState = false;
-        if (UserStore.hasSignIn === true && UserStore.userInitialed === true) { // 判断是否登录
+        if (UserStore.userInitialed === true && UserStore.userInitialed === true) { // 判断是否登录
             // 拉取远程文章列表并初始化本地列表
             const username = UserStore.currentUser.username;
             EditorStore.initArticleListByUsername(username);

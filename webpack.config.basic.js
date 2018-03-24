@@ -22,6 +22,7 @@ const inProduction = process.env.NODE_ENV === 'production';
 const entry = {
     home: path.resolve(webPagesPath, 'home.js'),
     gayme: path.resolve(webPagesPath, 'gayme.js'),
+    cards: path.resolve(webPagesPath, 'cards.js'),
 };
 const entriesArray = [];
 for (let key in entry) {

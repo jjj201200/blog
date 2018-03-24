@@ -16,23 +16,23 @@ class Article {
      * @param content
      */
     constructor({
-        id = null,
+        id,
         title = '',
         tags = [],
         content = {},
-        publishDate = null,
-        lastUpdateDate = null,
+        publishDate,
+        lastUpdateDate,
         hasPublished = false,
         hasSavedOnline = false,
         hasOpened = false,
         author = {},
     } = {
-        id: null,
+        id,
         title: '',
         tags: [],
         content: {},
-        publishDate: null,
-        lastUpdateDate: null,
+        publishDate,
+        lastUpdateDate,
         hasPublished: false,
         hasSavedOnline: false,
         hasOpened: false,
@@ -41,12 +41,12 @@ class Article {
         this.set({id, title, tags, content, publishDate, lastUpdateDate, hasPublished, hasSavedOnline, hasOpened, author});
     }
 
-    @observable id = null;
-    @observable authorId = null;
+    @observable id;
+    @observable authorId;
     @observable title = '';
     @observable tags = [];
     @observable content = {};
-    @observable publishDate = null;
+    @observable publishDate;
     @observable lastUpdateDate = formDate2YMDHMS(new Date());
     @observable hasPublished = false; // publish tag
     @observable deleteDhecked = false; // delete tag
@@ -56,16 +56,16 @@ class Article {
 
     // @action('setArticle')
     set({id, title, tags, content, publishDate, lastUpdateDate, hasPublished, hasSavedOnline, hasOpened, author}) {
-        if (id !== undefined) this.id = id;
-        if (title !== undefined) this.title = title;
-        if (tags !== undefined) this.tags = tags;
-        if (content !== undefined) this.content = content;
-        if (publishDate !== undefined) this.publishDate = publishDate;
-        if (lastUpdateDate !== undefined) this.lastUpdateDate = lastUpdateDate;
-        if (hasPublished !== undefined) this.hasPublished = hasPublished;
-        if (hasSavedOnline !== undefined) this.hasSavedOnline = hasSavedOnline;
-        if (hasOpened !== undefined) this.hasOpened = hasOpened;
-        if (author !== undefined) this.author = author;
+        if (id) this.id = id;
+        if (title) this.title = title;
+        if (tags) this.tags = tags;
+        if (content) this.content = content;
+        if (publishDate) this.publishDate = publishDate;
+        if (lastUpdateDate) this.lastUpdateDate = lastUpdateDate;
+        if (hasPublished) this.hasPublished = hasPublished;
+        if (hasSavedOnline) this.hasSavedOnline = hasSavedOnline;
+        if (hasOpened) this.hasOpened = hasOpened;
+        if (author) this.author = author;
     }
 }
 

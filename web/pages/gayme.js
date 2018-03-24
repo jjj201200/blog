@@ -10,7 +10,7 @@ import styled from 'styled-components';
 import {Body} from 'DFComponents/uis';
 import {theme} from 'DFStyles';
 import CssBaseline from 'material-ui/CssBaseline';
-import {Header, ArticleList, Gayme} from 'DFComponents';
+import {Header, ArticleList, Gayme, Cards} from 'DFComponents';
 import Snackbar from 'material-ui/Snackbar';
 // import Cookies from 'js-cookie';
 const {Route, Link} = require("react-router-dom");
@@ -25,8 +25,9 @@ class Index extends React.Component {
         return (
             <div>
                 {/*<CssBaseline key="reboot-style"/>*/}
-                <Header title="GayMe"/>
+                <Header/>
                 <Body>
+                <Route path="/cards" component={Cards}/>
                 <Route path="/gayme" component={Gayme}/>
                 <Route exact path="/" component={ArticleList}/>
                 </Body>

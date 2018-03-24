@@ -1,7 +1,7 @@
 /**
  * Author: Ruo
- * Create: 2018-02-08
- * Description: 入口页面组件名必须为Index
+ * Create: 2018-03-24
+ * Description:
  */
 import React from 'react';
 import {observer, inject} from 'mobx-react';

@@ -6,29 +6,31 @@
 
 import {observable, action} from 'mobx';
 
-class User {
+export class User {
     constructor({
-        username = null,
-        email = null,
-        loginDate = null
+        id,
+        username,
+        email,
+        loginDate
     } = {
-        username: null,
-        email: null,
-        loginDate: null
+        id,
+        username,
+        email,
+        loginDate
     }) {
-        this.set({username, email, loginDate});
+        this.set({id, username, email, loginDate});
     }
 
-    @observable username = null;
-    @observable email = null;
-    @observable loginDate = null;
+    @observable id;
+    @observable username;
+    @observable email;
+    @observable loginDate;
 
     @action('setUser')
-    set({username, email, loginDate}) {
-        this.username = username;
-        this.email = email;
-        this.loginDate = loginDate;
+    set({id, username, email, loginDate}) {
+        this.id = id || this.id ;
+        this.username = username ||this.username ;
+        this.email = email || this.email ;
+        this.loginDate = loginDate || this.loginDate ;
     }
 }
-
-export {User};

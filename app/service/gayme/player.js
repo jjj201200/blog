@@ -6,6 +6,16 @@
 const _ = require('lodash');
 const Service = require('egg').Service;
 
+const PlayerReturnKeys = [
+    '_id',
+    'userId',
+    'nickname',
+    'sum',
+    'win',
+    'cards',
+    'loginDate',
+];
+
 module.exports = class PlayerService extends Service {
     constructor(ctx) {
         super(ctx);
@@ -14,7 +24,27 @@ module.exports = class PlayerService extends Service {
         this.service = service;
         this.model = model;
         this.helper = helper;
-        this.Player = model.gayme.Player;
+        this.User = model.User;
+        this.Player = model.Gayme.Player;
+    }
+
+
+    /**
+     * 获取游戏账号数据
+     * @param userId
+     */
+    async get(userId) {
+        try {
+            // TODO select可以选择查询返回的字段，最好将字段设计为可配置对象自动生成需要的字符串
+            const searchPlayer = this.Player
+                .findOne({userId}).select(PlayerReturnKeys.join(' '));
+            // .populate('authorId', 'username email', this.User);
+            return await searchPlayer.exec();
+        } catch (e) {
+            // TODO 标准的错误处理
+            console.error(e);
+            throw new Error(e);
+        }
     }
 
     /**
@@ -25,42 +55,46 @@ module.exports = class PlayerService extends Service {
      * @param {number} win 胜利场数
      * @param {array} cards 卡牌对象
      */
-    async create(userId, nickname, sum = 0, win = 0, cards = []) {
+    async create({userId, nickname, sum = 0, win = 0, cards = []}) {
         try {
             // 获取用户id
-            const userId = await this.User.findOne()
-                .where({userId})
-                .select('_id').exec();
+            const resUserId = await this.User.findOne().where({_id: userId}).select('_id').exec();
+            console.log(resUserId);
+            if (resUserId) {
 
-            // 创建属于该用户的游戏账号数据
-            const player = new this.Player({
-                authorId: userId._id,
-                nickname,
-                sum,
-                win,
-                cards,
-            });
+                // 创建属于该用户的游戏账号数据
+                const player = new this.Player({
+                    userId,
+                    nickname,
+                    sum,
+                    win,
+                    cards,
+                });
 
-            // 保存文章数据
-            await player.save().then((newPlayer) => {
-                if (newPlayer) {
-                    this.ctx.body = {
-                        code: 0,
-                        data: newPlayer,
-                        message: 'create player successfully',
-                    };
-                } else this.ctx.body = {code: -1, message: 'create player failed'};
-            }).catch((e) => {
-                // TODO 标准的错误处理
-                this.ctx.body = {code: -1, message: e};
-            });
+                // 保存文章数据
+                return await player.save().then((newPlayer) => {
+                    if (newPlayer) {
+                        // this.ctx.body = {
+                        //     code: 0,
+                        //     data: newPlayer,
+                        //     message: 'create player successfully',
+                        // };
+                        return newPlayer;
+                    } else return false;
+                }).catch((e) => {
+                    // TODO 标准的错误处理
+                    // this.ctx.body = {code: -1, message: e};
+                    throw e;
+                });
+            }
         } catch (e) {
             // TODO 标准的错误处理
             console.error(e);
-            this.ctx.body = {
-                code: -1,
-                message: e.message,
-            };
+            // this.ctx.body = {
+            //     code: -1,
+            //     message: e.message,
+            // };
+            throw e;
         }
     }
 
@@ -101,39 +135,6 @@ module.exports = class PlayerService extends Service {
             //         message: 'no player',
             //     };
             // }
-        } catch (e) {
-            // TODO 标准的错误处理
-            console.error(e);
-            this.ctx.body = {
-                code: -1,
-                message: e.message,
-            };
-        }
-    }
-
-    /**
-     * 获取游戏账号数据
-     * @param userId
-     */
-    async get(userId) {
-        try {
-            // TODO select可以选择查询返回的字段，最好将字段设计为可配置对象自动生成需要的字符串
-            const searchPlayer = this.Article
-                .findOne({userId});
-                // .populate('authorId', 'username email', this.User)
-                // .select(ArticleReturnString);
-            await searchPlayer.exec((err, resPlayer) => {
-                if (resPlayer) { // 查询到了
-                    this.ctx.body = {
-                        code: 0,
-                        data: resPlayer,
-                        message: 'get player successfully',
-                    };
-                } else { // 没有查询到
-                    // TODO 标准的错误处理
-                    this.ctx.body = {code: -1, message: 'no player'};
-                }
-            });
         } catch (e) {
             // TODO 标准的错误处理
             console.error(e);

@@ -14,6 +14,7 @@ module.exports = app => {
 
     router.get('/', page.index);
     router.get('/gayme', page.gayme);
+    router.get('/cards', page.cards);
     // TODO router.get('/blog', page.blog);
     router.post('/api/sign_up', user.signUp);
     router.post('/api/sign_in', user.signIn);

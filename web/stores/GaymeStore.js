@@ -4,7 +4,7 @@
  * Description:
  */
 
-import {observable, action, autorun} from 'mobx';
+import {observable, action, autorun, toJS} from 'mobx';
 import {Ajax} from 'DFUtils';
 import io from 'socket.io-client';
 import {BasicStore, memoryStorage} from "./BasicStore";
@@ -23,13 +23,6 @@ export class GaymeStore extends BasicStore {
             if (!UserStore.userInitialed && that.socket && that.socket.connected) {
                 that.disconnect();
             }
-            if (UserStore.userInitialed) { // 是否登录
-                if (!that.socket) { // 是否连接过
-                    that.connect(UserStore.currentUser);
-                } else if (!that.socket.connected) { // 没有连接过就重连
-                    that.reconnect();
-                }
-            }
         })
     }
 
@@ -37,45 +30,75 @@ export class GaymeStore extends BasicStore {
 
     roomId = null; // 进入的房间号
 
+    playerData = null; // 玩家数据
+
     @observable requestSending = false; // 请求状态，如果在请求中，这个状态可用于置灰按钮
 
     @observable.shallow playerList = {}; // 大厅的玩家列表
 
+    @observable clickedPlayer = {}; // 被点击的玩家，用来查看玩家的数据
 
+    @observable battlePostDialog = { // 存储挑战相关的数据
+        open: false,
+        // defaultMessage: '',
+        // message: '',
+        postId: undefined, // 挑战发起者的userId
+    };
 
     init() {
         const that = this;
-        // 获取房间号
-        this.socket.on('getInitData', (initData) => { // 获取初始化游戏数据
+        // 获取初始化游戏数据
+        this.socket.off('getInitData').on('getInitData', (initData) => {
+            console.log(initData);
             that.roomId = initData.roomId;
             console.log(`${'roomId'.padEnd(6, ' ')} ${initData.roomId}`);
             that.getPlayerList(initData.roomId);
+            that.playerData = initData.playerData;
         });
 
-        this.socket.on('getBattlePost', (postId) => {
-            console.log(postId);
+        // 收到挑战申请
+        this.socket.off('getBattlePost').on('getBattlePost', (postId) => {
+            that.setPostDialog(true, postId);
         });
 
-        this.socket.on('disconnect', function (e) {
-            console.log('disconnect', e);
+        // 连接超时提示
+        let connectTimeoutCounter = 0;
+        this.socket.off('connect_timeout').on('connect_timeout', function (e) {
+            that.root.stores.GlobalStore.onOpenSnackbar({
+                msg: 'Connect timeout: ' + (++connectTimeoutCounter) + 'time',
+            });
+        });
+
+        this.socket.off('reconnect').on('reconnect', function (e) {
+            that.init();
+            that.root.stores.GlobalStore.onOpenSnackbar({
+                msg: 'Reconnect successfully',
+            });
+            connectTimeoutCounter = 0;
+        });
+
+        this.socket.off('disconnect').on('disconnect', function (e) {
+            that.playerList = {};
             that.root.stores.GlobalStore.onOpenSnackbar({
                 msg: 'Disconnect successfully',
             });
+            connectTimeoutCounter = 0;
         });
     }
 
     getPlayerList(roomId) {
         const that = this;
         this.socket.emit('livingRoom', {method: 'getPlayerList', data: {roomId}});
-        this.socket.on('playerList', (listData) => {
-            console.table(listData.sockets);
-            that.playerList = listData.sockets;
-        });
-        this.socket.on('res', function (data) {
-            console.log(data);
+        this.socket.off('playerList').on('playerList', (listData) => {
+            console.table(listData);
+            that.playerList = listData;
         });
     }
 
+    /**
+     * 发送挑战请求
+     * @param targetId 想要挑战的目标的userId
+     */
     sendBattlePost(targetId) {
         this.socket.emit('livingRoom', {
             method: 'sendBattlePost',
@@ -85,41 +108,45 @@ export class GaymeStore extends BasicStore {
         });
     }
 
+    // 接受挑战请求
+    acceptPost() {
+
+    }
+
+    // 拒绝请求
+    denyPost() {
+
+    }
+
+
+    setPostDialog(open, postId) {
+        this.battlePostDialog.open = open;
+        this.battlePostDialog.postId = postId;
+    }
+
     @action
     connect(user) {
         const that = this;
         const {UserStore} = this.root.stores;
         if (user) { // 已经登录
+            const {id, username} = UserStore.currentUser;
             this.socket = io('http://127.0.0.1:7001/', {
-                reconnection: true, // 开启重连
-                reconnectionAttempts: 10, // 重连尝试次数
+                reconnectionAttempts: 3, // 重连尝试次数
                 reconnectionDelay: 5000, // 重连间隔
                 forceNew: true,
                 query: {
-                    username: UserStore.currentUser.username,
+                    userId: id,
+                    username: username,
                 },
             });
-            this.socket.on('connect', function (e) {
+            this.socket.off('connect').on('connect', function (e) {
                 // 成功连接时，打印自己的id
+                if (!that.socket.id) that.socket.id = that.socket.io.engine.id;
                 that.root.stores.GlobalStore.onOpenSnackbar({
-                    msg: 'Connect successfully',
+                    msg: `Connect successfully: ${that.socket.id}`,
                 });
-                console.log(`${'id'.padEnd(6, ' ')} ${that.socket.id}`);
                 // 初始化
                 that.init();
-            });
-            this.socket.on('connect_timeout', function (e) {
-                console.log('connect timeout', e);
-                that.root.stores.GlobalStore.onOpenSnackbar({
-                    msg: 'Connect timeout',
-                });
-            });
-            this.socket.on('reconnect', function (e) {
-                console.log('reconnect', e);
-                that.init();
-                that.root.stores.GlobalStore.onOpenSnackbar({
-                    msg: 'Reconnect successfully',
-                });
             });
         } else { // 没有登录
             this.root.stores.GlobalStore.onOpenSnackbar({

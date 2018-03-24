@@ -3,6 +3,7 @@
  * Create: 2018-03-22
  * Description:
  */
+const _ = require('lodash');
 
 module.exports = app => {
     return class LivingRoomController extends app.Controller {
@@ -29,16 +30,15 @@ module.exports = app => {
         getPlayerList(requestBody) {
             const {socket, app} = this.ctx;
             const {data} = requestBody;
-            console.log(socket.session);
+            // console.log(socket.session);
             // console.log(socket.id, socket.rooms, app.io.sockets.adapter.rooms);
-            app.io.to(data.roomId).emit('playerList', app.io.sockets.adapter.rooms['room0']);
+            app.io.emit('playerList', app.players);
         }
 
         sendBattlePost(requestBody) {
             const {socket, app} = this.ctx;
             const {data} = requestBody;
-            socket.to(data.targetId).emit('getBattlePost', {postId: socket.id});
-            console.log(data.targetId);
+            socket.to(app.players[data.targetId].sid).emit('getBattlePost', {postId: socket.id});
         }
     }
 }
