@@ -18,7 +18,6 @@ export class CardsStore extends BasicStore {
         this.create = ::this.create;
         this.createNew = ::this.createNew;
         this.update = ::this.update;
-        this.deleteOne = ::this.deleteOne;
         this.delete = ::this.delete;
         this.getCardList = ::this.getCardList;
         // const that = this;
@@ -128,6 +127,7 @@ export class CardsStore extends BasicStore {
             if (this.requestSending) return;
             this.requestSending = true;
             const newCard = toJS(this.currentCard);
+            console.log(newCard);
             // TODO 参数校验
             // console.log(title, tags, content);
             return Ajax({
@@ -228,30 +228,7 @@ export class CardsStore extends BasicStore {
         }
     }
 
-    @action
-    deleteOne() {
-        const that = this;
-        if (this.requestSending) return;
-        this.requestSending = true;
 
-        // 卡牌编辑过
-        if (this.currentCard.hasEdited) {
-            if (this.currentCard.hasSaved) {// 保存过了
-                this.deleteCardList.push(this.currentCard.id);
-                this.delete();
-            } else { // 没有保存过
-                this.root.stores.GlobalStore.onOpenSnackbar({
-                    msg: 'the card has not saved',
-                });
-                return;
-            }
-        } else { // 没有编辑过
-            if (this.currentCard.hasSaved) { // 不是本地刚创建的卡牌
-                this.deleteCardList.push(this.currentCard.id);
-                this.delete();
-            }
-        }
-    }
 
     @action
     delete() {

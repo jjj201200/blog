@@ -76,7 +76,7 @@ class HeaderView extends React.Component {
                                 </Grid>
                                 <Grid item>
                                     <Button color="inherit" onClick={() => {push('/gayme');}}>Gayme</Button>
-                                    <Button color="inherit" onClick={() => {push('/cards');}}>Cards</Button>
+                                    {userInitialed && <Button color="inherit" onClick={() => {push('/cards');}}>Cards</Button>}
                                 </Grid>
                             </Grid>
                         </Grid>

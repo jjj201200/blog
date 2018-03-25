@@ -6,6 +6,7 @@
 
 import _ from 'lodash';
 import React from 'react';
+import {observable, action} from 'mobx';
 import {inject, observer} from 'mobx-react';
 import {withStyles} from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
@@ -19,6 +20,7 @@ import Typography from 'material-ui/Typography';
 import {FormControl, FormHelperText} from 'material-ui/Form';
 import Input, {InputLabel, InputAdornment} from 'material-ui/Input';
 import Card, {CardActions, CardContent, CardHeader} from 'material-ui/Card';
+import Dialog, {DialogTitle, DialogContent, DialogContentText, DialogActions} from 'material-ui/Dialog';
 import List, {ListItem, ListItemIcon, ListItemText, ListSubheader, ListItemSecondaryAction} from 'material-ui/List';
 
 @inject('GaymeStore', 'CardsStore') @observer
@@ -26,10 +28,28 @@ class CardsView extends React.Component {
     constructor(props) {
         super(props);
         this.onClickCard = ::this.onClickCard;
+        this.onOpenDeleteDialog = ::this.onOpenDeleteDialog;
+        this.onCloseDeleteDialog = ::this.onCloseDeleteDialog;
+        this.onDelete = ::this.onDelete;
     }
 
-    componentWillMount() {
-        const {CardsStore} = this.props;
+    /**
+     * 删除卡牌提示框的目标函数
+     */
+    deleteDialogTargetEvent = () => {
+    };
+
+    @observable deleteDialogShow = false; // 删除提示框显示状态
+
+    onOpenDeleteDialog(targetEvent) {
+        if (targetEvent instanceof Function) {
+            this.deleteDialogTargetEvent = targetEvent;
+        }
+        this.deleteDialogShow = true;
+    }
+
+    onCloseDeleteDialog() {
+        this.deleteDialogShow = false;
     }
 
     /**
@@ -39,6 +59,15 @@ class CardsView extends React.Component {
     onClickCard(cardId) {
         const {CardsStore} = this.props;
         CardsStore.currentCard = CardsStore.cardList.get(cardId);
+    }
+
+    @action
+    onDelete() {
+        const {CardsStore} = this.props;
+        this.onOpenDeleteDialog(() => {
+            CardsStore.deleteCardList.push(CardsStore.currentCard.id);
+            CardsStore.delete();
+        });
     }
 
     render() {
@@ -165,7 +194,7 @@ class CardsView extends React.Component {
                                             Update
                                         </Button>
                                         <Button
-                                            onClick={CardsStore.deleteOne}
+                                            onClick={this.onDelete}
                                             className={classes.button}
                                             variant="raised"
                                             color="default"
@@ -184,6 +213,27 @@ class CardsView extends React.Component {
                                         </Button>
                                     </div>
                                 </Grid>
+                                <Dialog open={this.deleteDialogShow} onClose={this.onCloseDeleteDialog}>
+                                    <DialogTitle>
+                                        Delete Card
+                                    </DialogTitle>
+                                    <DialogContent>
+                                        <DialogContentText>
+                                            Do you need to delete this Card?
+                                        </DialogContentText>
+                                    </DialogContent>
+                                    <DialogActions>
+                                        <Button onClick={this.onCloseDeleteDialog}>
+                                            Cancel
+                                        </Button>
+                                        <Button variant="raised" color="primary" onClick={() => {
+                                            that.onCloseDeleteDialog();
+                                            that.deleteDialogTargetEvent();
+                                        }}>
+                                            Delete
+                                        </Button>
+                                    </DialogActions>
+                                </Dialog>
                             </Grid>
                         </Grid>
                         <Grid item xs={9} className={classes.gameCardBox}>

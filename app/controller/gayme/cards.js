@@ -58,8 +58,8 @@ module.exports = app => {
                             duration: {type: 'number'},
                         },
                     },
-                    remove: { // 更新玩家胜负数据及场数
-                        name: 'remove',
+                    delete: { // 更新玩家胜负数据及场数
+                        name: 'delete',
                         rule: {
                             cardIdArray: {type: 'array', required: true},
                         },
@@ -95,7 +95,7 @@ module.exports = app => {
                 console.error(e);
                 ctx.body = {
                     code: -1,
-                    message: e.message,
+                    message: e,
                 };
             }
         }
@@ -130,9 +130,9 @@ module.exports = app => {
             const {service, request, helper} = this.ctx;
             try {
                 helper.checkParams(request.body, rule);
-                const {targetType, type, name, attark, defend, duration} = request.body;
+                const {targetType, type, name, attack, defend, duration} = request.body;
                 await service.gayme.cards.create(
-                    targetType, type, name, attark, defend, duration,
+                    targetType, type, name, attack, defend, duration,
                 );
             } catch (e) {
                 // TODO 标准的错误处理
