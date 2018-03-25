@@ -71,7 +71,7 @@ module.exports = class PlayerService extends Service {
                     cards,
                 });
 
-                // 保存文章数据
+                // 保存玩家数据
                 return await player.save().then((newPlayer) => {
                     if (newPlayer) {
                         // this.ctx.body = {

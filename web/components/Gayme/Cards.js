@@ -11,16 +11,19 @@ import Grid from 'material-ui/Grid';
 import Divider from 'material-ui/Divider';
 // import NumberFormat from 'react-number-format';
 import Button from 'material-ui/Button';
+import Select from 'material-ui/Select';
+import {MenuItem} from 'material-ui/Menu';
 import Typography from 'material-ui/Typography';
 import {FormControl, FormHelperText} from 'material-ui/Form';
 import Input, {InputLabel, InputAdornment} from 'material-ui/Input';
 import Card, {CardActions, CardContent, CardHeader} from 'material-ui/Card';
 import List, {ListItem, ListItemIcon, ListItemText, ListSubheader, ListItemSecondaryAction} from 'material-ui/List';
 
-@inject('GlobalStore', 'UserStore', 'GaymeStore') @observer
+@inject('GaymeStore', 'CardsStore') @observer
 class CardsView extends React.Component {
     render() {
-        const {classes} = this.props;
+        const {CardsStore, classes} = this.props;
+        const cardEditorInputs = CardsStore.cardEditor.inputs;
         return (
             <Card className={classes.card}>
                 <CardHeader
@@ -39,11 +42,43 @@ class CardsView extends React.Component {
                                     <FormControl fullWidth>
                                         <InputLabel
                                             className={classes.cardEditorLabel}
+                                            htmlFor="target-type"
+                                        >Target Type</InputLabel>
+                                        <Select
+                                            onChange={(e) => {cardEditorInputs.targetType = e.target.value}}
+                                            value={cardEditorInputs.targetType}
+                                            inputProps={{
+                                                name: 'target-type',
+                                                id: 'target-type',
+                                            }}
+                                        >
+                                            <MenuItem value={0}>Enemy</MenuItem>
+                                            <MenuItem value={1}>Own</MenuItem>
+                                            <MenuItem value={2}>Both</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                    <FormControl fullWidth>
+                                        <InputLabel
+                                            className={classes.cardEditorLabel}
                                             htmlFor="card-name"
                                         >Card Name</InputLabel>
                                         <Input
+                                            onChange={(e) => {cardEditorInputs.name = e.target.value}}
+                                            value={cardEditorInputs.name}
                                             id="card-name"
                                             name="card-name"
+                                        />
+                                    </FormControl>
+                                    <FormControl fullWidth>
+                                        <InputLabel
+                                            className={classes.cardEditorLabel}
+                                            htmlFor="card-type"
+                                        >Card Type</InputLabel>
+                                        <Input
+                                            onChange={(e) => {cardEditorInputs.type = e.target.value}}
+                                            value={cardEditorInputs.type}
+                                            id="card-type"
+                                            name="card-type"
                                         />
                                     </FormControl>
                                     <FormControl fullWidth>
@@ -52,6 +87,8 @@ class CardsView extends React.Component {
                                             htmlFor="attack"
                                         >Attack Number</InputLabel>
                                         <Input
+                                            onChange={(e) => {cardEditorInputs.attack = e.target.value}}
+                                            value={cardEditorInputs.attack}
                                             id="attack"
                                             name="attack"
                                         />
@@ -62,6 +99,8 @@ class CardsView extends React.Component {
                                             htmlFor="defend"
                                         >Defend Number</InputLabel>
                                         <Input
+                                            onChange={(e) => {cardEditorInputs.defend = e.target.value}}
+                                            value={cardEditorInputs.defend}
                                             id="defend"
                                             name="defend"
                                         />
@@ -72,6 +111,8 @@ class CardsView extends React.Component {
                                             htmlFor="duration"
                                         >Duration Times</InputLabel>
                                         <Input
+                                            onChange={(e) => {cardEditorInputs.duration = e.target.value}}
+                                            value={cardEditorInputs.duration}
                                             id="duration"
                                             name="duration"
                                         />
@@ -134,7 +175,9 @@ const styles = theme => ({
     buttonGroup: {
         display: 'flex',
         justifyContent: 'space-between',
-        marginTop: 20,
+        margin: '20px -0.5rem',
+        flexWrap: 'wrap',
+        flexGrow: 1,
     },
     button: {
         margin: theme.spacing.unit,

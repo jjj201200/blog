@@ -6,6 +6,16 @@
 const _ = require('lodash');
 const Service = require('egg').Service;
 
+const CardReturnKeys = [
+    '_id',
+    'targetType',
+    'type',
+    'name',
+    'attack',
+    'defend',
+    'duration',
+];
+
 module.exports = class CardService extends Service {
     constructor(ctx) {
         super(ctx);
@@ -18,47 +28,164 @@ module.exports = class CardService extends Service {
     }
 
     /**
-     * 创建一个新卡牌条目
-     * @param {string} userId 游戏账号对应的用户id
-     * @param {string} nickname 玩家昵称
-     * @param {number} sum 总游戏场数
-     * @param {number} win 胜利场数
-     * @param {array<string>} cards 卡牌对象
+     * 获取指定类型的卡牌列表
+     * 支持分页
+     * @param {object} conditions 卡牌筛选条件
+     * @param {number} [page=1] 卡牌列表的页数 从1开始计数
+     * @param {number} [pageSize=30] 列表的长度
      */
-    async create(userId, nickname, sum = 0, win = 0, cards = []) {
+    async getList(conditions, page = 1, pageSize = 30) {
         try {
-            // 获取用户id
-            const authorId = await this.User.findOne()
-                .where({username})
-                .select('_id').exec();
-
-            // 创建属于该用户的游戏账号数据
-            const article = new this.Article({
-                authorId: authorId._id,
-                title,
-                tags,
-                content,
-                lastUpdateDate: this.helper.currentTime,
-            });
-
-            // 保存文章数据
-            await article.save().then((newArticle) => {
-                if (newArticle) {
+            const list = this.Card.find()
+                .select(CardReturnKeys.join(' '))
+                .where(conditions)
+                .skip((page - 1) * pageSize)
+                .limit(pageSize);
+            await list.exec((err, resList) => {
+                if (resList && resList.length) { // 查询到了
                     this.ctx.body = {
                         code: 0,
-                        data: newArticle,
-                        message: 'create article successfully',
+                        data: resList,
+                        message: 'get card list successfully',
                     };
-                } else {
+                } else { // 没有查询到
+                    // TODO 标准的错误处理
                     this.ctx.body = {
                         code: -1,
-                        message: 'create article failed',
+                        message: 'no card',
                     };
                 }
-            }).catch((e) => {
-                // TODO 标准的错误处理
-                this.ctx.body = {code: -1, message: e};
             });
+
+        } catch (e) {
+            // TODO 标准的错误处理
+            console.error(e);
+            this.ctx.body = {
+                code: -1,
+                message: e.message,
+            };
+        }
+    }
+
+
+    /**
+     * 创建一个新卡牌条目
+     * @param {number} targetType 目标类型
+     * @param {number} type 卡牌类型 目前默认都为0
+     * @param {string} name 卡牌名称
+     * @param {number} attack 卡牌发动效果 - 造成多少点伤害 - 攻击值
+     * @param {number} defend 卡牌发动效果 - 给予多少点格挡 - 防御值
+     * @param {number} duration 卡牌效果持续回合数，如：攻击牌持续时间0，防御牌持续时间1
+     */
+    async create(targetType, type = 0, name, attack = 0, defend = 0, duration = 0,) {
+        try {
+            // 获取用户id
+            const cardId = await this.Card.findOne()
+                .where({targetType, name, type, attack, defend, duration}) // 查询是否有一模一样的卡
+                .select('_id').exec();
+
+            if (cardId) {
+                this.ctx.body = {
+                    code: 0,
+                    data: card,
+                    msg: 'has card',
+                }
+            } else { // 没有完全相同的牌则创建一张
+                const card = new this.Card({
+                    targetType,
+                    name,
+                    type,
+                    attack,
+                    defend,
+                    duration,
+                });
+                await card.save().then((newCard) => {
+                    if (newCard) {
+                        this.ctx.body = {
+                            code: 0,
+                            data: newCard,
+                            message: 'create card successfully',
+                        };
+                    } else {
+                        this.ctx.body = {
+                            code: -1,
+                            message: 'create card failed',
+                        };
+                    }
+                }).catch((e) => {
+                    // TODO 标准的错误处理
+                    this.ctx.body = {code: -1, message: e};
+                });
+            }
+        } catch (e) {
+            // TODO 标准的错误处理
+            console.error(e);
+            this.ctx.body = {code: -1, message: e};
+        }
+    }
+
+    /**
+     * 更新文章数据
+     * 包括更新草稿 发布文章
+     * @param {string} articleId
+     * @param {object} params
+     */
+    async update(cardId, params) {
+        const that = this;
+        try {
+            /**
+             * 筛选出需要更新的字段
+             */
+            const updateObject = {};
+            _.map(params, (value, key) => {
+                updateObject[key] = value;
+            });
+
+            /**
+             * TODO 这里需要搞清楚如果捕获错误
+             */
+                // conditions, updateObject
+            const card = await this.Card
+                // .select(ArticleReturnString)
+                    .findByIdAndUpdate(cardId, updateObject, {new: true})
+                    .select(['_id', 'targetType', 'name', 'type', 'attack', 'defend', 'duration']);
+            if (card) {
+                this.ctx.body = {
+                    code: 0,
+                    data: card,
+                    msg: 'update card successfully',
+                }
+            } else throw new Error('update card failed')
+        } catch (e) {
+            // TODO 标准的错误处理
+            console.error(e);
+            this.ctx.body = {
+                code: -1,
+                data: card,
+                msg: e.msg,
+            }
+        }
+    }
+
+    /**
+     * 删除卡牌条目
+     * @param cardIdArray
+     */
+    async delete(cardIdArray) {
+        try {
+            const card = await this.Card
+                .remove({_id: {$in: cardIdArray}});
+            if (card) {
+                this.ctx.body = {
+                    code: 0,
+                    message: 'delete card successfully',
+                };
+            } else {
+                this.ctx.body = {
+                    code: -1,
+                    message: 'delete card failed',
+                };
+            }
         } catch (e) {
             // TODO 标准的错误处理
             console.error(e);

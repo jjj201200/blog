@@ -8,6 +8,7 @@
 module.exports = app => {
     const {Controller} = app;
     return class UserController extends Controller {
+        // TODO 改为统一入口
         /**
          * 注册
          */

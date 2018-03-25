@@ -117,7 +117,7 @@ module.exports = app => {
                     const execFuncObject = this.methods[request.method][method];
                     if (execFuncObject) {
                         const {name, rule, checkJWT = true} = execFuncObject;
-                        if (checkJWT) { // 因为没有需要用到的数据，就不用获取值了
+                        if (checkJWT) { // 是否校验jwt，是否需要用到jwt的数据
                             if (jwToken) service.jwt.verify(jwToken);
                             else throw new Error('invalid jwt');
                         }
