@@ -7,7 +7,7 @@
 
 module.exports = app => {
     const {router, io} = app;
-    const {page, user, article} = app.controller;
+    const {page, user, article, gayme} = app.controller;
     const {livingRoom, connection} = io.controller;
     // socket.io 这里匹配的是接受事件名
     io.of('/').route('livingRoom', livingRoom.index);
@@ -24,4 +24,8 @@ module.exports = app => {
     // 文章
     router.get('/api/article', article.index);
     router.post('/api/article', article.index);
+
+    // 卡牌
+    router.get('/api/cards', gayme.cards.index);
+    router.post('/api/cards', gayme.cards.index);
 };

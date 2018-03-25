@@ -7,7 +7,7 @@
 module.exports = app => {
     const {Controller} = app;
 
-    return class GaymePlayerController extends Controller {
+    return class GaymeCardsController extends Controller {
         /**
          * methods是一个校验请求方法的配置对象
          * 包含了允许请求的方法名称和参数校验规则
@@ -25,7 +25,7 @@ module.exports = app => {
                     //     checkJWT: false,
                     // },
                     getList: { // 获取指定类型的卡牌数据列表
-                        name: 'getListByUsername',
+                        name: 'getList',
                         rule: {
                             type: {type: 'number', required: true},
                             page: {type: 'number'},
@@ -39,6 +39,7 @@ module.exports = app => {
                         name: 'create',
                         rule: {
                             name: {type: 'string', required: true},
+                            targetType: {type: 'number', required: true},
                             type: {type: 'string', required: true},
                             attack: {type: 'number', required: true},
                             defend: {type: 'number', required: true},
@@ -48,8 +49,10 @@ module.exports = app => {
                     update: { // 更新卡牌数据
                         name: 'update',
                         rule: {
-                            name: {type: 'string'},
+                            cardId: {type: 'string', required: true},
+                            targetType: {type: 'number'},
                             type: {type: 'string'},
+                            name: {type: 'string'},
                             attack: {type: 'number'},
                             defend: {type: 'number'},
                             duration: {type: 'number'},
@@ -85,7 +88,8 @@ module.exports = app => {
                             else throw new Error('invalid jwt');
                         }
                         if (this[name] && rule) await this[name](rule);
-                    } else throw new Error('empty or invalid method: ' + method);
+                        else throw new Error('empty or invalid method: ' + name);
+                    } else throw new Error('no method: ' + method);
                 } else throw new Error('no request method');
             } catch (e) {
                 console.error(e);
@@ -100,34 +104,34 @@ module.exports = app => {
          * 返回卡牌列表 - 默认根据type返回
          */
         async getList(rule) {
-            const {request, helper} = this.ctx;
+            const {request, helper, service} = this.ctx;
             try {
                 helper.checkParams(request, rule);
                 const {type = 0, page = 1, pageSize = 30} = request.query;
                 const conditions = {
                     type,
                 };
-                await service.gayme.card.getList(
+                await service.gayme.cards.getList(
                     conditions, page, pageSize,
                 );
             } catch (e) {
+                console.log(e);
                 this.ctx = {
                     code: -1,
-                    msg: e.msg,
+                    msg: e,
                 }
             }
         }
 
         /**
-         * 创建一个文章条目
-         * username从jwt中获取
+         * 创建一个卡牌条目
          */
         async create(rule) {
             const {service, request, helper} = this.ctx;
             try {
                 helper.checkParams(request.body, rule);
                 const {targetType, type, name, attark, defend, duration} = request.body;
-                await service.gayme.card.create(
+                await service.gayme.cards.create(
                     targetType, type, name, attark, defend, duration,
                 );
             } catch (e) {
@@ -147,7 +151,7 @@ module.exports = app => {
             try {
                 helper.checkParams(request.body, rule);
                 const {cardId, ...params} = request.body;
-                await service.gayme.card.update(cardId, params);
+                await service.gayme.cards.update(cardId, params);
             } catch (e) {
                 // TODO 标准的错误处理
                 console.error(e);
@@ -163,7 +167,7 @@ module.exports = app => {
             try {
                 helper.checkParams(request.body, rule);
                 const {cardIdArray} = request.body;
-                await service.gayme.card.delete(cardIdArray);
+                await service.gayme.cards.delete(cardIdArray);
             } catch (e) {
                 // TODO 标准的错误处理
                 console.error(e);

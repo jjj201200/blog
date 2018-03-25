@@ -24,7 +24,7 @@ module.exports = class CardService extends Service {
         this.service = service;
         this.model = model;
         this.helper = helper;
-        this.Card = model.gayme.Card;
+        this.Card = model.Gayme.Card;
     }
 
     /**
@@ -37,8 +37,8 @@ module.exports = class CardService extends Service {
     async getList(conditions, page = 1, pageSize = 30) {
         try {
             const list = this.Card.find()
-                .select(CardReturnKeys.join(' '))
                 .where(conditions)
+                .select(CardReturnKeys.join(' '))
                 .skip((page - 1) * pageSize)
                 .limit(pageSize);
             await list.exec((err, resList) => {
@@ -80,14 +80,15 @@ module.exports = class CardService extends Service {
     async create(targetType, type = 0, name, attack = 0, defend = 0, duration = 0,) {
         try {
             // 获取用户id
-            const cardId = await this.Card.findOne()
+            const searchCard = await this.Card.findOne()
                 .where({targetType, name, type, attack, defend, duration}) // 查询是否有一模一样的卡
-                .select('_id').exec();
+                .select(CardReturnKeys.join(' '))
+                .exec();
 
-            if (cardId) {
+            if (searchCard) {
                 this.ctx.body = {
                     code: 0,
-                    data: card,
+                    data: searchCard,
                     msg: 'has card',
                 }
             } else { // 没有完全相同的牌则创建一张
@@ -125,9 +126,8 @@ module.exports = class CardService extends Service {
     }
 
     /**
-     * 更新文章数据
-     * 包括更新草稿 发布文章
-     * @param {string} articleId
+     * 更新卡牌数据
+     * @param {string} cardId
      * @param {object} params
      */
     async update(cardId, params) {
@@ -148,7 +148,7 @@ module.exports = class CardService extends Service {
             const card = await this.Card
                 // .select(ArticleReturnString)
                     .findByIdAndUpdate(cardId, updateObject, {new: true})
-                    .select(['_id', 'targetType', 'name', 'type', 'attack', 'defend', 'duration']);
+                    .select(CardReturnKeys.join(' '));
             if (card) {
                 this.ctx.body = {
                     code: 0,

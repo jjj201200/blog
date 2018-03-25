@@ -4,15 +4,17 @@
  * Description:
  */
 
+import _ from 'lodash';
 import React from 'react';
 import {inject, observer} from 'mobx-react';
 import {withStyles} from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
-import Divider from 'material-ui/Divider';
-// import NumberFormat from 'react-number-format';
+// import Divider from 'material-ui/Divider';
+import {NumberField} from 'DFComponents';
 import Button from 'material-ui/Button';
 import Select from 'material-ui/Select';
 import {MenuItem} from 'material-ui/Menu';
+import TextField from 'material-ui/TextField';
 import Typography from 'material-ui/Typography';
 import {FormControl, FormHelperText} from 'material-ui/Form';
 import Input, {InputLabel, InputAdornment} from 'material-ui/Input';
@@ -21,9 +23,27 @@ import List, {ListItem, ListItemIcon, ListItemText, ListSubheader, ListItemSecon
 
 @inject('GaymeStore', 'CardsStore') @observer
 class CardsView extends React.Component {
+    constructor(props) {
+        super(props);
+        this.onClickCard = ::this.onClickCard;
+    }
+
+    componentWillMount() {
+        const {CardsStore} = this.props;
+    }
+
+    /**
+     * 卡牌点击载入编辑器事件
+     * TODO 考虑未保存的情况
+     */
+    onClickCard(cardId) {
+        const {CardsStore} = this.props;
+        CardsStore.currentCard = CardsStore.cardList.get(cardId);
+    }
+
     render() {
+        const that = this;
         const {CardsStore, classes} = this.props;
-        const cardEditorInputs = CardsStore.cardEditor.inputs;
         return (
             <Card className={classes.card}>
                 <CardHeader
@@ -39,14 +59,17 @@ class CardsView extends React.Component {
                                     <Typography variant="subheading">
                                         Card Editor
                                     </Typography>
-                                    <FormControl fullWidth>
+                                    <FormControl fullWidth className={classes.cardEditorItem}>
                                         <InputLabel
                                             className={classes.cardEditorLabel}
                                             htmlFor="target-type"
                                         >Target Type</InputLabel>
                                         <Select
-                                            onChange={(e) => {cardEditorInputs.targetType = e.target.value}}
-                                            value={cardEditorInputs.targetType}
+                                            onChange={(e) => {
+                                                CardsStore.currentCard.targetType = e.target.value;
+                                                CardsStore.currentCard.hasEdited = true;
+                                            }}
+                                            value={CardsStore.currentCard.targetType}
                                             inputProps={{
                                                 name: 'target-type',
                                                 id: 'target-type',
@@ -57,90 +80,150 @@ class CardsView extends React.Component {
                                             <MenuItem value={2}>Both</MenuItem>
                                         </Select>
                                     </FormControl>
-                                    <FormControl fullWidth>
+                                    <FormControl fullWidth className={classes.cardEditorItem}>
                                         <InputLabel
-                                            className={classes.cardEditorLabel}
                                             htmlFor="card-name"
                                         >Card Name</InputLabel>
                                         <Input
-                                            onChange={(e) => {cardEditorInputs.name = e.target.value}}
-                                            value={cardEditorInputs.name}
+                                            onChange={(e) => {
+                                                CardsStore.currentCard.name = e.target.value;
+                                                CardsStore.currentCard.hasEdited = true;
+                                            }}
+                                            value={CardsStore.currentCard.name}
                                             id="card-name"
                                             name="card-name"
                                         />
                                     </FormControl>
-                                    <FormControl fullWidth>
-                                        <InputLabel
-                                            className={classes.cardEditorLabel}
-                                            htmlFor="card-type"
-                                        >Card Type</InputLabel>
-                                        <Input
-                                            onChange={(e) => {cardEditorInputs.type = e.target.value}}
-                                            value={cardEditorInputs.type}
-                                            id="card-type"
-                                            name="card-type"
+                                    <FormControl fullWidth className={classes.cardEditorItem}>
+                                        <TextField
+                                            label="Type"
+                                            value={CardsStore.currentCard.type}
+                                            onChange={(e) => {
+                                                CardsStore.currentCard.type = e.target.value;
+                                                CardsStore.currentCard.hasEdited = true;
+                                            }}
+                                            InputProps={{
+                                                inputComponent: NumberField,
+                                            }}
                                         />
                                     </FormControl>
-                                    <FormControl fullWidth>
-                                        <InputLabel
-                                            className={classes.cardEditorLabel}
-                                            htmlFor="attack"
-                                        >Attack Number</InputLabel>
-                                        <Input
-                                            onChange={(e) => {cardEditorInputs.attack = e.target.value}}
-                                            value={cardEditorInputs.attack}
-                                            id="attack"
-                                            name="attack"
+                                    <FormControl fullWidth className={classes.cardEditorItem}>
+                                        <TextField
+                                            label="Attack"
+                                            value={CardsStore.currentCard.attack}
+                                            onChange={(e) => {
+                                                CardsStore.currentCard.attack = e.target.value;
+                                                CardsStore.currentCard.hasEdited = true;
+                                            }}
+                                            InputProps={{
+                                                inputComponent: NumberField,
+                                            }}
                                         />
                                     </FormControl>
-                                    <FormControl fullWidth>
-                                        <InputLabel
-                                            className={classes.cardEditorLabel}
-                                            htmlFor="defend"
-                                        >Defend Number</InputLabel>
-                                        <Input
-                                            onChange={(e) => {cardEditorInputs.defend = e.target.value}}
-                                            value={cardEditorInputs.defend}
-                                            id="defend"
-                                            name="defend"
+                                    <FormControl fullWidth className={classes.cardEditorItem}>
+                                        <TextField
+                                            label="Defend"
+                                            value={CardsStore.currentCard.defend}
+                                            onChange={(e) => {
+                                                CardsStore.currentCard.defend = e.target.value;
+                                                CardsStore.currentCard.hasEdited = true;
+                                            }}
+                                            InputProps={{
+                                                inputComponent: NumberField,
+                                            }}
                                         />
                                     </FormControl>
-                                    <FormControl fullWidth>
-                                        <InputLabel
-                                            className={classes.cardEditorLabel}
-                                            htmlFor="duration"
-                                        >Duration Times</InputLabel>
-                                        <Input
-                                            onChange={(e) => {cardEditorInputs.duration = e.target.value}}
-                                            value={cardEditorInputs.duration}
-                                            id="duration"
-                                            name="duration"
+                                    <FormControl fullWidth className={classes.cardEditorItem}>
+                                        <TextField
+                                            label="Duration"
+                                            value={CardsStore.currentCard.duration}
+                                            onChange={(e) => {
+                                                CardsStore.currentCard.duration = e.target.value;
+                                                CardsStore.currentCard.hasEdited = true;
+                                            }}
+                                            InputProps={{
+                                                inputComponent: NumberField,
+                                            }}
                                         />
                                     </FormControl>
                                     <div className={classes.buttonGroup}>
                                         <Button
                                             className={classes.button}
                                             variant="raised"
-                                            color="default"
+                                            color="secondary"
+                                            onClick={CardsStore.createNew}
                                         >
-                                            Delete
+                                            New
                                         </Button>
-                                        <Button className={classes.button} variant="raised" color="secondary">
+                                        <Button
+                                            onClick={CardsStore.update}
+                                            className={classes.button}
+                                            variant="raised"
+                                            color="secondary"
+                                            disabled={!CardsStore.currentCard.hasSaved}
+                                        >
                                             Update
                                         </Button>
                                         <Button
+                                            onClick={CardsStore.deleteOne}
                                             className={classes.button}
                                             variant="raised"
-                                            color="primary">
-                                            Create
+                                            color="default"
+                                            disabled={!CardsStore.currentCard.hasSaved}
+                                        >
+                                            Delete
+                                        </Button>
+                                        <Button
+                                            onClick={CardsStore.create}
+                                            className={classes.button}
+                                            variant="raised"
+                                            color="primary"
+                                            disabled={CardsStore.currentCard.hasSaved}
+                                        >
+                                            Save new
                                         </Button>
                                     </div>
                                 </Grid>
                             </Grid>
                         </Grid>
-                        <Grid item xs={9}>
-                            <List className="player-list">
-                            </List>
+                        <Grid item xs={9} className={classes.gameCardBox}>
+                            {_.map(CardsStore.cardListObject, (cardData, cardId) => {
+                                return (
+                                    <Card
+                                        key={cardId}
+                                        className={classes.gameCard}
+                                        onClick={() => {
+                                            that.onClickCard(cardId);
+                                        }}
+                                    >
+                                        <CardHeader
+                                            title={cardData.name}
+                                            subheader={`${CardsStore.TARGET_TYPE[cardData.targetType]} - T${cardData.type}`}
+                                        />
+                                        <CardContent className={classes.gameCardContent}>
+                                            <List>
+                                                <ListItem>
+                                                    <ListItemText
+                                                        primary={String(cardData.attack)}
+                                                        secondary={'Attack'}
+                                                        className={classes.gameCardContentItem}
+                                                    />
+                                                    <ListItemText
+                                                        primary={String(cardData.defend)}
+                                                        secondary={'Defend'}
+                                                        className={classes.gameCardContentItem}
+                                                    />
+                                                    <ListItemText
+                                                        primary={String(cardData.duration)}
+                                                        secondary={'Duration'}
+                                                        className={classes.gameCardContentItem}
+                                                    />
+                                                </ListItem>
+                                            </List>
+                                        </CardContent>
+                                    </Card>
+                                );
+                            })}
                         </Grid>
                     </Grid>
                 </CardContent>
@@ -168,20 +251,59 @@ const styles = theme => ({
         flexDirection: 'column',
         overflow: 'auto',
     },
-    cardEditorLabel: {
-        fontSize: '0.8rem',
-        top: 6,
+    cardEditorItem: {
+        '& label': {
+            fontSize: '0.8rem',
+            top: 6,
+        },
     },
     buttonGroup: {
         display: 'flex',
         justifyContent: 'space-between',
         margin: '20px -0.5rem',
         flexWrap: 'wrap',
-        flexGrow: 1,
     },
     button: {
         margin: theme.spacing.unit,
+        flexGrow: 1,
     },
+    gameCardBox: {
+        display: 'flex',
+        // justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        overflow: 'auto',
+    },
+    gameCard: {
+        display: 'inline-block',
+        cursor: 'pointer',
+        margin: '0 10px 10px 0',
+        width: 'auto',
+        height: 'fit-content',
+        flexGrow: 0,
+        flexShrink: 0,
+    },
+    gameCardContent: {
+        padding: 0,
+        '&:last-child': {
+            paddingBottom: 0,
+        },
+        '& li': {
+            flexWrap: 'wrap',
+        },
+    },
+    gameCardContentItem: {
+        display: 'flex',
+        flexDirection: 'column-reverse',
+        flexGrow: 1,
+        flexShrink: 0,
+        padding: '0 3px',
+        '& h3': {
+            textAlign: 'center',
+        },
+        '& p': {
+            fontSize: 12,
+        },
+    }
 });
 const Cards = withStyles(styles)(CardsView);
 export {Cards};

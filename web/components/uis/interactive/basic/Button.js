@@ -9,7 +9,7 @@ import PropType from 'prop-types';
 import styled from 'styled-components';
 import {theme} from 'DFStyles';
 
-class Button extends React.Component {
+export class Button extends React.Component {
     static proptypes = {
         content: PropType.string,
     }
@@ -17,5 +17,3 @@ class Button extends React.Component {
         <div>{}</div>
     }
 }
-
-export default styled(Button)``;

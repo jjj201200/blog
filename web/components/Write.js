@@ -277,8 +277,8 @@ class WriteMobView extends React.Component {
             //  确认删除模式开启 确认存在指定id的文章
             if (that.props.EditorStore.deleteModeState && EditorStore.articleList.has(articleId)) {
                 const article = EditorStore.articleList.get(articleId); // 获取文章对象 - 被观察的
-                article.deleteDhecked = !article.deleteDhecked; // 将文章的[删除标记]置反
-                if (article.deleteDhecked) {
+                article.deleteChecked = !article.deleteChecked; // 将文章的[删除标记]置反
+                if (article.deleteChecked) {
                     EditorStore.deleteArticleList.push(article.id); // 加入删除列表
                 } else {
                     EditorStore.deleteArticleList.remove(article.id);
@@ -565,7 +565,7 @@ class WriteMobView extends React.Component {
                                                     tabIndex={-1}
                                                     disableRipple
                                                     // onChange={this.onCreateClickArticleEvent(data.id)}
-                                                    checked={data.deleteDhecked}
+                                                    checked={data.deleteChecked}
                                                 />}
                                                 <ListItemText
                                                     primary={data.title}

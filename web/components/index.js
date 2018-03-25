@@ -4,6 +4,7 @@
  * Description: index
  */
 
+export * from './uis';
 export * from './Sidebar';
 export * from './Signup';
 export * from './Write';
