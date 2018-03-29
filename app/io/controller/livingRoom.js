@@ -38,7 +38,11 @@ module.exports = app => {
         sendBattlePost(requestBody) {
             const {socket, app} = this.ctx;
             const {data} = requestBody;
-            socket.to(app.players[data.targetId].sid).emit('getBattlePost', {postId: socket.id});
+            console.log(data);
+            socket.to(app.players[data.targetId].sid).emit('getBattlePost', {
+                postId: data.postId,
+                posterName: data.posterName,
+            });
         }
     }
 }

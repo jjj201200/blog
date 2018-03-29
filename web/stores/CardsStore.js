@@ -14,7 +14,7 @@ export class CardsStore extends BasicStore {
     constructor(rootStore) {
         super('CardsStore', rootStore, [memoryStorage]);
         this.load();
-        this.init();
+        // this.init();
         this.create = ::this.create;
         this.createNew = ::this.createNew;
         this.update = ::this.update;
@@ -39,6 +39,7 @@ export class CardsStore extends BasicStore {
         attack: 0, // 卡牌施加伤害效果数值
         defend: 0, // 卡牌施加格挡效果数值
         duration: 0, // 卡牌效果持续回合数
+        consume: 0, // 卡牌发动所需的费用
     };
 
     @observable currentCard = {}; // 当前编辑对象
@@ -59,9 +60,7 @@ export class CardsStore extends BasicStore {
 
     init() {
         this.currentCard = new Card(this.cardEditor);
-        // console.log(this.currentCard);
         this.getCardList();
-        console.log(this.cardListObject);
     }
 
     /**
@@ -76,7 +75,7 @@ export class CardsStore extends BasicStore {
             type: 'get',
             url: '/api/cards',
             data: {
-                type: 0,
+                // type: 0,
                 method: 'getList',
             },
             dataType: 'json',
@@ -178,6 +177,7 @@ export class CardsStore extends BasicStore {
      * @param attack
      * @param defend
      * @param duration
+     * @param consume
      */
     @action
     update() {
@@ -189,12 +189,12 @@ export class CardsStore extends BasicStore {
             }
             if (this.requestSending) return;
             this.requestSending = true;
-            const {id: cardId, targetType, type, name, attack, defend, duration} = this.currentCardObject;
+            const {id: cardId, targetType, type, name, attack, defend, duration, consume} = this.currentCardObject;
             return Ajax({
                 type: 'post',
                 url: '/api/cards',
                 data: JSON.stringify({
-                    cardId, targetType, type, name, attack, defend, duration,
+                    cardId, targetType, type, name, attack, defend, duration, consume,
                     method: 'update',
                 }),
                 contentType: JSON_CONTENT_TYPE,

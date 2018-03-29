@@ -14,10 +14,9 @@ import {observer, inject} from 'mobx-react';
 import Divider from 'material-ui/Divider';
 import IconButton from 'material-ui/IconButton';
 import Gesture from 'material-ui-icons/Gesture';
+import Badge from 'material-ui/Badge';
 import Add from 'material-ui-icons/Add';
 import Remove from 'material-ui-icons/Remove';
-import AddCircle from 'material-ui-icons/AddCircle';
-import RemoveCircle from 'material-ui-icons/RemoveCircle';
 import Card, {CardContent, CardHeader} from 'material-ui/Card';
 import Dialog, {DialogTitle, DialogContent, DialogContentText, DialogActions} from 'material-ui/Dialog';
 import List, {ListItem, ListItemIcon, ListItemText, ListSubheader, ListItemSecondaryAction} from 'material-ui/List';
@@ -27,7 +26,7 @@ const GameBox = styled(Card)`
   width: 100%;
 `;
 
-@inject('GlobalStore', 'UserStore', 'GaymeStore') @observer
+@inject('GlobalStore', 'UserStore', 'GaymeStore', 'CardsStore') @observer
 class GaymeView extends React.Component {
     constructor(props) {
         super(props);
@@ -39,6 +38,8 @@ class GaymeView extends React.Component {
                 } else if (!GaymeStore.socket.connected) { // 没有连接过就重连
                     GaymeStore.reconnect();
                 }
+            } else {
+                GaymeStore.disconnect();
             }
         });
     }
@@ -54,16 +55,16 @@ class GaymeView extends React.Component {
         GaymeStore.disconnect();
     }
 
-    onCloseAcceptDialog() {
-        const {GaymeStore} = this.props;
-        GaymeStore.battlePostDialog = false;
+    onClosePostDialog() {
+        this.props.GaymeStore.battlePostDialog.open = false;
     }
 
     render() {
         const that = this;
-        const {GaymeStore, classes} = this.props;
+        const {GaymeStore, UserStore, CardsStore, classes} = this.props;
         const {playerList, clickedPlayer} = GaymeStore;
-        const hasClickedPlayer = Object.keys(clickedPlayer).length > 0;
+        const hasClickedPlayer = clickedPlayer.id !== undefined;
+        const isOwn = UserStore.currentUser && clickedPlayer ? clickedPlayer.id === UserStore.currentUser.id : false;
         return (
             <GameBox className={[classes.card, 'gayme'].join(' ')}>
                 <CardHeader
@@ -79,11 +80,11 @@ class GaymeView extends React.Component {
                                     const isMe = GaymeStore.socket.id === playerData.sid;
                                     return [
                                         <ListItem button key={userId} onClick={() => {
-                                            GaymeStore.clickedPlayer = playerData;
+                                            GaymeStore.selectPlayer(userId);
                                         }}>
                                             <ListItemText
                                                 className={[isMe ? 'me' : '', userId].join(' ')}
-                                                primary={`${playerData.username} `}
+                                                primary={`${playerData.nickname} `}
                                             />
                                             {!isMe && <ListItemSecondaryAction className='article-list-delete-btn'>
                                                 <IconButton
@@ -99,83 +100,128 @@ class GaymeView extends React.Component {
                             </List>
                         </Grid>
                         <Grid item xs={9} className={classes.playerInfoBox}>
-                            {hasClickedPlayer && <Grid container direction="row">
-                                <Grid item xs={12}>
-                                    <List>
-                                        <ul>
-                                            <ListSubheader className={classes.playerInfoBoxSubHeader}>
-                                                基本信息<Divider/>
-                                            </ListSubheader>
-                                            <ListItem>
-                                                <ListItemText
-                                                    className={classes.playerInfoBoxListItem}
-                                                    primary={String(clickedPlayer.username)}
-                                                    secondary={'用户名'}
-                                                />
-                                                <ListItemText
-                                                    className={classes.playerInfoBoxListItem}
-                                                    primary={`${String(clickedPlayer.playerData.sum).padEnd(4, ' ')} 场`}
-                                                    secondary={'游戏场次'}
-                                                />
-                                                <ListItemText
-                                                    className={classes.playerInfoBoxListItem}
-                                                    primary={`${String(clickedPlayer.playerData.win).padEnd(4, ' ')} 场`}
-                                                    secondary={'胜利场次'}
-                                                />
-                                            </ListItem>
-                                        </ul>
-                                        <ul>
-                                            <ListSubheader className={classes.playerInfoBoxSubHeader}>
-                                                <div className={classes.layerInfoBoxSubHeaderBox}>
-                                                    <span style={{flexGrow: 1}}>拥有卡牌</span>
-                                                    <div style={{borderRight: '1px solid #e0e0e0'}}>
-                                                        <IconButton>
-                                                            <Add/>
-                                                        </IconButton>
-                                                        <IconButton>
-                                                            <Remove/>
-                                                        </IconButton>
-                                                    </div>
-                                                    <div>
-                                                        <IconButton>
-                                                            <AddCircle/>
-                                                        </IconButton>
-                                                        <IconButton>
-                                                            <RemoveCircle/>
-                                                        </IconButton>
-                                                    </div>
-                                                </div>
-                                                <Divider/>
-                                            </ListSubheader>
-
-                                            <ListItem>
-                                                {/*<ListItemText*/}
-                                                {/*primary={clickedPlayer.cards}*/}
-                                                {/*/>*/}
-                                            </ListItem>
-                                        </ul>
-
-                                    </List>
-                                </Grid>
-                            </Grid>}
+                            {hasClickedPlayer && ([
+                                <List key="basic-information">
+                                    <ListItem>
+                                        <ListItemText
+                                            className={classes.playerInfoBoxListItem}
+                                            primary={clickedPlayer.nickname || ''}
+                                            secondary={'Username'}
+                                        />
+                                        <ListItemText
+                                            className={classes.playerInfoBoxListItem}
+                                            primary={`${String(clickedPlayer.sum || 0).padEnd(4, ' ')} times`}
+                                            secondary={'Total'}
+                                        />
+                                        <ListItemText
+                                            className={classes.playerInfoBoxListItem}
+                                            primary={`${String(clickedPlayer.win || 0).padEnd(4, ' ')} times`}
+                                            secondary={'Win'}
+                                        />
+                                    </ListItem>
+                                </List>,
+                                <List key="card-list">
+                                    <ListSubheader className={classes.playerInfoBoxSubHeader}>
+                                        <div className={classes.layerInfoBoxSubHeaderBox}>
+                                            <span style={{flexGrow: 1}}>Cards List</span>
+                                            {isOwn && <Button
+                                                size="small"
+                                                variant="raised"
+                                                color="secondary"
+                                                disabled={!clickedPlayer.cards.hasEdited || GaymeStore.requestSending}
+                                                style={{height: 'fit-content'}}
+                                                onClick={GaymeStore.updatePlayerCard}
+                                            >Update</Button>}
+                                        </div>
+                                        <Divider/>
+                                    </ListSubheader>
+                                    <ListItem className={classes.playerCardBox}>
+                                        {_.map(clickedPlayer.cards.list, (cardData, cardId) => {
+                                            return (
+                                                <Card
+                                                    key={cardId}
+                                                    className={classes.gameCard}
+                                                    onClick={() => {
+                                                        // that.onClickCard(cardId);
+                                                    }}
+                                                >
+                                                    <CardHeader
+                                                        title={cardData.name}
+                                                        subheader={`${CardsStore.TARGET_TYPE[cardData.targetType]} - T${cardData.type}`}
+                                                    />
+                                                    <CardContent className={classes.gameCardContent}>
+                                                        <List>
+                                                            <ListItem>
+                                                                <ListItemText
+                                                                    primary={String(cardData.consume)}
+                                                                    secondary={'Consume'}
+                                                                    className={classes.gameCardContentItem}
+                                                                />
+                                                                <ListItemText
+                                                                    primary={String(cardData.attack)}
+                                                                    secondary={'Attack'}
+                                                                    className={classes.gameCardContentItem}
+                                                                />
+                                                                <ListItemText
+                                                                    primary={String(cardData.defend)}
+                                                                    secondary={'Defend'}
+                                                                    className={classes.gameCardContentItem}
+                                                                />
+                                                                <ListItemText
+                                                                    primary={String(cardData.duration)}
+                                                                    secondary={'Duration'}
+                                                                    className={classes.gameCardContentItem}
+                                                                />
+                                                            </ListItem>
+                                                            {isOwn && [
+                                                                <Divider key={`${cardData.id}-divider`}/>,
+                                                                <ListItem key={cardData.id} className={classes.cardCounterBox}>
+                                                                    <IconButton
+                                                                        onClick={() => {
+                                                                            clickedPlayer.cards.subtract(cardId, 1);
+                                                                        }}
+                                                                    >
+                                                                        <Remove/>
+                                                                    </IconButton>
+                                                                    <span>{clickedPlayer.cards.list[cardId].number}</span>
+                                                                    <IconButton
+                                                                        onClick={() => {
+                                                                            clickedPlayer.cards.add(cardId, 1);
+                                                                        }}
+                                                                    >
+                                                                        <Add/>
+                                                                    </IconButton>
+                                                                </ListItem>
+                                                            ]}
+                                                        </List>
+                                                    </CardContent>
+                                                </Card>
+                                            );
+                                        })}
+                                    </ListItem>
+                                </List>
+                            ])}
                         </Grid>
                     </Grid>
-                    <Dialog open={GaymeStore.battlePostDialog.open} onClose={this.onCloseDeleteDialog}>
+                    <Dialog open={GaymeStore.battlePostDialog.open} onClose={this.onClosePostDialog}>
                         <DialogTitle>
                             Receive a challenge.
                         </DialogTitle>
                         <DialogContent>
                             <DialogContentText>
-                                Do you want to accept it from {}?
+                                Do you want to accept it from {GaymeStore.battlePostDialog.posterName}?
                             </DialogContentText>
                         </DialogContent>
                         <DialogActions>
-                            <Button onClick={this.onCloseDeleteDialog}>
-                                Cancel
+                            <Button onClick={() => {
+                                that.onClosePostDialog();
+                                GaymeStore.denyBattlePost();
+                            }}>
+                                Deny
                             </Button>
                             <Button variant="raised" color="primary" onClick={() => {
-                                that.onCloseAcceptDialog();
-                                GaymeStore.acceptPost();
+                                that.onClosePostDialog();
+                                GaymeStore.acceptBattlePost();
                             }}>
                                 Accept
                             </Button>
@@ -202,17 +248,72 @@ const styles = {
     },
     playerInfoBox: {
         overflow: 'auto',
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
     },
     playerInfoBoxSubHeader: {
         backgroundColor: '#ffffff',
+        zIndex: 2,
     },
     layerInfoBoxSubHeaderBox: {
         display: 'flex',
+        alignItems: 'center',
     },
     playerInfoBoxListItem: {
         display: 'flex',
         flexDirection: 'column-reverse',
-    }
+    },
+    playerCardBox: {
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+    },
+    gameCard: {
+        display: 'inline-block',
+        cursor: 'pointer',
+        margin: '0 10px 10px 0',
+        width: 'auto',
+        height: 'fit-content',
+        flexGrow: 0,
+        flexShrink: 0,
+    },
+    gameCardContent: {
+        padding: 0,
+        '&:last-child': {
+            paddingBottom: 0,
+        },
+        '& li': {
+            flexWrap: 'wrap',
+        },
+    },
+    gameCardContentItem: {
+        display: 'flex',
+        flexDirection: 'column-reverse',
+        flexGrow: 1,
+        flexShrink: 0,
+        padding: '0 12px',
+        flexBasis: '30px',
+        '& h3': {
+            textAlign: 'center',
+        },
+        '& p': {
+            fontSize: 12,
+        },
+        '&:last-child': {
+            paddingRight: 0,
+        },
+    },
+    cardCounterBox: {
+        display: 'flex',
+        width: '100%',
+        textAlign: 'center',
+        alignItems: 'center',
+        padding: '0 12px',
+        '& > span': {
+            flexGrow: 1,
+        }
+    },
 };
 const Gayme = withStyles(styles)(GaymeView);
 export {Gayme};

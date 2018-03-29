@@ -11,6 +11,7 @@ import {inject, observer} from 'mobx-react';
 import {withStyles} from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 // import Divider from 'material-ui/Divider';
+import Badge from 'material-ui/Badge';
 import {NumberField} from 'DFComponents';
 import Button from 'material-ui/Button';
 import Select from 'material-ui/Select';
@@ -40,6 +41,11 @@ class CardsView extends React.Component {
     };
 
     @observable deleteDialogShow = false; // 删除提示框显示状态
+
+    componentWillMount() {
+        const {CardsStore} = this.props;
+        CardsStore.init();
+    }
 
     onOpenDeleteDialog(targetEvent) {
         if (targetEvent instanceof Function) {
@@ -175,6 +181,19 @@ class CardsView extends React.Component {
                                             }}
                                         />
                                     </FormControl>
+                                    <FormControl fullWidth className={classes.cardEditorItem}>
+                                        <TextField
+                                            label="Consume"
+                                            value={CardsStore.currentCard.consume}
+                                            onChange={(e) => {
+                                                CardsStore.currentCard.consume = e.target.value;
+                                                CardsStore.currentCard.hasEdited = true;
+                                            }}
+                                            InputProps={{
+                                                inputComponent: NumberField,
+                                            }}
+                                        />
+                                    </FormControl>
                                     <div className={classes.buttonGroup}>
                                         <Button
                                             className={classes.button}
@@ -254,6 +273,11 @@ class CardsView extends React.Component {
                                             <List>
                                                 <ListItem>
                                                     <ListItemText
+                                                        primary={String(cardData.consume)}
+                                                        secondary={'Consume'}
+                                                        className={classes.gameCardContentItem}
+                                                    />
+                                                    <ListItemText
                                                         primary={String(cardData.attack)}
                                                         secondary={'Attack'}
                                                         className={classes.gameCardContentItem}
@@ -331,6 +355,11 @@ const styles = theme => ({
         height: 'fit-content',
         flexGrow: 0,
         flexShrink: 0,
+    },
+    gameCardBadge: {
+        right: 'auto',
+        top: '-14px',
+        left: '-22px',
     },
     gameCardContent: {
         padding: 0,

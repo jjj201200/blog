@@ -59,7 +59,6 @@ module.exports = class PlayerService extends Service {
         try {
             // 获取用户id
             const resUserId = await this.User.findOne().where({_id: userId}).select('_id').exec();
-            console.log(resUserId);
             if (resUserId) {
 
                 // 创建属于该用户的游戏账号数据
@@ -103,38 +102,38 @@ module.exports = class PlayerService extends Service {
      * @param userId
      * @param cardId
      */
-    async addCard(userId, cardId) {
+    async updateCards(userId, cardsArray) {
         const that = this;
         try {
             /**
              * 筛选出需要更新的字段
              */
-            const updateObject = {};
-            _.map(params, (value, key) => {
-                updateObject[key] = value;
-            });
+            // const updateObject = {};
+            // _.map(cardsArray, (value, key) => {
+            //     updateObject[key] = value;
+            // });
 
             /**
              * TODO 这里需要搞清楚如何捕获错误
              */
                 // conditions, updateObject
-            const player = await this.Player
-                // .select(ArticleReturnString)
-                    .findOne(userId);
-            console.log(player);
-            // if (player) {
-            //     const {__v, ...rest} = article._doc;
-            //     that.ctx.body = {
-            //         code: 0,
-            //         data: {...rest},
-            //         message: 'update player successfully',
-            //     };
-            // } else {
-            //     this.ctx.body = {
-            //         code: -1,
-            //         message: 'no player',
-            //     };
-            // }
+            const newPlayer = await this.Player.findOneAndUpdate({userId}, {cards: cardsArray}, {new: true});
+            if (newPlayer) {
+                const {_id: id, userId, nickname, sum, win, cards} = newPlayer;
+
+                this.ctx.app.players[userId].playerData.cards = cards; // 更新内存中的数据
+
+                that.ctx.body = {
+                    code: 0,
+                    data: {id, userId, nickname, sum, win, cards},
+                    message: 'update player successfully',
+                };
+            } else {
+                that.ctx.body = {
+                    code: -1,
+                    message: 'no player',
+                };
+            }
         } catch (e) {
             // TODO 标准的错误处理
             console.error(e);

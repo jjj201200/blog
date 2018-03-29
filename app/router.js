@@ -26,6 +26,10 @@ module.exports = app => {
     router.post('/api/article', article.index);
 
     // 卡牌
+    router.get('/api/player', gayme.player.index);
+    router.post('/api/player', gayme.player.index);
+
+    // 卡牌
     router.get('/api/cards', gayme.cards.index);
     router.post('/api/cards', gayme.cards.index);
 };

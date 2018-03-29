@@ -53,7 +53,6 @@ export class UserStore extends BasicStore {
                     //TODO
                 } else {
                     const user = res.data;
-                    console.log(user);
                     this.updateCurrentUser({...user});
                     this.root.stores.GlobalStore.onOpenSnackbar({
                         msg: 'sign in successfully'
@@ -185,9 +184,12 @@ export class UserStore extends BasicStore {
     @action
     updateCurrentUser({id, username, email, loginDate, initial = true}) {
         const currentUser = this.store.get('currentUser');
-        if (currentUser)
+        this.currentUser = new User({id, username, email, loginDate});
+        if (currentUser) {
             currentUser.set({id, username, email, loginDate});
-        else this.store.set('currentUser', new User({id, username, email, loginDate}));
+        } else {
+            this.store.set('currentUser', {id, username, email, loginDate});
+        }
         this.userInitialed = initial;
         // this.updateLoginStatus(loginState);
     }

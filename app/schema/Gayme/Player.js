@@ -8,6 +8,17 @@ module.exports = app => {
     const {mongoose} = app;
     const {Schema} = mongoose;
 
+    const PlayCard = new Schema({
+        id: {
+            type: Schema.Types.ObjectId,
+            ref: 'card',
+        },
+        number: {
+            type: Number,
+            default: 0,
+        }
+    },{ _id: false});
+
     const PlayerSchema = new Schema({
         userId: {
             type: Schema.Types.ObjectId,
@@ -23,12 +34,8 @@ module.exports = app => {
         },
         sum: Number,
         win: Number,
-        cards: [{
-            type: Schema.Types.ObjectId,
-            required: true,
-            ref: 'card',
-        }],
+        cards: [PlayCard],
         loginDate: {type: Date, default: Date.now},
-    }, { id: false });
+    });
     return PlayerSchema;
 }

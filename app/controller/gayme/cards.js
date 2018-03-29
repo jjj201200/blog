@@ -4,6 +4,8 @@
  * Description: gayme card
  */
 
+const _ = require('lodash');
+
 module.exports = app => {
     const {Controller} = app;
 
@@ -44,6 +46,7 @@ module.exports = app => {
                             attack: {type: 'number', required: true},
                             defend: {type: 'number', required: true},
                             duration: {type: 'number', required: true},
+                            consume: {type: 'number', required: true},
                         },
                     },
                     update: { // 更新卡牌数据
@@ -56,6 +59,7 @@ module.exports = app => {
                             attack: {type: 'number'},
                             defend: {type: 'number'},
                             duration: {type: 'number'},
+                            consume: {type: 'number'},
                         },
                     },
                     delete: { // 更新玩家胜负数据及场数
@@ -107,10 +111,10 @@ module.exports = app => {
             const {request, helper, service} = this.ctx;
             try {
                 helper.checkParams(request, rule);
-                const {type = 0, page = 1, pageSize = 30} = request.query;
-                const conditions = {
+                const {type, page = 1, pageSize = 30} = request.query;
+                const conditions = _.pickBy({
                     type,
-                };
+                }, v => v !== undefined);
                 await service.gayme.cards.getList(
                     conditions, page, pageSize,
                 );
@@ -130,9 +134,9 @@ module.exports = app => {
             const {service, request, helper} = this.ctx;
             try {
                 helper.checkParams(request.body, rule);
-                const {targetType, type, name, attack, defend, duration} = request.body;
+                const {targetType, type, name, attack, defend, duration, consume} = request.body;
                 await service.gayme.cards.create(
-                    targetType, type, name, attack, defend, duration,
+                    targetType, type, name, attack, defend, duration, consume,
                 );
             } catch (e) {
                 // TODO 标准的错误处理
@@ -143,6 +147,7 @@ module.exports = app => {
                 };
             }
         }
+
         /**
          * 更新卡牌数据
          */

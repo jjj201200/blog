@@ -7,6 +7,7 @@ const JWT = Symbol('Application#jwt');
 const PlayerList = Symbol('Application#playerList');
 const RoomList = Symbol('Application#roomList');
 const BattleList = Symbol('Application#battleList');
+const Gayme = Symbol('Application#Gayme');
 
 const extendObject = {
     get jwt() {
@@ -35,6 +36,12 @@ const extendObject = {
             this[BattleList] = {};
         }
         return this[BattleList];
+    },
+    get gayme() {
+        if (!this[Gayme]) {
+            this[Gayme] = {};
+        }
+        return this[Gayme];
     }
 };
 

@@ -14,6 +14,7 @@ const CardReturnKeys = [
     'attack',
     'defend',
     'duration',
+    'consume',
 ];
 
 module.exports = class CardService extends Service {
@@ -36,9 +37,11 @@ module.exports = class CardService extends Service {
      */
     async getList(conditions, page = 1, pageSize = 30) {
         try {
-            const list = this.Card.find()
-                .where(conditions)
-                .select(CardReturnKeys.join(' '))
+            let list = this.Card.find();
+            if (conditions) {
+                list = list.where(conditions);
+            }
+            list = list.select(CardReturnKeys.join(' '))
                 .skip((page - 1) * pageSize)
                 .limit(pageSize);
             await list.exec((err, resList) => {
@@ -76,12 +79,13 @@ module.exports = class CardService extends Service {
      * @param {number} attack 卡牌发动效果 - 造成多少点伤害 - 攻击值
      * @param {number} defend 卡牌发动效果 - 给予多少点格挡 - 防御值
      * @param {number} duration 卡牌效果持续回合数，如：攻击牌持续时间0，防御牌持续时间1
+     * @param {number} consume 卡牌发动所需的费用
      */
-    async create(targetType, type = 0, name, attack = 0, defend = 0, duration = 0,) {
+    async create(targetType, type = 0, name, attack = 0, defend = 0, duration = 0, consume = 0) {
         try {
             // 获取用户id
             const searchCard = await this.Card.findOne()
-                .where({targetType, name, type, attack, defend, duration}) // 查询是否有一模一样的卡
+                .where({targetType, name, type, attack, defend, duration, consume}) // 查询是否有一模一样的卡
                 .select(CardReturnKeys.join(' '))
                 .exec();
 
@@ -99,6 +103,7 @@ module.exports = class CardService extends Service {
                     attack,
                     defend,
                     duration,
+                    consume,
                 });
                 await card.save().then((newCard) => {
                     if (newCard) {

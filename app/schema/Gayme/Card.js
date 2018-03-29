@@ -34,6 +34,10 @@ module.exports = app => {
             type: Number,
             default: 0,
         },
+        consume: { // 卡牌发动所需的费用（不管是行动值还是能量）
+            type: Number,
+            default: 0,
+        },
     });
     return Card;
 }
