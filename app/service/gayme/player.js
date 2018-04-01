@@ -36,10 +36,8 @@ module.exports = class PlayerService extends Service {
     async get(userId) {
         try {
             // TODO select可以选择查询返回的字段，最好将字段设计为可配置对象自动生成需要的字符串
-            const searchPlayer = this.Player
-                .findOne({userId}).select(PlayerReturnKeys.join(' '));
+            return this.Player.findOne({userId}).select(PlayerReturnKeys.join(' ')).exec();
             // .populate('authorId', 'username email', this.User);
-            return await searchPlayer.exec();
         } catch (e) {
             // TODO 标准的错误处理
             console.error(e);
@@ -73,11 +71,6 @@ module.exports = class PlayerService extends Service {
                 // 保存玩家数据
                 return await player.save().then((newPlayer) => {
                     if (newPlayer) {
-                        // this.ctx.body = {
-                        //     code: 0,
-                        //     data: newPlayer,
-                        //     message: 'create player successfully',
-                        // };
                         return newPlayer;
                     } else return false;
                 }).catch((e) => {

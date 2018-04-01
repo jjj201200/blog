@@ -8,7 +8,7 @@ module.exports = app => {
     const {mongoose} = app;
     const {Schema} = mongoose;
 
-    const PlayCard = new Schema({
+    const Card = new Schema({
         id: {
             type: Schema.Types.ObjectId,
             ref: 'card',
@@ -34,7 +34,7 @@ module.exports = app => {
         },
         sum: Number,
         win: Number,
-        cards: [PlayCard],
+        cards: [Card],
         loginDate: {type: Date, default: Date.now},
     });
     return PlayerSchema;

@@ -44,8 +44,10 @@ class Player {
         this.sum = sum;
         this.win = win;
 
+        this.state = false;
+
         // this.inTeam = false;
-        this.teamId = undefined;
+        this.team = undefined;
         this.isLeader = false;
     }
 
@@ -53,6 +55,18 @@ class Player {
     get inTeam() {
         return this.teamId !== undefined;
     }
+
+    get battle() {
+        if (!this.inTeam) return undefined;
+        if (!this.team.inBattle) return undefined;
+        return this.team.battle;
+    }
+
+    get inBattle() {
+        if (!this.inTeam) return undefined;
+        return this.team.inBattle;
+    }
+
 
     // 创建队伍
     createTeam() {
@@ -139,10 +153,7 @@ class Player {
                 //     msg: 'Connect timeout: ' + (++connectTimeoutCounter) + 'time',
                 // });
             });
-            // get player list
-            this.socket.off('playerList').on('playerList', (playerList) => {
 
-            });
             // get battle post
             this.socket.off('getBattlePost').on('getBattlePost', (data) => {
                 // that.battlePostDialog.receivedPost.postername = data.posterName;
@@ -151,6 +162,37 @@ class Player {
             });
         } catch (e) {
             console.log(e);
+        }
+    }
+
+    // 链接到socket
+    connect() {
+        const that = this;
+        const {UserStore} = this.root.stores;
+        if (user) { // 已经登录
+            const {id, username} = UserStore.currentUser;
+            this.socket = io('http://127.0.0.1:7001/', {
+                reconnectionAttempts: 3, // 重连尝试次数
+                reconnectionDelay: 5000, // 重连间隔
+                forceNew: true,
+                query: {
+                    userId: id,
+                    username: username,
+                },
+            });
+            this.socket.off('connect').on('connect', function (e) {
+                // 成功连接时，打印自己的id
+                if (!that.socket.id) that.socket.id = that.socket.io.engine.id;
+                that.root.stores.GlobalStore.onOpenSnackbar({
+                    msg: `Connect successfully: ${that.socket.id}`,
+                });
+                // 初始化
+                that.init();
+            });
+        } else { // 没有登录
+            this.root.stores.GlobalStore.onOpenSnackbar({
+                msg: 'please sign in first',
+            });
         }
     }
 

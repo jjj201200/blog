@@ -3,6 +3,7 @@
  * Create: 2018-03-27
  * Description: 玩家列表管理对象
  */
+
 /**
  * 属性
  * 在线玩家列表 {userId: Player, }
@@ -17,9 +18,32 @@
  */
 
 class PlayerManager {
-    constructor() {
+    constructor(owner) {
+        this.o = owner;
         this.playerList = {};
     }
 
-    addPlayer
+    initPlayerListEvent() {
+        try {
+            const {socket} = this.o;
+            // get player list
+            socket.off('playerList').on('playerList', (playerList) => {
+
+            });
+        }catch (e) {
+
+        }
+    }
+
+    getPlayerList() {
+        try {
+            const {sokcet} = this.o;
+            sokcet.emit('livingRoom', {
+                method: 'getPlayerList',
+                data: {roomId}
+            });
+        } catch (e) {
+            console.error(e);
+        }
+    }
 }

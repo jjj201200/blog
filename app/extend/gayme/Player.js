@@ -6,22 +6,53 @@
 
 class Player {
     constructor({
-        userId, nickname, cards, sum, win,
+        app, userId, nickname, cards, sum, win,
     }) {
+        this.app = app;
         this.userId = userId;
         this.nickname = nickname;
         this.cards = cards;
         this.sum = sum;
         this.win = win;
 
+        this.state = false;
+
         // this.inTeam = false;
         this.teamId = undefined;
         this.isLeader = false;
 
-        this.socket = undefined;
+        this.s = undefined;
 
         //战斗参数列表
-        this.heal = 100;
+        // this.heal = 100;
+    }
+
+    set socket(o) {
+        this.s = o;
+        this.initEvent();
+    }
+
+    get socket() {
+        return this.s;
+    }
+
+    initEvent() {
+        const that = this;
+        let cacheId = undefined;
+        this.socket.on('disconnect',() => {
+            /**
+             * 离线缓存清理计时器
+             * 离线1分钟后删除游戏数据
+             */
+            cacheId = setTimeout(() => {
+                // 清理缓存，发送清理后的玩家列表
+                that.app.PlayerManager.removePlayer(that.userId);
+            }, 60000);
+        });
+        this.socket.on('reconnect',() => {
+            // 重连上的话，删除离线缓存清理计时器
+            if (cacheId) clearTimeout(that.cacheId);
+        });
     }
 
     //是否在队伍中
@@ -61,5 +92,4 @@ class Player {
     signOut() {
 
     }
-
 }

@@ -52,7 +52,7 @@ module.exports = appInfo => {
             }, // passed to engine.io
             namespace: {
                 '/': {
-                    connectionMiddleware: ['connection'],
+                    connectionMiddleware: ['connection', 'authentication'],
                     packetMiddleware: [],
                 },
             },
