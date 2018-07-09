@@ -112,14 +112,17 @@ module.exports = app => {
             try {
                 helper.checkParams(request, rule);
                 const {type, page = 1, pageSize = 30} = request.query;
-                const conditions = _.pickBy({
-                    type,
-                }, v => v !== undefined);
-                await service.gayme.cards.getList(
+                const conditions = _.pickBy({type}, o => o !== undefined);
+                const data = await service.gayme.cards.getList(
                     conditions, page, pageSize,
                 );
+                this.ctx = {
+                    code: 0,
+                    msg: e,
+                    data,
+                }
             } catch (e) {
-                console.log(e);
+                console.error(e);
                 this.ctx = {
                     code: -1,
                     msg: e,

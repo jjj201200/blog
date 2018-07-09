@@ -26,16 +26,16 @@
  * addTarget [userId] - 绑定目标为作用对象，即设定该效果作用于哪个玩家对象的战斗参数列表
  */
 module.exports = class Effect {
-    constructor({name, life, paramStr, power, preEffectId, postEffectId}) {
-        this.name = name;
-        this.power = power;
-        this.id = `${name}-${power}`;
-        this.life = life;
-        this.paramStr = paramStr;
-        this.preEffectId = preEffectId;
-        this.postEffectId = postEffectId;
+    constructor({name, life, paramStr, power, targetType = 0, range = 0}) {
+        this.name = name; // 效果英文名称
+        this.power = power; // 效果的影响，可以是正数负数或者字符串
+        this.id = `${name}-${power}`; // 效果id
+        this.life = life; // 效果的生命周期
+        this.targetType = targetType; // 卡牌作用类型，即能够作用在哪一方的
+        this.range = range; // 作用范围，即单体还是全体
+        this.paramStr = paramStr; // 效果影响的对象的参数引用字符串
 
-        this.targetId = undefined;
+        this.targets = []; // 目标对象id数组
     }
 
     /**
@@ -50,6 +50,6 @@ module.exports = class Effect {
      * @param userId
      */
     addTarget(userId) {
-        this.targetId = userId;
+        this.targets.push(userId);
     }
 }

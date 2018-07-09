@@ -6,18 +6,18 @@
 
 module.exports = app => {
     return async (ctx, next) => {
-        const {PlayerManager: PM} = app;
+        const {PlayerManager} = app;
         const {socket, service} = ctx;
 
         // init socketList
         const {userId, username} = socket.handshake.query;
-        let player = PM.hasPlayer(userId);
+        socket.session = {userId, username};
+        let player = PlayerManager.hasPlayer(userId);
         if (player) { // 服务器缓存中已经存在，恢复登录
-            player = PM.getPlayer(userId);
+            player = PlayerManager.getPlayer(userId);
             player.socket = socket; // 重连够更新socket对象
         } else {
             socket.needAuth = true;
-            socket.session = {userId, username};
         }
         next();
     };

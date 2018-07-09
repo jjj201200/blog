@@ -38,35 +38,14 @@ module.exports = class CardService extends Service {
     async getList(conditions, page = 1, pageSize = 30) {
         try {
             let list = this.Card.find();
-            if (conditions) {
-                list = list.where(conditions);
-            }
-            list = list.select(CardReturnKeys.join(' '))
+            if (conditions) list = list.where(conditions);
+            return await list.select(CardReturnKeys.join(' '))
                 .skip((page - 1) * pageSize)
-                .limit(pageSize);
-            await list.exec((err, resList) => {
-                if (resList && resList.length) { // 查询到了
-                    this.ctx.body = {
-                        code: 0,
-                        data: resList,
-                        message: 'get card list successfully',
-                    };
-                } else { // 没有查询到
-                    // TODO 标准的错误处理
-                    this.ctx.body = {
-                        code: -1,
-                        message: 'no card',
-                    };
-                }
-            });
-
+                .limit(pageSize).exec();
         } catch (e) {
             // TODO 标准的错误处理
             console.error(e);
-            this.ctx.body = {
-                code: -1,
-                message: e.message,
-            };
+            return e;
         }
     }
 

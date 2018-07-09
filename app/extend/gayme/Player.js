@@ -11,7 +11,7 @@ class Player {
         this.app = app;
         this.userId = userId;
         this.nickname = nickname;
-        this.cards = cards;
+        this.cardsdata = cards;
         this.sum = sum;
         this.win = win;
 
@@ -51,7 +51,7 @@ class Player {
         });
         this.socket.on('reconnect',() => {
             // 重连上的话，删除离线缓存清理计时器
-            if (cacheId) clearTimeout(that.cacheId);
+            if (cacheId) clearTimeout(cacheId);
         });
     }
 

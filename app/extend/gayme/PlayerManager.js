@@ -28,17 +28,16 @@ module.exports = class PlayerManager {
          * 因为socketId每次断链后都会变，在一场游戏中需要始终依赖对应的uid游戏数据来恢复和同步数据（非战斗时数据）
          * @type {{userId: socketId}}
          */
-        this.playerList = {};
+        this.list = {};
     }
 
     /**
-     *
+     * 返回玩家列表
      */
-    getPlayerList() {
-        return _.mapValues(this.playerList, o => {
-            const {nickname, sum, win, cards} = o;
-            return {nickname, sum, win, cards};
-        });
+    getList() {
+        return _.mapValues(this.list,
+            o => _.pick(o, ['nickname', 'sum', 'win', 'cards']),
+        );
     }
 
     /**
@@ -47,17 +46,17 @@ module.exports = class PlayerManager {
      * @returns {Player}
      */
     getPlayer(userId) {
-        return this.playerList[userId];
+        return this.list[userId];
     }
 
     /**
      * 用玩家数据实例化玩家对象，添加到玩家列表
      * @param {Player} player
-     * @returns {object} playerList;
+     * @returns {object} list;
      */
     addPlayer(player) {
-        this.playerList[player.userId] = player;
-        return this.playerList;
+        this.list[player.userId] = player;
+        return this.list;
     }
 
     /**
@@ -65,8 +64,8 @@ module.exports = class PlayerManager {
      * @param {string} userId
      */
     removePlayer(userId) {
-        // const player = this.playerList[userId];
-        this.playerList[userId] = null;
+        // const player = this.list[userId];
+        this.list[userId] = null;
         this.broadcastPlayerList();
     }
 

@@ -4,12 +4,13 @@ const koaJwt = require('koa-jwt');
 const jwt = require('jsonwebtoken');
 const JWT = Symbol('Application#jwt');
 
-const PlayerManangerSign = Symbol('Application#PlayerMananger');
-const RoomList = Symbol('Application#roomList');
+const PlayerManagerSign = Symbol('Application#PlayerMananger');
+const CardManagerSign = Symbol('Application#CardManager');
 const BattleList = Symbol('Application#battleList');
 const Gayme = Symbol('Application#Gayme');
 
-const PlayerMananger = require('./gayme/PlayerManager');
+const PlayerManager = require('./gayme/PlayerManager');
+const CardManager = require('./gayme/CardManager');
 
 const extendObject = {
     get jwt() {
@@ -21,11 +22,17 @@ const extendObject = {
         }
         return this[JWT];
     },
-    get PlayerMananger() {
-        if (!this[PlayerManangerSign]) {
-            this[PlayerManangerSign] = new PlayerMananger();
+    get PlayerManager() {
+        if (!this[PlayerManagerSign]) {
+            this[PlayerManagerSign] = new PlayerManager();
         }
-        return this[PlayerManangerSign];
+        return this[PlayerManagerSign];
+    },
+    get CardManager() {
+        if (!this[CardManagerSign]) {
+            this[CardManagerSign] = new CardManager();
+        }
+        return this[CardManagerSign];
     },
 };
 

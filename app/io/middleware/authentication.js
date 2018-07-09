@@ -13,9 +13,11 @@ module.exports = app => {
             const player = PM.instantiatePlayer(userId, username);
             PM.addPlayer(player);
         }
-        socket.emit('connectSuccessfully', {
+        const {userId, nickname, sum, win, cards} = PM.getPlayer(userId);
+        socket.emit('connect', { // 登录成功
             code: 0,
             msg: 'connect successfully',
+            data: {userId, nickname, sum, win, cards},
         });
         next();
     };

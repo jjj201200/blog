@@ -11,6 +11,7 @@ module.exports = app => {
     const {livingRoom, connection} = io.controller;
     // socket.io 这里匹配的是接受事件名
     io.of('/').route('livingRoom', livingRoom.index);
+    io.of('/').route('cardLibrary', livingRoom.index);
 
     router.get('/', page.index);
     router.get('/gayme', page.gayme);

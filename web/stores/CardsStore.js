@@ -8,7 +8,7 @@ import _ from 'lodash';
 import {observable, action, autorun, toJS, computed} from 'mobx';
 import {Ajax, JSON_CONTENT_TYPE} from 'DFUtils';
 import {BasicStore, memoryStorage} from "./BasicStore";
-import {Card} from 'DFModels';
+import {Card} from 'DFModels/gayme';
 
 export class CardsStore extends BasicStore {
     constructor(rootStore) {

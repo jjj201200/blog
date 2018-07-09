@@ -1,7 +1,7 @@
 /**
  * Author: Ruo
  * Create: 2018-03-14
- * Description:
+ * Description: dll库文件编译模板
  */
 const path = require('path');
 const webpack = require('webpack');

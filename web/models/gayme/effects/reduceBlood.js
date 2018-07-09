@@ -4,16 +4,17 @@
  * Description: 扣血效果
  */
 
+const _ = require('lodash');
 const Effect = require('../effects');
 
 class ReduceBlood extends Effect {
     constructor({
-        name, life, paramStr, power, preEffectId, postEffectId,
+        name, life, paramStr, power, targetType, range,
     }) {
-        super({name, life, paramStr, power, preEffectId, postEffectId});
+        super({name, life, paramStr, power, targetType, range});
     }
     main() {
-
+        _.at()
     }
 }
 
