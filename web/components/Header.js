@@ -82,10 +82,10 @@ class HeaderView extends React.Component {
                                         {title || 'Playground'}
                                     </Typography>
                                 </Grid>
-                                <Grid item>
-                                    <Button color="inherit" onClick={() => {push('/gayme');}}>Gayme</Button>
-                                    <Button color="inherit" onClick={() => {push('/');}}>back</Button>
-                                </Grid>
+                                {/*<Grid item>*/}
+                                    {/*<Button color="inherit" onClick={() => {push('/gayme');}}>Gayme</Button>*/}
+                                    {/*<Button color="inherit" onClick={() => {push('/');}}>back</Button>*/}
+                                {/*</Grid>*/}
                             </Grid>
                         </Grid>
                         <Grid item xs={6}>

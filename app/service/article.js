@@ -188,6 +188,13 @@ class ArticleService extends Service {
      */
     async getList(conditions, page = 1, pageSize = 10) {
         try {
+            let userId;
+            if (conditions.username) {
+                const {username, ...rest} = conditions;
+                const user = await this.User.findOne({username}).exec();
+                if (user) userId = user._id;
+                conditions = {authorId: userId, ...rest};
+            }
             const list = this.Article.find()
                 .populate('authorId', 'username email', this.User)
                 .select(ArticleReturnString)
