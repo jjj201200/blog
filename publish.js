@@ -25,7 +25,7 @@ const getCurrentGitCommitHash = () => {
 };
 
 const rsyncFolders = (from, to) => {
-    shelljs.exec(`rsync -e ssh --include '.rsync-include' --exclude-from './rsync-exclude' "${from}" "${to}" --checksum --recursive --delete`)
+    shelljs.exec(`sudo rsync -e ssh --include '.rsync-include' --exclude-from './rsync-exclude' "${from}" "${to}" --checksum --recursive --delete`)
 };
 
 const serverList = [{
@@ -86,7 +86,7 @@ inquirer.prompt([
     shelljs.exec(`npm run build`);
 
     message('开始上传文件到目标服务器');
-    console.log(`将 ${answers.server.srcDir} 传输到 ${answers.server.host}:${answers.server.path} 目录下`.yellow.blod);
+    console.log(`将 ${answers.server.srcDir} 传输到 ${answers.server.host}:${answers.server.path} 目录下`.yellow);
     rsyncFolders(`${answers.server.srcDir}`, `${answers.server.host}:${answers.server.path}`);
     // shelljs.exec('yarn');
 });
