@@ -25,7 +25,7 @@ const getCurrentGitCommitHash = () => {
 };
 
 const rsyncFolders = (from, to) => {
-    shelljs.exec(`sudo rsync -e ssh --include '.rsync-include' --exclude-from './rsync-exclude' "${from}" "${to}" --checksum --recursive --delete`)
+    shelljs.exec(`rsync -e ssh --include '.rsync-include' --exclude-from './rsync-exclude' "${from}" "${to}" --checksum --recursive --delete`);
 };
 
 const serverList = [{
@@ -33,10 +33,10 @@ const serverList = [{
     name: 'aliyun - hongkong',
     short: 'aliyun - hongkong',
     value: {
-        srcDir: './app/public',
+        srcDir: './',
         branch: 'master',
         host: 'root@47.91.213.174',
-        path: 'blog/app/',
+        path: 'blog/',
         webpack: require.resolve('./webpack.config.production'),
         web: 'http://www.drowsyflesh.com',
     }
