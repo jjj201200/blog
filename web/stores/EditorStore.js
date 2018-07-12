@@ -104,6 +104,7 @@ export class EditorStore extends BasicStore {
         const that = this;
         if (this.requestSending) return;
         this.requestSending = true;
+        this.articleList.clear();
         return Ajax({
             type: 'get',
             url: '/api/article',

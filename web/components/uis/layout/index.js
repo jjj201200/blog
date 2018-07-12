@@ -4,5 +4,6 @@
  * Description: index
  */
 
-export Header from './Header';
-export Page from './Page';
+// export {Header} from './Header';
+// export {Page} from './Page';
+export {Body} from './Body';

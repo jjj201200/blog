@@ -248,6 +248,11 @@ class WriteMobView extends React.Component {
         }
     }
 
+    /**
+     * 生成文章删除事件
+     * @param articleId
+     * @return {function()}
+     */
     onCreateDeleteArticleEvent(articleId) {
         const that = this;
         return () => {

@@ -10,7 +10,7 @@ module.exports = appInfo => {
         consoleLevel: 'DEBUG',
         defaultLocale: 'zh-CN',
         keys: 'drowsy flesh',
-        // middleware: [ 'jwt' ],
+        middleware: [ 'jwt' ],
         security: { // 关闭csrf校验，使用jwt
             csrf: {
                 enable: false,
