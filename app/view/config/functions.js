@@ -12,7 +12,7 @@ const scriptTags = SCRIPTS[process.env.NODE_ENV];
 const styleTags = STYLES[process.env.NODE_ENV];
 
 module.exports = {
-    createScriptTags: function () {
+    createScriptTags: function() {
         const Scripts = [];
         for (let index in scriptTags) {
             Scripts.push(
@@ -20,12 +20,12 @@ module.exports = {
                     key={index}
                     type="text/javascript"
                     src={scriptTags[index]}
-                />
+                />,
             );
         }
         return Scripts;
     },
-    createStyleTags: function () {
+    createStyleTags: function() {
         const Styles = [];
         for (let type in styleTags) {
             const links = styleTags[type];
@@ -36,13 +36,13 @@ module.exports = {
                         type={STYLES.linkTypes[type]}
                         rel={type}
                         href={links[i]}
-                    />
+                    />,
                 );
             }
         }
         return Styles;
     },
-    createMetaTags: function (params) {
+    createMetaTags: function(params) {
         const metaData = META(params);
         const Metas = [];
         for (let type in metaData) {
@@ -54,7 +54,7 @@ module.exports = {
                         key={type + '-' + i}
                         {...dynamicType}
                         content={metas[i]}
-                    />
+                    />,
                 );
             }
         }

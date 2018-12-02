@@ -21,4 +21,5 @@ config.plugins.push(
         name: '[name]_library',
     }),
 )
+config.mode = 'production';
 module.exports = config;

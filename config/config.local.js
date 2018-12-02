@@ -1,3 +1,4 @@
+/* global require, module */
 'use strict';
 const path = require('path');
 
@@ -8,9 +9,12 @@ const jwtMaxAge = timeZoneIncrement + 24 * 60 * 60 * 1000
 module.exports = appInfo => {
     const config = {
         webpack: {
-            proxyMapping: {
-                js: 'text/javascript;',
-            },
+            browser: './',
+            //match: /^\/public\//,
+            //proxyMapping: {
+            //    js: 'text/javascript;',
+            //},
+            //webpackConfigFile: '../webpack.config.development.js',
             webpackConfigList: [require('../webpack.config.development.js')],
         },
     };

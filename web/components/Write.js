@@ -201,7 +201,7 @@ class WriteMobView extends React.Component {
     onCreateDeleteTagEvent(tagName) {
         const {EditorStore} = this.props;
         const tagsArray = EditorStore.article.tags;
-        return function () {
+        return function() {
             if (tagsArray.length === 0) return;
             const index = tagsArray.findIndex(value => value === tagName);
             if (index >= 0) {
@@ -243,7 +243,7 @@ class WriteMobView extends React.Component {
      */
     onDeleteArticles() {
         const {EditorStore} = this.props;
-        if (EditorStore.deleteArticleList.peek().length > 0) {
+        if (EditorStore.deleteArticleList.length > 0) {
             EditorStore.deleteArticle();
         }
     }
@@ -278,7 +278,7 @@ class WriteMobView extends React.Component {
     onCreateClickArticleEvent(articleId) {
         const that = this;
         const {EditorStore} = that.props;
-        return function () {
+        return function() {
             //  确认删除模式开启 确认存在指定id的文章
             if (that.props.EditorStore.deleteModeState && EditorStore.articleList.has(articleId)) {
                 const article = EditorStore.articleList.get(articleId); // 获取文章对象 - 被观察的
@@ -303,7 +303,7 @@ class WriteMobView extends React.Component {
                      * 判断有没有已经被打开的且没有保存到线上的文章
                      */
                     that.onOpenUnsavedDialog(() => {
-                        EditorStore.openArticle(EditorStore.articleList.get(articleId))
+                        EditorStore.openArticle(EditorStore.articleList.get(articleId));
                     });
                 }
             } else if (!EditorStore.article) { // 没有被打开的文章时
@@ -474,7 +474,7 @@ class WriteMobView extends React.Component {
         const {show, onClose, classes, EditorStore} = this.props;
         const articleObject = toJS(EditorStore.articleList);
         const {deleteModeState} = EditorStore;
-        const deleteNum = EditorStore.deleteArticleList.peek().length;
+        const deleteNum = EditorStore.deleteArticleList.length;
         return (
             <Dialog open={show} onClose={onClose} fullScreen onEntered={this.onEntered} onExited={this.onExited}>
                 <AppBar style={{position: 'relative'}} className={classes.appBar}>

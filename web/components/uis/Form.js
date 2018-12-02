@@ -35,7 +35,7 @@ export const Input = styled.input`
   ${theme.fontFamily('')};
   vertical-align: middle;
 `;
-export const Submit = Button.extend`
+export const Submit = styled(Button)`
     width: 20%;
     position: absolute;
     right: -4px;

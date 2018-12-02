@@ -12,4 +12,11 @@ require('babel-register')(babelRegisterConfig);
 // view engine
 module.exports = function(app) {
     app.view.use('reactViewEngine', require('./lib/reactRenderEngine'));
+    if (process.env.NODE_ENV === 'development') {
+        const proxy = require('koa-proxy');
+        app.use(proxy({
+            host: 'http://192.168.0.100:9000',
+            match: /^\/temp/,
+        }));
+    }
 };

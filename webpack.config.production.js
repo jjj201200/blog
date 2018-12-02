@@ -60,5 +60,5 @@ config.plugins.push(
         basePath: '/public/bundles/',
     }),
 );
-
+config.mode = 'production';
 module.exports = config;

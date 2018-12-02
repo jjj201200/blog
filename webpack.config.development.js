@@ -1,3 +1,4 @@
+/* global require, module*/
 /**
  * Author: Ruo
  * Create: 2018-02-07
@@ -34,13 +35,14 @@ config.plugins.push(
     //     exclude: [],
     // }),
     new webpack.DefinePlugin({
-        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
+        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
     }),
     new webpack.DllReferencePlugin({
         context: rootPath,
         manifest: require(path.resolve(dllPath, 'bundle-manifest-dev.json')),
     }),
     new webpack.NamedModulesPlugin(),
+    new webpack.HotModuleReplacementPlugin(),
 );
-
+config.mode = 'development';
 module.exports = config;

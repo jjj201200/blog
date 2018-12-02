@@ -36,4 +36,5 @@ config.plugins.push(
         name: '[name]_library_dev',
     }),
 )
+config.mode = 'development';
 module.exports = config;

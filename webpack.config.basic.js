@@ -1,3 +1,4 @@
+/* global require, module */
 /**
  * Author: Ruo
  * Create: 2018-02-07
@@ -45,17 +46,17 @@ const externals = {
 
 const output = {
     // path: process.env.NODE_ENV === 'production' ? bundlesPath : rootPath,
-    publicPath: '/',
+    publicPath: '/temp/',
     filename: '[name].bundle.js',
 };
 
 const modules = {
-    loaders: [
+    rules: [
         {
             test: /\.js$/,
-            loaders: [
-                'babel-loader',
-                path.resolve(rootPath, 'loaders', 'clientEntryLoader.js'),
+            use: [
+                {loader: 'babel-loader'},
+                {loader: path.resolve(rootPath, 'loaders', 'clientEntryLoader.js')},
             ],
             include: entriesArray,
         },

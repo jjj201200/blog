@@ -47,7 +47,7 @@ const MobHeader = styled.header`
     ${theme.fontSize(30)};
     text-align: center;
 `;
-const CloseBtn = Button.extend`
+const CloseBtn = styled(Button)`
     position: absolute;
     right: -4px;
     top: -19px;

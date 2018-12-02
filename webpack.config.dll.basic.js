@@ -1,3 +1,4 @@
+/* global require */
 /**
  * Author: Ruo
  * Create: 2018-03-14
@@ -33,11 +34,22 @@ const config = {
         filename: '[name].dll.js',
         library: '[name]_library'
     },
+    optimization: {
+        minimizer: [
+            new UglifyJsPlugin({
+                cache: true,
+                parallel: true,
+                sourceMap: true, // set to true if you want JS source maps
+                uglifyOptions: {
+                    compress: false,
+                    ecma: 6,
+                    mangle: true,
+                },
+            }),
+        ],
+    },
     plugins: [
         // new webpack.optimize.ModuleConcatenationPlugin(),
-        new UglifyJsPlugin({
-            parallel: true,
-        }),
     ]
 };
 

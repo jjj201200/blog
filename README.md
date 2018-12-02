@@ -2,7 +2,7 @@
 
 ### 安装
 
-### Mongdb → [link](./install_mongodb.m)
+### Mongdb → [link](./install_mongodb.md)
 
 ### Node-sass
 

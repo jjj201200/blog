@@ -29,7 +29,7 @@ export default class ClientTemplate extends React.Component {
         const styleTags = createStyleTags();
         const metaTags = createMetaTags({title});
         const dllFileUrl = `../public/dll/bundle.dll${inProduction ? '' : '.dev'}.js`
-        const scriptFileUrl = `../${inProduction ? 'public/bundles/' : ''}${scriptFilename}.bundle.js`
+        const scriptFileUrl = `../${inProduction ? 'public/bundles/' : 'temp/'}${scriptFilename}.bundle.js`
         return (
             <html>
             <head>

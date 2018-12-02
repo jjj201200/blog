@@ -9,7 +9,7 @@ import styled from 'styled-components';
 import {theme, rem} from 'DFStyles';
 import {Card, Button} from 'DFComponents/uis';
 
-const ArticleCardWrapper = Card.extend`
+const ArticleCardWrapper = styled(Card)`
     padding: 0;
     margin: 40px 0px 50px;
 `;
@@ -66,7 +66,7 @@ const Summary = styled.div`
     }
 `;
 
-const Redmore = Button.extend`
+const Redmore = styled(Button)`
     height: 26px;
     position: absolute;
     right: -4px;

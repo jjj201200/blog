@@ -1,10 +1,10 @@
-{/**
+/**
  * Author: Ruo
  * Create: 2018-02-26
  * Description:
  */
 
-module.exports = function (content, map, meta) {
+module.exports = function(content, map, meta) {
     try {
         return `
             import ReactDOM from 'react-dom';
