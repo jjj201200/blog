@@ -10,3 +10,4 @@ package-lock.json
 db
 app/public/
 
+temp/
