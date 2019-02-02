@@ -102,7 +102,7 @@ export class ArticleCard extends React.Component {
                     <Tag>Webpack</Tag>
                 </TagBox>
                 <Summary dangerouslySetInnerHTML={{__html: summary}}/>
-                <Redmore>Read More</Redmore>
+                {/*<Redmore>Read More</Redmore>*/}
             </ArticleCardWrapper>
         );
     }
