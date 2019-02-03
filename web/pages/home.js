@@ -18,7 +18,7 @@ import Snackbar from 'material-ui/Snackbar';
 const {Route, Link} = require("react-router-dom");
 
 @inject('GlobalStore', 'Routing') @observer
-class Index extends React.Component {
+class Home extends React.Component {
     render() {
         const {GlobalStore, Routing} = this.props;
         const {open, anchorOrigin, autoHideDuration, onClose, message, action} = GlobalStore.snackbar;
@@ -27,8 +27,8 @@ class Index extends React.Component {
                 <Header/>
                 <Body>
                 {/*<Route path="/gayme" component={Gayme}/>*/}
-                <Route path="/article/:articleId" component={withRouter(ArticlePage)}/>
-                <Route exact path="/" component={withRouter(ArticleList)}/>
+                <Route path="/article/:articleId" component={ArticlePage}/>
+                <Route exact path="/" component={ArticleList}/>
                 </Body>
                 <Snackbar
                     className="global-snackbar"
@@ -46,3 +46,4 @@ class Index extends React.Component {
         );
     }
 }
+const Index = withRouter(Home);
