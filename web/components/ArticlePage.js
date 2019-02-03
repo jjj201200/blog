@@ -20,7 +20,7 @@ const Header = styled.header`
     //margin: -10px -10px 10px -10px;
     padding: 10px;
     font-size: ${rem(26)};
-    text-transform: uppercase;
+    //text-transform: uppercase;
     //background-color: ${theme.colors.black};
     //color: ${theme.colors.white};
     ${theme.textOverflow()};
