@@ -76,17 +76,17 @@ const Readmore = styled(Button)`
     bottom: -26px;
     font-size: 16px;
 `;
-const TagBox = styled.div`
-    position: absolute;
-    bottom: -20px;
-    right: 85px;
+const TagBox = styled.span`
+    //position: absolute;
+    //bottom: -20px;
+    //right: 85px;
     height: 20px;
-    color: rgb(255,255,255);
+    //color: rgb(255,255,255);
 `;
 const Tag = styled.span`
-    display: inline-block;
+    //display: inline-block;
     margin-left: 1px;
-    background-color: rgb(0, 4, 26);
+    //background-color: rgb(0, 4, 26);
     padding: 0px 10px;
 `;
 
