@@ -16,6 +16,6 @@ exports.validate = { // 用于对请求参数进行校验
     package: 'egg-validate',
 };
 exports.io = { // websocket
-    enable: true,
+    enable: false,
     package: 'egg-socket.io',
 };
