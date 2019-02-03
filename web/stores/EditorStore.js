@@ -202,23 +202,20 @@ export class EditorStore extends BasicStore {
         }
     }
 
-    // 生成文章摘要 默认200字长的摘要
+    // 生成文章摘要 默认300字长的摘要
     @action
-    createSummary(contentObject, length = 200) {
+    createSummary(contentObject, length = 300) {
         let lengthCounter = 0;
-        let more = false;
         const summary = {blocks: [], entityMap: []};
         contentObject.blocks.map((block) => {
-            if (lengthCounter < 200 && block.text.length + lengthCounter < length) {
+            if (lengthCounter < length) {
+                lengthCounter += block.text.length;
                 summary.blocks.push(block);
                 block.entityRanges.map(({key}) => {
                     summary.entityMap.push(contentObject.entityMap[key]);
                 });
-            } else {
-                more = true;
             }
         });
-        if (more) summary[summary.length - 1].text + '...'; // 在最后一个block添加省略号
         return summary;
     }
 

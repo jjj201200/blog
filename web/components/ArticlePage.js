@@ -43,11 +43,12 @@ const Header = styled.header`
     //}
 `;
 const InfoBox = styled.div`
-    //position: absolute;
-    //top: -20px;
-    //left: -4px;
-    //height: 20px;
-    //color: ${theme.colors.white};
+    padding: 0 10px;
+    color: rgba(0, 0, 0, 0.54);
+    font-size: 0.875rem;
+    font-weight: 400;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    line-height: 1.46429em;
 `;
 const PublishTime = styled.span`
     display: inline-block;
@@ -111,10 +112,8 @@ export class ArticlePage extends React.Component {
             !!article.id && <ArticleCardWrapper>
                 <Header><Readmore>Back</Readmore>{title}</Header>
                 <InfoBox>
-                    <PublishTime>{publishDate}</PublishTime>
-                    <Author>{author.username}</Author>
+                    {new Date(publishDate).toLocaleDateString()} - {author.username} - tags: {tags.join(', ')}
                 </InfoBox>
-                <TagBox>{tags.map((tag) => <Tag key={tag}>{tag}</Tag>)}</TagBox>
                 <Summary dangerouslySetInnerHTML={{__html: html}}/>
             </ArticleCardWrapper>
         );
