@@ -39,7 +39,7 @@ export default class ClientTemplate extends React.Component {
                 <link rel="manifest" href="../public/bundles/manifest.json"/>
                 {metaTags}
                 {styleTags}
-                {inProduction && scriptTags}
+                {scriptTags}
             </head>
             <body>
             <div id="root"/>

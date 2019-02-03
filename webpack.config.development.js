@@ -29,7 +29,7 @@ message(`开始编译 webpack.config.development.js`);
 
 config.output.path = rootPath; // 内存编译后固定位置 - *不要改动*
 config.devtool = 'source-map';
-// config.externals = externals;
+config.externals = externals;
 config.plugins.push(
     // new CleanWebpackPlugin([bundlesPath], {
     //     verbose: false,
