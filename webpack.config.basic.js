@@ -22,7 +22,7 @@ const inProduction = process.env.NODE_ENV === 'production';
 // 配置入口文件
 const entry = {
     home: path.resolve(webPagesPath, 'home.js'),
-    gayme: path.resolve(webPagesPath, 'gayme.js'),
+    //gayme: path.resolve(webPagesPath, 'gayme.js'),
 };
 const entriesArray = [];
 for (let key in entry) {

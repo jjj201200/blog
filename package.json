@@ -33,7 +33,7 @@
     "dependencies": {
         "color": "^3.1.0",
         "draft-js": "^0.10.5",
-        "draftjs-to-html": "^0.8.3",
+        "draftjs-to-html": "^0.8.4",
         "egg": "^2.0.0",
         "egg-jwt": "^3.1.4",
         "egg-mongoose": "^3.1.1",
