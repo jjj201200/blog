@@ -55,7 +55,7 @@ config.plugins.push(
         removeDebugger: true,
     }, {}),
     new BundleAnalyzerPlugin({
-        //analyzerMode: 'disabled',
+        analyzerMode: 'disabled',
         generateStatsFile: true,
         statsFilename: 'production.analysis.json',
     }),
