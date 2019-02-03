@@ -33,9 +33,9 @@ class Index extends React.Component {
                     open={open}
                     anchorOrigin={anchorOrigin}
                     autoHideDuration={autoHideDuration}
-                    SnackbarContentProps={{
-                        'aria-describedby': 'global-snackbar',
-                    }}
+                    //snackbarContentProps={{
+                    //    'aria-describedby': 'global-snackbar',
+                    //}}
                     onClose={onClose}
                     message={<span id="global-snackbar">{message}</span>}
                     action={action}

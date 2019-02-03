@@ -31,10 +31,10 @@ config.plugins.push(
         verbose: false,
         exclude: ['bundle.dll.js'],
     }),
-    new webpack.DllPlugin({
-        path: path.resolve(dllPath, '[name]-manifest-dev.json'),
-        name: '[name]_library_dev',
-    }),
+    //new webpack.DllPlugin({
+    //    path: path.resolve(dllPath, '[name]-manifest-dev.json'),
+    //    name: '[name]_library_dev',
+    //}),
 )
 config.mode = 'development';
 module.exports = config;

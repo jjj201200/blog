@@ -16,10 +16,10 @@ config.plugins.push(
         verbose: false,
         exclude: ['bundle.dll.dev.js'],
     }),
-    new webpack.DllPlugin({
-        path: path.resolve(dllPath, '[name]-manifest.json'),
-        name: '[name]_library',
-    }),
+    //new webpack.DllPlugin({
+    //    path: path.resolve(dllPath, '[name]-manifest.json'),
+    //    name: '[name]_library',
+    //}),
 )
 config.mode = 'production';
 module.exports = config;

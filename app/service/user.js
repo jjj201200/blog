@@ -119,23 +119,19 @@ class UserService extends Service {
         const {ctx} = this;
         const {User} = ctx.model;
         try {
-            await User.findOne({username}).select(UserReturnString).exec((err, user) => {
-                if (err) {
-                    //TODO 标准的错误处理
-                    console.error(err);
-                } else if (user) {
-                    const {username, email} = user;
-                    ctx.body = {
-                        code: 0,
-                        data: {username, email},
-                    };
-                } else {
-                    ctx.body = {
-                        code: -1,
-                        message: 'no user',
-                    };
-                }
-            });
+            const user = await User.findOne({username}).select(UserReturnString);
+            if (user) {
+                const {username, email} = user;
+                ctx.body = {
+                    code: 0,
+                    data: {username, email},
+                };
+            } else {
+                ctx.body = {
+                    code: -1,
+                    message: 'no user',
+                };
+            }
         } catch (e) {
             // TODO 标准的错误处理
             console.error(e);

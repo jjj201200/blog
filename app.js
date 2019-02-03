@@ -15,7 +15,7 @@ module.exports = function(app) {
     if (process.env.NODE_ENV === 'development') {
         const proxy = require('koa-proxy');
         app.use(proxy({
-            host: 'http://192.168.0.100:9000',
+            host: 'http://0.0.0.0:9000',
             match: /^\/temp/,
         }));
     }

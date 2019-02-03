@@ -48,6 +48,7 @@ const output = {
     // path: process.env.NODE_ENV === 'production' ? bundlesPath : rootPath,
     publicPath: '/temp/',
     filename: '[name].bundle.js',
+    //chunkFilename: '[name].bundle.js',
 };
 
 const modules = {
@@ -88,6 +89,19 @@ const modules = {
         },
     ],
 };
+const optimization = {
+    splitChunks: {
+        minChunks: 2,
+        cacheGroups: {
+            vendors: {
+                name: 'vendors',
+                test: /[\\/](node_modules)[\\/]/,
+                chunks: 'all',
+                minChunks: 1,
+            },
+        },
+    },
+}
 
 let config = {
     cache: false,
@@ -95,6 +109,7 @@ let config = {
     entry,
     output,
     module: modules,
+    optimization,
     resolve: {
         alias: { // 这里需要个app.js里保持一致
             DFPages: path.resolve(webPath, 'pages'),
@@ -123,4 +138,5 @@ module.exports = {
     config,
     externals,
     modules,
+    optimization,
 };

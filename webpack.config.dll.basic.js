@@ -21,7 +21,7 @@ const bundle = [
     // 'styled-components', // 使用cdn
     // 'draft-js', // 使用cdn
     // 'jquery', // 使用cdn
-    'react-draft-wysiwyg',
+    'react-draft-wysiwyg', // 使用cdn
 ];
 
 const config = {

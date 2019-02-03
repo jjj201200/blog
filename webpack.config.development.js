@@ -12,17 +12,18 @@ const webpack = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const {config, externals, rootPath, bundlesPath, dllPath} = require('./webpack.config.basic');
 const {message} = require('./utils');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-const dllFileName = 'bundle.dll.dev.js';
+//const dllFileName = 'bundle.dll.dev.js';
 
 /**
  * 检测dll是否已经先编译
  */
-if (!fs.existsSync(path.resolve(dllPath, dllFileName))) {
+/*if (!fs.existsSync(path.resolve(dllPath, dllFileName))) {
     message(`没有在 ${dllPath} 找到 ${dllFileName}`, 'red');
     message(`开始编译 ${dllFileName}`);
     shelljs.exec('npm run build:dev:dll');
-}
+}*/
 
 message(`开始编译 webpack.config.development.js`);
 
@@ -37,12 +38,13 @@ config.plugins.push(
     new webpack.DefinePlugin({
         'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
     }),
-    new webpack.DllReferencePlugin({
-        context: rootPath,
-        manifest: require(path.resolve(dllPath, 'bundle-manifest-dev.json')),
-    }),
+    //new webpack.DllReferencePlugin({
+    //    context: rootPath,
+    //    manifest: require(path.resolve(dllPath, 'bundle-manifest-dev.json')),
+    //}),
     new webpack.NamedModulesPlugin(),
     new webpack.HotModuleReplacementPlugin(),
+    new BundleAnalyzerPlugin(),
 );
 config.mode = 'development';
 module.exports = config;

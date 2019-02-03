@@ -65,7 +65,7 @@ export class GaymeStore extends BasicStore {
     connect(user) {
         const that = this;
         if (user) { // 已经登录
-            this.socket = io('http://127.0.0.1:7001/', {forceNew: false});
+            this.socket = io('http://0.0.0.0:7001/', {forceNew: false});
             this.socket.on('connect', function (e) {
                 console.log(`${'id'.padEnd(6, ' ')} ${that.socket.id}`);
                 that.init();

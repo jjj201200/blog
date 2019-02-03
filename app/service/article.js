@@ -150,25 +150,22 @@ class ArticleService extends Service {
     async get(_id) {
         try {
             // TODO select可以选择查询返回的字段，最好将字段设计为可配置对象自动生成需要的字符串
-            const searchArticle = this.Article
+            const searchArticle = await this.Article
                 .findOne({_id})
                 // .populate('authorId', 'username email', this.User)
                 .select(ArticleReturnString);
-            await searchArticle.exec((err, resArticle) => {
-                if (resArticle) { // 查询到了
-                    this.ctx.body = {
-                        code: 0,
-                        data: resArticle,
-                        message: 'get article successfully',
-                    };
-                } else { // 没有查询到
-                    // TODO 标准的错误处理
-                    this.ctx.body = {
-                        code: -1,
-                        message: 'no article',
-                    };
-                }
-            });
+            if (searchArticle) {
+                this.ctx.body = {
+                    code: 0,
+                    data: searchArticle,
+                    message: 'get article successfully',
+                };
+            } else {
+                this.ctx.body = {
+                    code: -1,
+                    message: 'no article',
+                };
+            }
         } catch (e) {
             // TODO 标准的错误处理
             console.error(e);
@@ -195,28 +192,24 @@ class ArticleService extends Service {
                 if (user) userId = user._id;
                 conditions = {authorId: userId, ...rest};
             }
-            const list = this.Article.find()
+            const list = await this.Article.find()
                 .populate('authorId', 'username email', this.User)
                 .select(ArticleReturnString)
                 .where(conditions)
                 .skip((page - 1) * pageSize)
                 .limit(pageSize);
-            await list.exec((err, resList) => {
-                if (resList && resList.length) { // 查询到了
-                    this.ctx.body = {
-                        code: 0,
-                        data: resList,
-                        message: 'get article list successfully',
-                    };
-                } else { // 没有查询到
-                    // TODO 标准的错误处理
-                    this.ctx.body = {
-                        code: -1,
-                        message: 'no article',
-                    };
-                }
-            });
-
+            if (list) {
+                this.ctx.body = {
+                    code: 0,
+                    data: list,
+                    message: 'get article list successfully',
+                };
+            } else {
+                this.ctx.body = {
+                    code: -1,
+                    message: 'no article',
+                };
+            }
         } catch (e) {
             // TODO 标准的错误处理
             console.error(e);
@@ -233,8 +226,7 @@ class ArticleService extends Service {
      */
     async delete(articleIdArray) {
         try {
-            const article = await this.Article
-                .remove({_id: {$in: articleIdArray}});
+            const article = await this.Article.remove({_id: {$in: articleIdArray}});
             if (article) {
                 this.ctx.body = {
                     code: 0,

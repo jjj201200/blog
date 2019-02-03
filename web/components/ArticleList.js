@@ -26,17 +26,18 @@ class ArticleList extends React.Component {
             <div className="article-list">
                 {_.map(articles, (v, k) => {
                     const publishDate = new Date(v.publishDate);
+                    const tags = v.tags.length > 0 ? ` - tags: ${v.tags.join(' + ')}` : '';
                     return (
                         <Card key={k} style={{marginBottom: 20}}>
                             <CardHeader
                                 title={v.title}
-                                subheader={`${publishDate.toLocaleDateString()} - ${v.author.username} - tags: ${v.tags.join(' + ')}`}
+                                subheader={`${publishDate.toLocaleDateString()} - ${v.author.username}${tags}`}
                             />
                             <CardContent style={{padding: 0, margin: 16}}>
                                 <div dangerouslySetInnerHTML={{__html: draftToHtml(v.content)}}/>
                             </CardContent>
                             <CardActions>
-                                <Button>Read More</Button>
+                                {/*<Button>Read More</Button>*/}
                             </CardActions>
                         </Card>
                     );

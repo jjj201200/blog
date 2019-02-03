@@ -28,7 +28,8 @@ export default class ClientTemplate extends React.Component {
         const scriptTags = createScriptTags();
         const styleTags = createStyleTags();
         const metaTags = createMetaTags({title});
-        const dllFileUrl = `../public/dll/bundle.dll${inProduction ? '' : '.dev'}.js`
+        const vendorsUrl = `../${inProduction ? 'public/bundles/' : 'temp/'}vendors.bundle.js`;
+        //const dllFileUrl = `../public/dll/bundle.dll${inProduction ? '' : '.dev'}.js`
         const scriptFileUrl = `../${inProduction ? 'public/bundles/' : 'temp/'}${scriptFilename}.bundle.js`
         return (
             <html>
@@ -42,7 +43,8 @@ export default class ClientTemplate extends React.Component {
             </head>
             <body>
             <div id="root"/>
-            <script type="text/javascript" src={dllFileUrl}/>
+            <script type="text/javascript" src={vendorsUrl}/>
+            {/*<script type="text/javascript" src={dllFileUrl}/>*/}
             <script type="text/javascript" src={scriptFileUrl}/>
             </body>
             </html>
