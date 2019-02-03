@@ -51,7 +51,7 @@ module.exports = {
         'https://cdn.bootcss.com/styled-components/3.1.6/styled-components.min.js',
 
         // draft.js
-         'https://cdn.bootcss.com/draft-js/0.10.5/Draft.min.js',
+        // 'https://cdn.bootcss.com/draft-js/0.10.5/Draft.min.js',
 
         // react-router
         'https://cdn.bootcss.com/react-router/4.2.0/react-router.min.js',
