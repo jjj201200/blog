@@ -82,7 +82,7 @@ inquirer.prompt([
 
     const lastCommitHash = getCurrentGitCommitHash();
     message(`开始执行webpack编译过程 - hash:${lastCommitHash}`);
-    shelljs.exec(`npm run build:dll`);
+    //shelljs.exec(`npm run build:dll`);
     shelljs.exec(`npm run build`);
 
     message('开始上传文件到目标服务器');
