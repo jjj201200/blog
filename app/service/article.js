@@ -7,26 +7,28 @@ const _ = require('lodash');
 const Service = require('egg').Service;
 // const uniqid = require('uniqid');
 // 文章对象允许返回的字段
-const ArticleReturnKeys = [
+const ArticleSummaryKeys = [
     'title',
     'tags',
+    'summary',
+    'username',
+    'authorId',
+    'publishDate',
+    'lastUpdateDate',
+    'hasPublished',
+];
+const ArticleContentKeys = [
+    'title',
+    'tags',
+    'username',
     'content',
-    'username',
     'authorId',
     'publishDate',
     'lastUpdateDate',
     'hasPublished',
 ];
-const ArticleListReturnKeys = [
-    'title',
-    'tags',
-    'username',
-    'authorId',
-    'publishDate',
-    'lastUpdateDate',
-    'hasPublished',
-];
-const ArticleReturnString = ArticleReturnKeys.join(' ');
+const ArticleSummaryKeysString = ArticleSummaryKeys.join(' ');
+const ArticleContentKeysString = ArticleContentKeys.join(' ');
 
 /**
  * 文章模型
@@ -51,7 +53,7 @@ class ArticleService extends Service {
      * @param {array} tags 标签列表
      * @param {object} content 存储文章内容的对象
      */
-    async create(username, title, tags, content) {
+    async create(username, title, tags, content, summary) {
         try {
             // 获取用户id
             const authorId = await this.User.findOne()
@@ -64,6 +66,7 @@ class ArticleService extends Service {
                 title,
                 tags,
                 content,
+                summary,
                 lastUpdateDate: this.helper.currentTime,
             });
 
@@ -111,6 +114,7 @@ class ArticleService extends Service {
             _.map(params, (value, key) => {
                 updateObject[key] = value;
             });
+            console.log(updateObject);
 
             /**
              * TODO 这里需要搞清楚如果捕获错误
@@ -152,8 +156,8 @@ class ArticleService extends Service {
             // TODO select可以选择查询返回的字段，最好将字段设计为可配置对象自动生成需要的字符串
             const searchArticle = await this.Article
                 .findOne({_id})
-                // .populate('authorId', 'username email', this.User)
-                .select(ArticleReturnString);
+                 .populate('authorId', 'username email', this.User)
+                .select(ArticleContentKeysString);
             if (searchArticle) {
                 this.ctx.body = {
                     code: 0,
@@ -194,7 +198,7 @@ class ArticleService extends Service {
             }
             const list = await this.Article.find()
                 .populate('authorId', 'username email', this.User)
-                .select(ArticleReturnString)
+                .select(ArticleSummaryKeysString)
                 .where(conditions)
                 .skip((page - 1) * pageSize)
                 .limit(pageSize);

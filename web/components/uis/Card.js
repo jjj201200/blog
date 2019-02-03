@@ -23,6 +23,6 @@ export const Card = styled.div`
   overflow: visible;
   
   ${theme.fontFamily()};
-  border: 4px solid ${theme.colors.black};
+  //border: 4px solid ${theme.colors.black};
   ${CardCss};
 `;

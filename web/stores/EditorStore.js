@@ -82,9 +82,8 @@ export class EditorStore extends BasicStore {
                     // console.log(res.data);
                     that.article.content = res.data.content;
                     this.initEditorState();
-                    console.log(1);
                     this.root.stores.GlobalStore.onOpenSnackbar({
-                        msg: 'get article successfully'
+                        msg: 'get article successfully',
                     });
                 }
             },
@@ -116,7 +115,7 @@ export class EditorStore extends BasicStore {
             success: (res) => {
                 if (res && res.data && res.code === 0) {
                     this.root.stores.GlobalStore.onOpenSnackbar({
-                        msg: 'get article list successfully'
+                        msg: 'get article list successfully',
                     });
                     _.forEach(res.data, (value) => {
                         if (!that.articleList.has(value._id)) {
@@ -189,6 +188,7 @@ export class EditorStore extends BasicStore {
         // const content = this.props.EditorStore.saveFunc();
         // console.log({title, tags, content});
         const contentObject = convertToRaw(this.editorState.getCurrentContent());
+        this.article.summary = this.createSummary(contentObject);
         this.article.content = contentObject;
         const article = toJS(this.article); // 获取需要保存的文章数据
         /**
@@ -196,10 +196,30 @@ export class EditorStore extends BasicStore {
          * 是否有id 没有就是新建的
          */
         if (article.id) {
-            return this.updateArticle(article.id, article.title, article.tags, article.content);
+            return this.updateArticle();
         } else {
             return this.createArticle();
         }
+    }
+
+    // 生成文章摘要 默认200字长的摘要
+    @action
+    createSummary(contentObject, length = 200) {
+        let lengthCounter = 0;
+        let more = false;
+        const summary = {blocks: [], entityMap: []};
+        contentObject.blocks.map((block) => {
+            if (lengthCounter < 200 && block.text.length + lengthCounter < length) {
+                summary.blocks.push(block);
+                block.entityRanges.map(({key}) => {
+                    summary.entityMap.push(contentObject.entityMap[key]);
+                });
+            } else {
+                more = true;
+            }
+        });
+        if (more) summary[summary.length - 1].text + '...'; // 在最后一个block添加省略号
+        return summary;
     }
 
     /**
@@ -252,7 +272,7 @@ export class EditorStore extends BasicStore {
                         that.articleList.set(id, that.article);
                         that.initEditorState();
                         this.root.stores.GlobalStore.onOpenSnackbar({
-                            msg: 'create article successfully'
+                            msg: 'create article successfully',
                         });
                         console.log(that.article);
                     }
@@ -285,12 +305,12 @@ export class EditorStore extends BasicStore {
             }
             if (this.requestSending) return;
             this.requestSending = true;
-            const {id, title, tags, content} = this.article;
+            const {id, title, tags, content, summary} = this.article;
             return Ajax({
                 type: 'post',
                 url: '/api/article',
                 data: JSON.stringify({
-                    articleId: id, title, tags, content,
+                    articleId: id, title, tags, content, summary,
                     method: 'update',
                 }),
                 contentType: JSON_CONTENT_TYPE,
@@ -303,7 +323,7 @@ export class EditorStore extends BasicStore {
                             id, hasSavedOnline: true, ...rest,
                         });
                         this.root.stores.GlobalStore.onOpenSnackbar({
-                            msg: 'update article successfully'
+                            msg: 'update article successfully',
                         });
                     }
                 },
@@ -346,9 +366,8 @@ export class EditorStore extends BasicStore {
                     }
                 });
                 if (that.articleList.size === 0) this.deleteModeState = false;
-                console.log(res);
                 this.root.stores.GlobalStore.onOpenSnackbar({
-                    msg: 'delete article(s) successfully'
+                    msg: 'delete article(s) successfully',
                 });
             },
             fail: (e) => {
@@ -387,7 +406,7 @@ export class EditorStore extends BasicStore {
                             id, hasSavedOnline: true, ...rest,
                         });
                         this.root.stores.GlobalStore.onOpenSnackbar({
-                            msg: 'pubish article successfully'
+                            msg: 'pubish article successfully',
                         });
                     }
                 },
@@ -427,7 +446,7 @@ export class EditorStore extends BasicStore {
                             id, hasSavedOnline: true, ...rest,
                         });
                         this.root.stores.GlobalStore.onOpenSnackbar({
-                            msg: 'unpublish article successfully'
+                            msg: 'unpublish article successfully',
                         });
                     }
                 },

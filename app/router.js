@@ -12,6 +12,7 @@ module.exports = app => {
     // io.of('/').route('livingRoom', io.controller.livingRoom.index);
 
     router.get('/', controller.page.index);
+    router.get('/article/:articleId', controller.page.article);
     router.get('/gayme', controller.page.gayme);
     // TODO router.get('/blog', controller.page.blog);
     router.post('/api/sign_up', controller.user.signUp);

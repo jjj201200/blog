@@ -10,6 +10,7 @@ import {GaymeStore} from './GaymeStore';
 import {UserStore} from './UserStore';
 import {EditorStore} from './EditorStore';
 import {BlogStore} from './BlogStore';
+import {ArticlePageStore} from './ArticlePageStore';
 
 export default new GBS([
     GlobalStore,
@@ -17,4 +18,5 @@ export default new GBS([
     GaymeStore,
     BlogStore,
     EditorStore,
+    ArticlePageStore
 ]);

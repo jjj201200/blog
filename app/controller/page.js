@@ -22,6 +22,16 @@ module.exports = app => {
             await ctx.render('serverRenderTemplate.js', props);
         }
 
+        async article() {
+            const {ctx} = this;
+            const props = {
+                title: 'Article',
+                location: ctx.request.url,
+                componentName: 'Home',
+            };
+            await ctx.render('serverRenderTemplate.js', props);
+        }
+
         async gayme() {
             const {ctx} = this;
             const props = {

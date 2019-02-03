@@ -197,9 +197,9 @@ module.exports = app => {
                 if (!username) {
                     throw new Error('invalide username');
                 }
-                const {title, tags, content} = request.body;
+                const {title, tags, content, summary} = request.body;
                 await service.article.create(
-                    username, title, tags, content,
+                    username, title, tags, content, summary,
                 );
             } catch (e) {
                 // TODO 标准的错误处理

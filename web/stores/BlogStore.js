@@ -5,48 +5,11 @@
  */
 
 import _ from 'lodash';
-import {observable, action} from 'mobx';
+import {observable, action, toJS} from 'mobx';
 import {Ajax, inClient} from 'DFUtils';
 import {BasicStore, localStorage} from './BasicStore';
 import {EditorState, convertFromRaw} from 'draft-js';
 import {Article} from 'DFModels';
-
-export class Blog {
-    constructor({
-        author = null,
-        title = null,
-        tags = null,
-        content = {},
-        publishDate = null,
-        lastUpdateDate = null,
-    } = {
-        author: null,
-        title: null,
-        tags: null,
-        content: {},
-        publishDate: null,
-        lastUpdateDate: null,
-    }) {
-        this.set({author, title, tags, content, publishDate, lastUpdateDate});
-    }
-
-    @observable author = null;
-    @observable title = null;
-    @observable tags = null;
-    @observable content = {};
-    @observable publishDate = null;
-    @observable lastUpdateDate = null;
-
-    @action('setBlog')
-    set({author, title, tags, content, publishDate, lastUpdateDate}) {
-        this.author = author;
-        this.title = title;
-        this.tags = tags;
-        this.content = content;
-        this.publishDate = publishDate;
-        this.lastUpdateDate = lastUpdateDate;
-    }
-}
 
 export class BlogStore extends BasicStore {
     constructor(rootStore) {
@@ -70,7 +33,6 @@ export class BlogStore extends BasicStore {
             },
             dataType: 'json',
             success: (res) => {
-                // console.log(res);
                 if (res && res.code === 0) {
                     _.forEach(res.data, (value) => {
                         if (!that.articleList.has(value._id)) {
@@ -94,5 +56,40 @@ export class BlogStore extends BasicStore {
         }).always(() => {
             this.requestSending = false;
         })
+    }
+    /**
+     * 获取指定文章id的数据
+     * @param {string} articleId
+     */
+    @action
+    getArticle(articleId) {
+        const that = this;
+        if (this.requestSending) return;
+        this.requestSending = true;
+        return Ajax({
+            type: 'get',
+            url: '/api/article',
+            data: {
+                articleId,
+                method: 'get',
+            },
+            contentType: JSON_CONTENT_TYPE,
+            dataType: 'json',
+            success: (res) => {
+                if (res.code === 0 && res.data) {
+                    // console.log(res.data);
+                    that.article.content = res.data.content;
+                    this.initEditorState();
+                    this.root.stores.GlobalStore.onOpenSnackbar({
+                        msg: 'get article successfully',
+                    });
+                }
+            },
+            fail: (e) => {
+                console.error(e);
+            },
+        }).always(() => {
+            this.requestSending = false;
+        });
     }
 }

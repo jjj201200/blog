@@ -19,6 +19,7 @@ class Article {
         id = null,
         title = '',
         tags = [],
+        summary = {},
         content = {},
         publishDate = null,
         lastUpdateDate = null,
@@ -30,6 +31,7 @@ class Article {
         id: null,
         title: '',
         tags: [],
+        summary: {},
         content: {},
         publishDate: null,
         lastUpdateDate: null,
@@ -38,13 +40,14 @@ class Article {
         hasOpened: false,
         author: {},
     }) {
-        this.set({id, title, tags, content, publishDate, lastUpdateDate, hasPublished, hasSavedOnline, hasOpened, author});
+        this.set({id, title, tags, summary, content, publishDate, lastUpdateDate, hasPublished, hasSavedOnline, hasOpened, author});
     }
 
     @observable id = null;
     @observable authorId = null;
     @observable title = '';
     @observable tags = [];
+    @observable summary = {};
     @observable content = {};
     @observable publishDate = null;
     @observable lastUpdateDate = formDate2YMDHMS(new Date());
@@ -55,10 +58,11 @@ class Article {
     @observable author = {};
 
     // @action('setArticle')
-    set({id, title, tags, content, publishDate, lastUpdateDate, hasPublished, hasSavedOnline, hasOpened, author}) {
+    set({id, title, tags, summary, content, publishDate, lastUpdateDate, hasPublished, hasSavedOnline, hasOpened, author}) {
         if (id !== undefined) this.id = id;
         if (title !== undefined) this.title = title;
         if (tags !== undefined) this.tags = tags;
+        if (summary !== undefined) this.summary = summary;
         if (content !== undefined) this.content = content;
         if (publishDate !== undefined) this.publishDate = publishDate;
         if (lastUpdateDate !== undefined) this.lastUpdateDate = lastUpdateDate;

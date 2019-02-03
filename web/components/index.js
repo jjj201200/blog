@@ -10,7 +10,7 @@ export * from './Signup';
 export * from './Write';
 export * from './Login';
 export * from './DateBox';
-export * from './ArticleCard';
+export * from './ArticlePage';
 export * from './Mob';
 export * from './Header';
 export * from './ArticleList';

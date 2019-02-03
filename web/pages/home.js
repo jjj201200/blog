@@ -5,8 +5,9 @@
  */
 import React from 'react';
 import {observer, inject} from 'mobx-react';
+import {withRouter } from 'react-router-dom'
 import {Body} from 'DFComponents/uis';
-import {Header, ArticleList, Gayme} from 'DFComponents';
+import {Header, ArticleList, Gayme, ArticlePage} from 'DFComponents';
 import Snackbar from 'material-ui/Snackbar';
 // import {Route} from "../components/lib/Route";
 // import styled from 'styled-components';
@@ -25,8 +26,9 @@ class Index extends React.Component {
             <div>
                 <Header/>
                 <Body>
-                <Route path="/gayme" component={Gayme}/>
-                <Route exact path="/" component={ArticleList}/>
+                {/*<Route path="/gayme" component={Gayme}/>*/}
+                <Route path="/article/:articleId" component={withRouter(ArticlePage)}/>
+                <Route exact path="/" component={withRouter(ArticleList)}/>
                 </Body>
                 <Snackbar
                     className="global-snackbar"

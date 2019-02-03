@@ -17,8 +17,11 @@ module.exports = app => {
         title: {
             type: String,
             required: true,
-            lowercase: true,
+            //lowercase: true,
             trim: true,
+        },
+        summary: {
+            type: Schema.Types.Mixed,
         },
         tags: [String],
         content: {type: Schema.Types.Mixed},
