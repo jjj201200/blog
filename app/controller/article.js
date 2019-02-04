@@ -22,6 +22,7 @@ module.exports = app => {
                         rule: {
                             articleId: {type: 'string', required: true},
                         },
+                        checkJWT: false,
                     },
                     getListByUsername: { // 获取文章列表
                         name: 'getListByUsername',
